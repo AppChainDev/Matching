@@ -1,0 +1,39 @@
+name: drone
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: '>=3.3.3 <4.0.0'
+
+dependencies:
+  # date_time_formater: any
+  date_format_field: ^0.1.0
+  file_picker: ^8.0.3
+  flutter:
+    sdk: flutter
+  flutter_secure_storage: ^9.2.2
+  http: ^1.2.1
+  intl: ^0.18.0
+  jwt_decoder: ^2.0.1
+  multi_dropdown: ^2.1.4
+  pod_player: ^0.2.2
+  provider: ^6.1.2
+  sizer: ^2.0.15
+  text_area: ^0.0.3
+  image_picker: ^0.8.4+4
+  image_cropper: ^7.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+  fonts:
+    - family: HiraginoMinchoPro
+      fonts:
+        - asset: assets/fonts/HiraginoMinchoPro/HiraginoMinchoProW6.otf

@@ -1,0 +1,200 @@
+import 'package:drone/components/app_colors.dart';
+import 'package:drone/components/base_screen.dart';
+import 'package:drone/components/custom_button.dart';
+import 'package:drone/components/custom_container.dart';
+import 'package:drone/components/custom_text.dart';
+import 'package:drone/models/phone_number.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+class PhoneVerifyScreen extends StatefulWidget {
+
+  const PhoneVerifyScreen({super.key});
+
+  @override
+  State<PhoneVerifyScreen> createState() => _PhoneVerifyScreenState();
+}
+
+class _PhoneVerifyScreenState extends State<PhoneVerifyScreen> {
+  final TextEditingController verifyController = TextEditingController();
+    
+  @override
+  void initState() {
+    super.initState();
+    verifyController.addListener(_updateButtonColor);
+  }
+
+  @override
+  void dispose() {
+    verifyController.removeListener(_updateButtonColor);
+    verifyController.dispose();
+    super.dispose();
+  }
+
+  void _updateButtonColor() {
+    setState(() {
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final args = ModalRoute.of(context)!.settings.arguments as Phonenumber;
+    return BaseScreen(
+      child: Stack(
+        children: [
+          Center(
+             child: CustomContainer(
+              decoration: BoxDecoration(
+                color: AppColors.primaryWhite
+              ),
+               child: Padding(
+                padding: const EdgeInsets.only(top: 108, left: 20, right: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CustomText(
+                      text: "届いた認証番号を入力",
+                      fontSize: 24, 
+                      fontWeight: FontWeight.normal, 
+                      color: AppColors.primaryBlack,
+                      lineHeight: 1,
+                      letterSpacing: 1,
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    CustomText(
+                      text: "下記電話番号宛に届いた認証コードを入力してください。",
+                      fontSize: 14, 
+                      fontWeight: FontWeight.normal, 
+                      color: AppColors.primaryBlack,
+                      lineHeight: 1,
+                      letterSpacing: -1.5,
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Icon(
+                          Icons.trip_origin,
+                          color: AppColors.primaryBlack,
+                        ),
+                        const SizedBox(
+                          width: 7,
+                        ),
+                        CustomText(
+                          text: args.num,
+                          fontSize: 14, 
+                          fontWeight: FontWeight.normal, 
+                          color: AppColors.primaryBlack,
+                          lineHeight: 1,
+                          letterSpacing: 1,
+                        )
+                      ],
+                    ),
+                  ],
+                )
+               ),
+             ),
+           ),
+          Center(
+            child: CustomContainer(
+              child: Padding(
+                padding: const EdgeInsets.only(top:250),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 20, right: 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          TextField(
+                            controller: verifyController,
+                            textAlign: TextAlign.center,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                            cursorColor: AppColors.primaryBlack,
+                            style: TextStyle(
+                              color:AppColors.primaryBlack
+                            ),
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: const BorderSide(
+                                  width: 0,
+                                  style: BorderStyle.none,
+                                ),
+                              ),
+                              filled: true,
+                              contentPadding: const EdgeInsets.all(15),
+                              fillColor: AppColors.textFieldColor.withOpacity(0.5),
+                            ),
+                          ),
+                        ]
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          ),
+          Center(
+            child: CustomContainer(
+              child: Padding(
+                padding: const EdgeInsets.only(top:460, left:20, right: 20),
+                child: Column(
+                  children: [
+                    CustomButton(
+                      title: "つぎへ",
+                      width: 343,
+                      height: 45,
+                      fontSize: 17, 
+                      fontWeight: FontWeight.normal, 
+                      color: verifyController.text.isEmpty?AppColors.secondaryGreen.withOpacity(0.5):AppColors.secondaryGreen, 
+                      titleColor: AppColors.primaryWhite, 
+                      onTap: () async{ 
+                        Navigator.pushNamed(context, "/loginhome");
+                        // final isAuthenticated = Provider.of<UserState>(context, listen: false).isAuthenticated;
+                        // if (isAuthenticated) {
+                        //   if(Provider.of<UserState>(context, listen: false).user?.isPilot == false){
+                        //     await Provider.of<UserState>(context, listen: false).login(emailController.text, passwordController.text);     
+                        //   }
+                        // }
+                      }
+                    ),
+                  ],
+                ),
+              ),
+            ),
+           ),
+          Center(
+            child: CustomContainer(
+              height: 80,
+              child: Padding(
+                padding: const EdgeInsets.only(top:24, left:10, right: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    IconButton(
+                      onPressed: (){
+                        Navigator.pop(context);
+                      }, 
+                      // icon: Image.asset("assets/images/black_backmark.png", fit: BoxFit.cover,)
+                      icon: Icon(
+                        Icons.arrow_back,
+                        color: AppColors.primaryBlack,
+                      )
+                    ),
+                  ],
+                ),
+              ),
+            ),
+           ),
+
+        ],
+      )
+    );
+  }
+}
