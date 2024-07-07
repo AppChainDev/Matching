@@ -7,8 +7,9 @@ class CustomCupertinoPicker extends StatelessWidget {
 
   final List<String> items;
   final Function(int) onSelectedItemChanged;
+  final String text;
 
-  const CustomCupertinoPicker({super.key, required this.items, required this.onSelectedItemChanged});
+  const CustomCupertinoPicker({super.key, required this.items, required this.onSelectedItemChanged, required this.text});
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +25,7 @@ class CustomCupertinoPicker extends StatelessWidget {
             children: [
               Center(
                 child: CustomText(
-                  text: "居住地", 
+                  text: text, 
                   fontSize: 17, 
                   fontWeight: FontWeight.bold, 
                   lineHeight: 1, 

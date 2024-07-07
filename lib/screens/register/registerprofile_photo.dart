@@ -164,8 +164,11 @@ class _RegisterProfilePhotoScreenState extends State<RegisterProfilePhotoScreen>
                                             ),
                                           ):Center(
                                             child: Container(
-                                              width: 130,
-                                              height: 130,
+                                              width: 140,
+                                              height: 140,
+                                              decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.circular(10)
+                                              ),
                                               child: Image.file(
                                                 image!,
                                                 fit: BoxFit.cover,
@@ -196,7 +199,29 @@ class _RegisterProfilePhotoScreenState extends State<RegisterProfilePhotoScreen>
                               )                            
                             ],
                           ),
-                        )
+                        ),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(left: 16, right: 16),
+                              child: CustomButton(
+                                title: "つぎへ",
+                                width: 343,
+                                height: 45,
+                                fontSize: 17, 
+                                fontWeight: FontWeight.normal, 
+                                color: image==null?AppColors.secondaryGreen.withOpacity(0.5):AppColors.secondaryGreen, 
+                                titleColor: AppColors.primaryWhite, 
+                                onTap: (){ 
+                                  if(image != null){
+                                    Navigator.pushNamed(context, "/registerprofile_fourth");                                 
+                                  }
+                                }
+                              ),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   ),

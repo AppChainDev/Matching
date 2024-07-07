@@ -51,8 +51,8 @@ class _RegisterProfileThirdScreenState extends State<RegisterProfileThirdScreen>
 
   void changeHeight(int index) {
     setState(() {
-      height = 100 + index;
-      heightController.text = '${100 + index}cm'; 
+      height = 130 + index;
+      heightController.text = '${130 + index}cm'; 
     });
   }
   
@@ -182,7 +182,7 @@ class _RegisterProfileThirdScreenState extends State<RegisterProfileThirdScreen>
                                   ),
                                 ),
                                 
-                                onTap: () async {
+                                onTap: () {
                                   FocusScope.of(context).requestFocus(FocusNode());
                                   showModalBottomSheet(
                                       context: context,
@@ -194,6 +194,7 @@ class _RegisterProfileThirdScreenState extends State<RegisterProfileThirdScreen>
                                             ),
                                             height: MediaQuery.of(context).copyWith().size.height / 3,
                                             child: CustomCupertinoPicker(
+                                              text: "居住地",
                                               items: ConstFile.prefectureItems, 
                                               onSelectedItemChanged: (int index){
                                                 changePrefecture(index);
@@ -246,7 +247,7 @@ class _RegisterProfileThirdScreenState extends State<RegisterProfileThirdScreen>
                                     ),
                                   ),
                                 ),                              
-                                onTap: () async {
+                                onTap: () {
                                   List<String> values = List.generate(80, (index) => '${130 + index}cm');
                                   FocusScope.of(context).requestFocus(FocusNode());
                                   showModalBottomSheet(
@@ -259,6 +260,7 @@ class _RegisterProfileThirdScreenState extends State<RegisterProfileThirdScreen>
                                             ),
                                             height: MediaQuery.of(context).copyWith().size.height / 3,
                                             child: CustomCupertinoPicker(
+                                              text: "身長",
                                               items: values, 
                                               onSelectedItemChanged: (int index){
                                                 changeHeight(index);
@@ -308,7 +310,7 @@ class _RegisterProfileThirdScreenState extends State<RegisterProfileThirdScreen>
                                     ),
                                   ),
                                 ),                              
-                                onTap: () async {
+                                onTap: () {
                                   FocusScope.of(context).requestFocus(FocusNode());
                                   showModalBottomSheet(
                                       context: context,
@@ -320,6 +322,7 @@ class _RegisterProfileThirdScreenState extends State<RegisterProfileThirdScreen>
                                             ),
                                             height: MediaQuery.of(context).copyWith().size.height / 3,
                                             child: CustomCupertinoPicker(
+                                              text: "体型",
                                               items: ConstFile.bodyTypes, 
                                               onSelectedItemChanged: (int index){
                                                 changebodyType(index);
@@ -369,7 +372,7 @@ class _RegisterProfileThirdScreenState extends State<RegisterProfileThirdScreen>
                                     ),
                                   ),
                                 ),                              
-                                onTap: () async {
+                                onTap: () {
                                   FocusScope.of(context).requestFocus(FocusNode());
                                   showModalBottomSheet(
                                       context: context,
@@ -381,6 +384,7 @@ class _RegisterProfileThirdScreenState extends State<RegisterProfileThirdScreen>
                                             ),
                                             height: MediaQuery.of(context).copyWith().size.height / 3,
                                             child: CustomCupertinoPicker(
+                                              text: "結婚に対する意識",
                                               items: ConstFile.attitudes, 
                                               onSelectedItemChanged: (int index){
                                                 attitudeChange(index);
@@ -415,12 +419,14 @@ class _RegisterProfileThirdScreenState extends State<RegisterProfileThirdScreen>
                       fontSize: 17, 
                       fontWeight: FontWeight.normal, 
                       color: isCompleted()?AppColors.secondaryGreen:AppColors.secondaryGreen.withOpacity(0.5), 
-                      titleColor: AppColors.primaryWhite, 
-                      onTap: () async{ 
-                        if(isCompleted()){
+                      titleColor: AppColors.primaryWhite,
+                      onTap: () {
+                        if(isCompleted()==true){
                           Navigator.pushNamed(context, "/registerprofile_photo");
+                          // Navigator.pushNamed(context, "/registerprofile_first");
+                          
                         }     
-                      }
+                      }, 
                     ),
                   ),
                 ],
@@ -431,7 +437,7 @@ class _RegisterProfileThirdScreenState extends State<RegisterProfileThirdScreen>
             child: CustomContainer(
               height: 94,
               decoration: BoxDecoration(
-                color: AppColors.secondaryGreen
+                color: gender!=2? AppColors.secondaryGreen:AppColors.primaryWhite
               ),
               child: Padding(
                 padding: const EdgeInsets.only(bottom: 20),
@@ -465,7 +471,7 @@ class _RegisterProfileThirdScreenState extends State<RegisterProfileThirdScreen>
                       }, 
                       icon: Icon(
                         Icons.arrow_back_ios_rounded,
-                        color: AppColors.primaryWhite,
+                        color: gender!=2? AppColors.primaryWhite:AppColors.primaryBlack,
                       )
                     ),
                   ],

@@ -1,3 +1,4 @@
+import 'package:drone/models/community_model.dart';
 
 class ConstFile {
   static const List<String> qualificationsItems = <String>["一等無人航空機操縦士","なし"];
@@ -63,6 +64,122 @@ class ConstFile {
     "1年以内には",
     "2〜3年以内にしたい",
     "良い人がいればすぐにでも"
+  ];
+  static const List<String> bloodItems = <String>[
+    "A型",
+    "B型",
+    "AB型",
+    "O型"
+  ];
+  static const List<String> educationItems = <String>[
+    "高校卒",
+    "短大・専門卒",
+    "大学卒",
+    "大学院卒",
+    "復学"
+  ];
+  static const List<String> jobTypes = <String>[
+    "大手企業",
+    "弁護士",
+    "公認会計士",
+    "外資系企業",
+    "薬剤師",
+    "金融系",
+    "税理士",
+    "消防士",
+    "国家公務員",
+    "地方公務員",
+    "商社",
+    "医療系メーカー",
+    "医師",
+    "IT関連",
+    "経営者・役員",
+    "機械系メーカー",
+    "司法書士",
+    "コンサル業",
+    "電機メーカー",
+    "獣医",
+    "会社員",
+    "飲食業",
+  ];
+  static const List<String> incomes = <String>[
+    "200万円未満",
+    "200万円〜300万円",
+    "300万円〜400万円",
+    "400万円〜600万円",
+    "600万円〜800万円",
+    "800万円〜1000万円",
+    "1000万円以上"
+  ];
+  static const List<String> maritalHistories= <String>[
+    "独身(未婚)",
+    "独身(離婚)"
+  ];
+  static const List<String> childrenItems= <String>[
+    "なし",
+    "同居中",
+    "別居中"
+  ];
+  static const List<String> houseworkItems= <String>[
+    "積極的に参加したい",
+    "参加したい",
+    "できれば参加したい",
+    "苦手",
+    "苦手だけど頑張りたい",
+  ];
+  static const List<String> hopeMeetItems= <String>[
+    "まずは会って話したい",
+    "気が合えば会いたい",
+    "メッセージを重ねてから",
+    "会う前に電話したい"
+  ];
+  static const List<String> dateCostItems= <String>[
+    "男性がすべて払う",
+    "男性が多めに払う",
+    "割り勘",
+    "持ってる方が払う",
+    "相手と相談して決める",
+    "その場の流れ"
+  ];
+  static final List<CommunityModel> sportsGroupDatas = <CommunityModel>[
+    CommunityModel(id: 1, text: "サッカー", image: "football.png"),
+    CommunityModel(id: 2, text: "野球", image: "baseball.png"),
+    CommunityModel(id: 3, text: "バスケ", image: "basketball.png"),
+    CommunityModel(id: 4, text: "テニス", image: "tennis.png"),
+    CommunityModel(id: 5, text: "卓球", image: "tabletennis.png"),
+    CommunityModel(id: 6, text: "ゴルフ", image: "golf.png"),
+    CommunityModel(id: 7, text: "陸上", image: "track.png"),
+    CommunityModel(id: 8, text: "マラソン", image: "marathon.png"),
+    CommunityModel(id: 9, text: "バトミントン", image: "badminton.png"),
+    CommunityModel(id: 10, text: "水泳", image: "swimming.png"),
+    CommunityModel(id: 11, text: "スノボー", image: "snowboarding.png"),
+  ];
+  static final List<CommunityModel> personalityGroupDatas = <CommunityModel>[
+    CommunityModel(id: 1, text: "音楽", image: "music.png"),
+    CommunityModel(id: 2, text: "映画", image: "movies.png"),
+    CommunityModel(id: 3, text: "漫画", image: "cartoon.png"),
+    CommunityModel(id: 4, text: "ゲーム", image: "games.png"),
+    CommunityModel(id: 5, text: "食べ歩き", image: "eating.png"),
+    CommunityModel(id: 6, text: "サウナ", image: "sanua.png"),
+    CommunityModel(id: 7, text: "筋トレ", image: "muscle.png"),
+    CommunityModel(id: 8, text: "温泉", image: "hotspring.png"),
+    CommunityModel(id: 9, text: "釣り", image: "fishing.png"),
+    CommunityModel(id: 10, text: "水泳", image: "swimming.png"),
+    CommunityModel(id: 11, text: "写真", image: "photo.png"),
+  ];
+  static final List<CommunityModel> outingDetailDatas = <CommunityModel>[
+    CommunityModel(id: 1, text: "旅行", image: "travel.png"),
+    CommunityModel(id: 2, text: "キャンプ", image: "camping.png"),
+    CommunityModel(id: 3, text: "登山", image: "mountain_climbing.png"),
+    CommunityModel(id: 4, text: "散歩", image: "walking.png"),
+    CommunityModel(id: 5, text: "ドライブ", image: "driving.png")
+  ];
+  static final List<CommunityModel> lifeStyleDatas = <CommunityModel>[
+    CommunityModel(id: 1, text: "ペット好き", image: "pet_lover.png"),
+    CommunityModel(id: 2, text: "電話可", image: "phone.png"),
+    CommunityModel(id: 3, text: "真剣恋愛", image: "serious_relationships.png"),
+    CommunityModel(id: 4, text: "夜型", image: "nocturnal.png"),
+    CommunityModel(id: 5, text: "朝型", image: "morning_person.png")
   ];
   static const String term_summary = "＿＿＿＿＿＿＿＿（以下，「当社」といいます。）は，本ウェブサイト上で提供するサービス（以下,「本サービス」といいます。）における，ユーザーの個人情報の取扱いについて，以下のとおりプライバシーポリシー（以下，「本ポリシー」といいます。）を定めます。";
   static const String term_section1 = "第1条（個人情報）\n「個人情報」とは，個人情報保護法にいう「個人情報」を指すものとし，生存する個人に関する情報であって，当該情報に含まれる氏名，生年月日，住所，電話番号，連絡先その他の記述等により特定の個人を識別できる情報及び容貌，指紋，声紋にかかるデータ，及び健康保険証の保険者番号などの当該情報単体から特定の個人を識別できる情報（個人識別情報）を指します。";
