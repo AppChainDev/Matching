@@ -19,6 +19,7 @@ class _RegisterProfileSecondScreenState extends State<RegisterProfileSecondScree
 
   final TextEditingController birthdayController = TextEditingController();
    final int maxAge = 40;
+   int age = 0;
 
   @override
   void initState() {
@@ -39,8 +40,8 @@ class _RegisterProfileSecondScreenState extends State<RegisterProfileSecondScree
     });
   }
   void onBirthdayChange(DateTime birthday) {
-    // final now = DateTime.now();
-    // final age = now.year - birthday.year - (now.month < birthday.month || (now.month == birthday.month && now.day < birthday.day) ? 1 : 0);
+    final now = DateTime.now();
+    int value = now.year - birthday.year - (now.month < birthday.month || (now.month == birthday.month && now.day < birthday.day) ? 1 : 0);
     
     // if (age > maxAge) {
     //   setState(() {
@@ -68,6 +69,7 @@ class _RegisterProfileSecondScreenState extends State<RegisterProfileSecondScree
     //   });
     // }
     setState(() {
+      age = value;
       birthdayController.text = DateFormat('yyyy-MM-dd').format(birthday);
     });
   }
@@ -212,8 +214,28 @@ class _RegisterProfileSecondScreenState extends State<RegisterProfileSecondScree
                       fontWeight: FontWeight.normal, 
                       color: birthdayController.text.isEmpty?AppColors.secondaryGreen.withOpacity(0.5):AppColors.secondaryGreen, 
                       titleColor: AppColors.primaryWhite, 
-                      onTap: () async{ 
-                        Navigator.pushNamed(context, "/registerprofile_third");                                 
+                      onTap: () async{                        
+                        if (age > maxAge) {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text(''),
+                                content: Text('$maxAge歳以上のお客様はご利用いただけません。'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    child: const Text('OK'),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        } else {
+                          Navigator.pushNamed(context, "/registerprofile_third");                                 
+                        }
                       }
                     ),
                   ),

@@ -14,6 +14,7 @@ import 'package:drone/screens/mailsend_alert_screen.dart';
 import 'package:drone/screens/mailsend_screen.dart';
 import 'package:drone/screens/client/findpilot_screen.dart';
 import 'package:drone/screens/client/pilotprofile_screen.dart';
+import 'package:drone/screens/register/preferences.dart';
 import 'package:drone/screens/register/registerprofile_first.dart';
 import 'package:drone/screens/register/registerprofile_fourth.dart';
 import 'package:drone/screens/register/registerprofile_group.dart';
@@ -39,6 +40,7 @@ class Routes {
     '/registerprofile_photo': (context) => const RegisterProfilePhotoScreen(),
     '/registerprofile_fourth': (context) => const RegisterProfileFourthScreen(),
     '/registerprofile_group': (context) => const RegisterProfileGroupScreen(),
+    '/preference': (context) => const PreferenceScreen(),
     '/findpilot': (context) => FindPilotScreen(),
     '/settingpilot': (context) => SettingPilotScreen(),
     '/pilotprofile': (context) => PilotProfileScreen(),

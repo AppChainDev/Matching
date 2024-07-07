@@ -53,6 +53,13 @@ class _RegisterProfileGroupScreenState extends State<RegisterProfileGroupScreen>
       community4.add(id);
     });
   }
+  bool isCompleted(){
+    if(community1.isNotEmpty && community2.isNotEmpty && community3.isNotEmpty && community4.isNotEmpty){
+      return true;
+    }else{
+      return false;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,12 +82,12 @@ class _RegisterProfileGroupScreenState extends State<RegisterProfileGroupScreen>
                       height: 45,
                       fontSize: 17, 
                       fontWeight: FontWeight.normal, 
-                      color: AppColors.secondaryGreen.withOpacity(0.5), 
+                      color: isCompleted()?AppColors.secondaryGreen : AppColors.secondaryGreen.withOpacity(0.5), 
                       titleColor: AppColors.primaryWhite, 
                       onTap: () { 
-                        // if(isCompleted()){
-                        //   Navigator.pushNamed(context, "/registerprofile_photo");
-                        // }     
+                        if(isCompleted()){
+                          Navigator.pushNamed(context, "/preference");
+                        }     
                       }
                     ),
                   ),
