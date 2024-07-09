@@ -166,12 +166,45 @@ class _PhoneScreenState extends State<PhoneScreen> {
                           showDialog(
                             context: context,
                             builder: (context) => AlertDialog(
-                              title: const Text(''),
-                              content: const Text('正しい電話番号を入力してください。'),
+                              content: Padding(
+                                padding: const EdgeInsets.only(top: 40, left: 30, right: 30),
+                                child:CustomText(
+                                  text: "正しい電話番号を入力してください。", 
+                                  fontSize: 18, 
+                                  fontWeight: FontWeight.normal, 
+                                  lineHeight: 1.5, 
+                                  letterSpacing: 1, 
+                                  color: AppColors.primaryBlack
+                                )
+                              ),
                               actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context),
-                                  child: const Text('OK'),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    border: Border(
+                                      top: BorderSide(
+                                        width: 2,
+                                        color: AppColors.primaryGray
+                                      )
+                                    )
+                                  ),
+                                  child: Center(
+                                    child: TextButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: TextButton(
+                                        onPressed: (){
+                                          Navigator.pop(context);
+                                        }, 
+                                        child: CustomText(
+                                          text: "OK", 
+                                          fontSize: 20, 
+                                          fontWeight: FontWeight.bold, 
+                                          lineHeight: 1, 
+                                          letterSpacing: 1, 
+                                          color: AppColors.primaryBlue
+                                        )
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ],
                             ),

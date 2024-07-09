@@ -18,7 +18,7 @@ class CustomContainer extends StatelessWidget {
     return Container(
       transform: transform,
       height: height?? (kIsWeb?812:((Platform.isAndroid || Platform.isIOS)?MediaQuery.of(context).size.height:812)),
-      width: width ?? (kIsWeb?375:((Platform.isAndroid || Platform.isIOS)?MediaQuery.of(context).size.height:375)),
+      width: width ?? (kIsWeb?375:((Platform.isAndroid || Platform.isIOS)?MediaQuery.of(context).size.width:375)),
       decoration: decoration,
       child: child?? const SizedBox(),
     );

@@ -42,32 +42,6 @@ class _RegisterProfileSecondScreenState extends State<RegisterProfileSecondScree
   void onBirthdayChange(DateTime birthday) {
     final now = DateTime.now();
     int value = now.year - birthday.year - (now.month < birthday.month || (now.month == birthday.month && now.day < birthday.day) ? 1 : 0);
-    
-    // if (age > maxAge) {
-    //   setState(() {
-    //     birthdayController.text = '';
-    //   });
-    //   showDialog(
-    //     context: context,
-    //     builder: (BuildContext context) {
-    //       return AlertDialog(
-    //         content: Text('$maxAge歳以上のお客様はご利用いただけません。'),
-    //         actions: <Widget>[
-    //           TextButton(
-    //             child: const Text('OK'),
-    //             onPressed: () {
-    //               Navigator.of(context).pop();
-    //             },
-    //           ),
-    //         ],
-    //       );
-    //     },
-    //   );
-    // } else {
-    //   setState(() {
-    //     birthdayController.text = DateFormat('yyyy-MM-dd').format(birthday);
-    //   });
-    // }
     setState(() {
       age = value;
       birthdayController.text = DateFormat('yyyy-MM-dd').format(birthday);
