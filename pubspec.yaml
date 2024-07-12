@@ -23,6 +23,7 @@ dependencies:
   text_area: ^0.0.3
   image_picker: ^0.8.4+4
   image_cropper: ^7.1.0
+  modal_bottom_sheet: ^3.0.0
 
 dev_dependencies:
   flutter_test:

@@ -1,3 +1,6 @@
+import 'package:drone/screens/agreement/agreement.dart';
+import 'package:drone/screens/agreement/agreement_chatlist.dart';
+import 'package:drone/screens/agreement/matching_complete.dart';
 import 'package:drone/screens/auth/loginhome_screen.dart';
 import 'package:drone/screens/auth/phone_screen.dart';
 import 'package:drone/screens/auth/phoneverify_screen.dart';
@@ -15,6 +18,9 @@ import 'package:drone/screens/mailsend_screen.dart';
 import 'package:drone/screens/client/findpilot_screen.dart';
 import 'package:drone/screens/client/pilotprofile_screen.dart';
 import 'package:drone/screens/male/male_mypage.dart';
+import 'package:drone/screens/profile/view_profile.dart';
+import 'package:drone/screens/record/record_empty.dart';
+import 'package:drone/screens/record/record_list.dart';
 import 'package:drone/screens/register/introduce.dart';
 import 'package:drone/screens/register/preferences.dart';
 import 'package:drone/screens/register/registerprofile_first.dart';
@@ -23,17 +29,16 @@ import 'package:drone/screens/register/registerprofile_group.dart';
 import 'package:drone/screens/register/registerprofile_photo.dart';
 import 'package:drone/screens/register/registerprofile_second.dart';
 import 'package:drone/screens/register/registerprofile_third.dart';
+import 'package:drone/screens/support/support_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:drone/screens/first_screen.dart';
-import 'screens/home_screen.dart';
-
 class Routes {
   static final Map<String, WidgetBuilder> routes = {
     '/': (context) => const FirstScreen(),
-    '/mailsend': (context) => MailSendScreen(),
-    '/mailsendalert': (context) => MailSendAlertScreen(),
+    '/agreement': (context) => const AgreementScreen(),
+    '/agreenment_chatlist': (context) => const AgreementChatListScreen(),
     '/login': (context) => LoginScreen(),
-    '/loginhome': (context) => const LoginHomeScreen(),
+    '/matching_complete': (context) => const MatchingCompleteScreen(),
     '/phone': (context) => const PhoneScreen(),
     '/phoneverify': (context) => const PhoneVerifyScreen(),
     '/registerprofile_first': (context) => const RegisterProfileFirstScreen(),
@@ -43,11 +48,12 @@ class Routes {
     '/registerprofile_fourth': (context) => const RegisterProfileFourthScreen(),
     '/registerprofile_group': (context) => const RegisterProfileGroupScreen(),
     '/preference': (context) => const PreferenceScreen(),
-    '/introduce': (context) => const IntroduceSceen(),
+    '/introduce': (context) => const IntroduceScreen(),
     '/malemypage': (context) => const MaleMyPage(),
-    '/findpilot': (context) => FindPilotScreen(),
-    '/settingpilot': (context) => SettingPilotScreen(),
-    '/pilotprofile': (context) => PilotProfileScreen(),
+    '/support': (context) => const SupportScreen(),
+    '/record_list': (context) => const RecordListScreen(),
+    '/record_empty': (context) => const RecordEmptyScreen(),
+    '/view_profile': (context) => const ViewProfileScreen(),
     '/request': (context) => RequestScreen(),
     '/requestconfirm': (context) => RequestConfirmScreen(),
     '/requestsuccess': (context) => RequestSuccessScreen(),
@@ -55,6 +61,5 @@ class Routes {
     '/clientjobdetail': (context) => ClientJobDetailScreen(),
     '/paymentlist': (context) => PaymentListScreen(),
     '/paymentdetail': (context) => PaymentDetailScreen(),
-    '/home': (context) => const HomeScreen(),
   };
 }

@@ -4,14 +4,14 @@ import 'package:drone/components/custom_container.dart';
 import 'package:drone/components/custom_text.dart';
 import 'package:flutter/material.dart';
 
-class IntroduceSceen extends StatefulWidget {
-  const IntroduceSceen({super.key});
+class IntroduceScreen extends StatefulWidget {
+  const IntroduceScreen({super.key});
 
   @override
-  State<IntroduceSceen> createState() => _IntroduceSceenState();
+  State<IntroduceScreen> createState() => _IntroduceScreenState();
 }
 
-class _IntroduceSceenState extends State<IntroduceSceen> {
+class _IntroduceScreenState extends State<IntroduceScreen> {
   final TextEditingController introduceController = TextEditingController();
   int textCount = 0;
 

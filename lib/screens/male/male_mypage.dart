@@ -1,9 +1,11 @@
+
 import 'package:drone/components/app_colors.dart';
 import 'package:drone/components/base_screen.dart';
 import 'package:drone/components/custom_button.dart';
 import 'package:drone/components/custom_container.dart';
 import 'package:drone/components/custom_text.dart';
 import 'package:flutter/material.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 class MaleMyPage extends StatefulWidget {
 
   const MaleMyPage({super.key});
@@ -13,7 +15,7 @@ class MaleMyPage extends StatefulWidget {
 }
 
 class _MaleMyPageState extends State<MaleMyPage> {
-
+  final TextEditingController questionController= TextEditingController();
 
   @override
   void initState() {
@@ -94,6 +96,7 @@ class _MaleMyPageState extends State<MaleMyPage> {
                       titleColor: AppColors.primaryWhite, 
                       onTap: () async{ 
                         Navigator.pop(context);
+                        allowNotification(context);
                       }
                     ),
                 ],
@@ -267,8 +270,126 @@ class _MaleMyPageState extends State<MaleMyPage> {
       );
   }
 
+  allowNotification(BuildContext context) {
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (_) => Center( // Aligns the container to center
+        child: Container( // A simplified version of dialog. 
+          width: 270,
+          height: 190,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5),
+            // color: AppColors.primaryWhite.withOpacity(0.9)
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                AppColors.primaryYellow.withOpacity(0.9),
+                AppColors.primaryYellow.withOpacity(0.7)
+              ],
+            ),
+          ),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top:12),
+                child: Center(
+                  child: Text(
+                    "通知を送信します\n許可しますか？",
+                    textAlign:TextAlign.center,
+                    style: TextStyle(
+                      color: AppColors.primaryBlack,
+                      fontWeight: FontWeight.normal,
+                      fontSize:15,
+                      decoration: TextDecoration.none
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top:24, bottom: 30),
+                child: Center(
+                  child: Text(
+                    "通知方法は、テキスト、サウンド、アイコンが\n利用できる可能性を含みます。\n通知方法は「設定」で設定できます。",
+                    textAlign:TextAlign.center,
+                    style: TextStyle(
+                      color: AppColors.primaryBlack,
+                      fontWeight: FontWeight.normal,
+                      fontSize:10,
+                      decoration: TextDecoration.none
+                    ),
+                  ),
+                )
+              ),
+              Expanded(
+                child: Row(
+                  children: [
+                    Container(
+                      width: 135,
+                      decoration: BoxDecoration(
+                        border:Border(
+                          top: BorderSide(
+                            color: AppColors.primaryBlack.withOpacity(0.4),
+                            width: 1.5
+                          ),
+                          right: BorderSide(
+                            color: AppColors.primaryBlack.withOpacity(0.4),
+                            width: 1.5
+                          )
+                        )
+                      ),
+                      child: TextButton(
+                        onPressed: (){
+                          Navigator.pop(context);
+                        },
+                        child: Text(
+                          '許可しない',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color:AppColors.alertBlue,
+                            fontWeight: FontWeight.bold
+                          ),
+                        )
+                      ),
+                    ),
+                    Container(
+                      width: 135,
+                      decoration: BoxDecoration(
+                        border:Border(
+                          top: BorderSide(
+                            color: AppColors.primaryBlack.withOpacity(0.4),
+                            width: 1.5
+                          )
+                        )
+                      ),
+                      child: TextButton(
+                        onPressed: (){
+                          Navigator.pop(context);
+                        },
+                        child: Text(
+                          '許可',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color:AppColors.alertBlue,
+                            fontWeight: FontWeight.bold
+                          ),
+                        )
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            ],
+          ),
+          )
+        )
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
     return BaseScreen(
       child: Stack(
         children: [
@@ -538,7 +659,7 @@ class _MaleMyPageState extends State<MaleMyPage> {
                             width: MediaQuery.of(context).size.width/3,
                             child: MaterialButton(
                               onPressed: () {
-                                
+                                Navigator.pushNamed(context, '/record_list');
                               },
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -568,7 +689,7 @@ class _MaleMyPageState extends State<MaleMyPage> {
                             width: MediaQuery.of(context).size.width/3,
                             child: MaterialButton(
                               onPressed: () {
-                                
+                                Navigator.pushNamed(context, "/agreement");
                               },
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -598,7 +719,7 @@ class _MaleMyPageState extends State<MaleMyPage> {
                             width: MediaQuery.of(context).size.width/3,
                             child: MaterialButton(
                               onPressed: () {
-                                
+                                Navigator.pushNamed(context, "/support");
                               },
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,

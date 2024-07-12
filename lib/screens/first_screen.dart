@@ -50,7 +50,7 @@ class FirstScreen extends StatelessWidget {
                       color: AppColors.primaryGreen,
                       titleColor: AppColors.primaryWhite, 
                       onTap: (){
-                        Navigator.pushNamed(context, "/registerprofile_group");
+                        Navigator.pushNamed(context, "/malemypage");
                       }
                     ),
                     const SizedBox(
