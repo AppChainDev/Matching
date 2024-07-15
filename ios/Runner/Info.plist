@@ -56,5 +56,7 @@
 	<string>Allow access to microphone for video recording</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Allow access to photo library</string>
+	<key>NSUserNotificationUsageDescription</key>
+	<string>We need your permission to send you notifications.</string>
 </dict>
 </plist>

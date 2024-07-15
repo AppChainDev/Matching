@@ -124,7 +124,7 @@ class _MaleMyPageState extends State<MaleMyPage> {
                       width: MediaQuery.of(context).size.width/5,
                       child: MaterialButton(
                         onPressed: () {
-                          
+                          Navigator.pushNamed(context, "/postpage");
                         },
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,

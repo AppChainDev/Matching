@@ -1,5 +1,5 @@
-class PilotidIdModel {
+class UserTransforIdModel {
   final int id;
-  final String name;
-  PilotidIdModel({required this.id, required this.name});
+  final String beforePage;
+  UserTransforIdModel({required this.id, required this.beforePage});
 }

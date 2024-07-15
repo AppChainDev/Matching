@@ -261,7 +261,7 @@ class _SettingScreenState extends State<SettingScreen> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          
+                          Navigator.pushNamed(context, "/delete_account");
                         },
                         child: Container(
                           padding: const EdgeInsets.only(top: 15, bottom: 15, right: 18),
@@ -289,7 +289,7 @@ class _SettingScreenState extends State<SettingScreen> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          
+                          logoutAlert(context);
                         },
                         child: Container(
                           padding: const EdgeInsets.only(top: 15, bottom: 15, right: 18),
@@ -369,4 +369,99 @@ class _SettingScreenState extends State<SettingScreen> {
       )
     );
   }
+}
+
+logoutAlert(BuildContext context){
+  showDialog(
+    barrierDismissible: false,
+    context: context,
+    builder: (_) => Center( // Aligns the container to center
+      child: Container( // A simplified version of dialog. 
+        width: 270,
+        height: 142,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(5),
+          color: AppColors.primaryWhite
+        ),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top:43, bottom: 33),
+              child: Center(
+                child: Text(
+                  "ログアウトしますか？",
+                  textAlign:TextAlign.center,
+                  style: TextStyle(
+                    color: AppColors.primaryBlack,
+                    fontWeight: FontWeight.bold,
+                    fontSize:17,
+                    decoration: TextDecoration.none
+                  ),
+                ),
+              )
+            ),
+            Expanded(
+              child: Row(
+                children: [
+                  Container(
+                    width: 135,
+                    decoration: BoxDecoration(
+                      border:Border(
+                        top: BorderSide(
+                          color: AppColors.primaryGray,
+                          width: 1.5
+                        ),
+                        right: BorderSide(
+                          color: AppColors.primaryGray,
+                          width: 1.5
+                        )
+                      )
+                    ),
+                    child: TextButton(
+                      onPressed: (){
+                        Navigator.pop(context);
+                        Navigator.pushNamed(context, "/");
+                      },
+                      child: Text(
+                        'ログアウト',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color:AppColors.alertBlue,
+                          fontWeight: FontWeight.bold
+                        ),
+                      )
+                    ),
+                  ),
+                  Container(
+                    width: 135,
+                    decoration: BoxDecoration(
+                      border:Border(
+                        top: BorderSide(
+                          color: AppColors.primaryGray,
+                          width: 1.5
+                        )
+                      )
+                    ),
+                    child: TextButton(
+                      onPressed: (){
+                        Navigator.pop(context);
+                      },
+                      child: Text(
+                        'キャンセル',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color:AppColors.alertBlue,
+                          fontWeight: FontWeight.bold
+                        ),
+                      )
+                    ),
+                  ),
+                ],
+              ),
+            )
+          ],
+        ),
+        )
+      )
+  );
 }

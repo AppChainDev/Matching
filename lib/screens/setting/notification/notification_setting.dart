@@ -3,6 +3,7 @@ import 'package:drone/components/base_screen.dart';
 import 'package:drone/components/custom_container.dart';
 import 'package:drone/components/custom_text.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class NotificationSettingScreen extends StatefulWidget {
 
@@ -28,10 +29,9 @@ class _NotificationSettingScreenState extends State<NotificationSettingScreen> {
     super.dispose();
   }
 
-  // Future<void> setNotifiaction() async {
-  //   const storage = FlutterSecureStorage();
-  //   await storage.write(key: 'notification', value: light.toString());  
-  // }
+  Future<void> openNotificationSettings() async {
+    await openAppSettings();
+  }
   
   @override
   Widget build(BuildContext context) {
@@ -84,7 +84,7 @@ class _NotificationSettingScreenState extends State<NotificationSettingScreen> {
                                   ),
                                   child: MaterialButton(
                                     onPressed: () {
-                                      
+                                      openNotificationSettings();
                                     },
                                     child: Center(
                                       child: CustomText(

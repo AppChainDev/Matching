@@ -8,6 +8,7 @@ import 'package:drone/screens/login_screen.dart';
 import 'package:drone/screens/male/male_mypage.dart';
 import 'package:drone/screens/notification/notification.dart';
 import 'package:drone/screens/notification/notification_detail.dart';
+import 'package:drone/screens/post/postpage.dart';
 import 'package:drone/screens/profile/component/edit_introductoin.dart';
 import 'package:drone/screens/profile/component/group/group_edit.dart';
 import 'package:drone/screens/profile/component/memories/memories_description.dart';
@@ -27,6 +28,7 @@ import 'package:drone/screens/register/registerprofile_group.dart';
 import 'package:drone/screens/register/registerprofile_photo.dart';
 import 'package:drone/screens/register/registerprofile_second.dart';
 import 'package:drone/screens/register/registerprofile_third.dart';
+import 'package:drone/screens/setting/account/delete_account.dart';
 import 'package:drone/screens/setting/blockaccount/block_list.dart';
 import 'package:drone/screens/setting/notification/notification_setting.dart';
 import 'package:drone/screens/setting/settings.dart';
@@ -61,6 +63,7 @@ class Routes {
     '/setting': (context) => const SettingScreen(),
     '/block_list': (context) => const BlockListScreen(),
     '/notification_setting': (context) => const NotificationSettingScreen(),
+    '/delete_account': (context) => const DeleteAccountScreen(),
     '/view_profile': (context) => const ViewProfileScreen(),
     '/edit_profile': (context) => const EditProfileScreen(),
     '/question1': (context) => const Question1Screen(),
@@ -69,5 +72,7 @@ class Routes {
     '/memories_description': (context) => const MemoryDescriptionWidget(),
     '/edit_name': (context) => const EditNameScreen(),
     '/edit_group': (context) => const GroupEditScreen(),
+    '/postpage': (context) => const PostScreen(),
+    
   };
 }
