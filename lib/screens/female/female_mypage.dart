@@ -879,7 +879,7 @@ class _FemaleMyPageState extends State<FemaleMyPage> {
                             width: MediaQuery.of(context).size.width/3,
                             child: MaterialButton(
                               onPressed: () {
-                                
+                                Navigator.pushNamed(context, "/setting");
                               },
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,

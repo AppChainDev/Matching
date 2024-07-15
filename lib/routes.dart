@@ -27,6 +27,9 @@ import 'package:drone/screens/register/registerprofile_group.dart';
 import 'package:drone/screens/register/registerprofile_photo.dart';
 import 'package:drone/screens/register/registerprofile_second.dart';
 import 'package:drone/screens/register/registerprofile_third.dart';
+import 'package:drone/screens/setting/blockaccount/block_list.dart';
+import 'package:drone/screens/setting/notification/notification_setting.dart';
+import 'package:drone/screens/setting/settings.dart';
 import 'package:drone/screens/support/support_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:drone/screens/first_screen.dart';
@@ -55,6 +58,9 @@ class Routes {
     '/record_empty': (context) => const RecordEmptyScreen(),
     '/notification': (context) => const NotificationScreen(),
     '/notification_detail': (context) => const NotificationDetailScreen(),
+    '/setting': (context) => const SettingScreen(),
+    '/block_list': (context) => const BlockListScreen(),
+    '/notification_setting': (context) => const NotificationSettingScreen(),
     '/view_profile': (context) => const ViewProfileScreen(),
     '/edit_profile': (context) => const EditProfileScreen(),
     '/question1': (context) => const Question1Screen(),

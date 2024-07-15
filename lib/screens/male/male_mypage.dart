@@ -388,7 +388,6 @@ class _MaleMyPageState extends State<MaleMyPage> {
 
   @override
   Widget build(BuildContext context) {
-    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
     return BaseScreen(
       child: Stack(
         children: [
@@ -748,7 +747,7 @@ class _MaleMyPageState extends State<MaleMyPage> {
                             width: MediaQuery.of(context).size.width/3,
                             child: MaterialButton(
                               onPressed: () {
-                                
+                                Navigator.pushNamed(context, "/setting");
                               },
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,

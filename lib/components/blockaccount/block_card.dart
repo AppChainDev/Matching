@@ -3,8 +3,8 @@ import 'package:drone/components/custom_text.dart';
 import 'package:drone/utils/const_file.dart';
 import 'package:flutter/material.dart';
 
-class RecordItem extends StatelessWidget{
-  const RecordItem({
+class BlockItem extends StatelessWidget{
+  const BlockItem({
     super.key, required this.name, required this.prefectureId, required this.age, required this.avatarImage, required this.id, required this.onPressed
  });
 
@@ -33,6 +33,7 @@ class RecordItem extends StatelessWidget{
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -88,19 +89,21 @@ class RecordItem extends StatelessWidget{
                 ],
               ),
               Container(
+                height: 24,
+                margin: const EdgeInsets.only(right: 18),
                 decoration: BoxDecoration(
-                  color: AppColors.secondaryGreen,
-                  borderRadius: BorderRadius.circular(5)
+                  color: AppColors.secondaryRed,
+                  borderRadius: BorderRadius.circular(50)
                 ),
                 child: MaterialButton(
                   onPressed: onPressed,
                   child: Center(
                     child: CustomText(
-                      text: "いいねを送る", 
-                      fontSize: 13, 
+                      text: "ブロック解除", 
+                      fontSize: 10, 
                       fontWeight: FontWeight.normal, 
                       lineHeight: 1, 
-                      letterSpacing: 1, 
+                      letterSpacing: -1, 
                       color: AppColors.primaryWhite
                     ),
                   ),
