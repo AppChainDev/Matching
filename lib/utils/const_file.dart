@@ -93,6 +93,7 @@ class ConstFile {
     "医療系メーカー",
     "医師",
     "IT関連",
+    "教育関連",
     "経営者・役員",
     "機械系メーカー",
     "司法書士",
@@ -141,6 +142,42 @@ class ConstFile {
     "相手と相談して決める",
     "その場の流れ"
   ];
+  static const List<String> holidayItem= <String>[
+    "土日",
+    "平日",
+    "不定期",
+  ];
+  static const List<String> roommateItem= <String>[
+    "一人暮らし",
+    "実家暮らし",
+    "社宅",
+    "ペットと一緒",
+    "その他"
+  ];
+  static const List<String> alcoholItem= <String>[
+    "飲まない",
+    "時々飲む",
+    "飲む",
+    "よく飲む",
+    "その他"
+  ];
+  static const List<String> smokingItem= <String>[
+    "吸わない",
+    "時々吸う",
+    "吸う",
+    "電子タバコなら吸う",
+    "相手が嫌なら辞める"
+  ];
+  static const List<String> savingsItem= <String>[
+    "仲良くなったら教える",
+    "100万円以上",
+    "300万円以上",
+    "500万円以上",
+    "1000万円以上",
+    "2000万円以上",
+    "2000万円以上"
+  ];
+
   static final List<CommunityModel> sportsGroupDatas = <CommunityModel>[
     CommunityModel(id: 1, text: "サッカー", image: "football.png"),
     CommunityModel(id: 2, text: "野球", image: "baseball.png"),

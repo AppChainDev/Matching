@@ -344,6 +344,7 @@ class GroupItem extends StatelessWidget {
           Container(
             width: 95,
             height: 65,
+            margin: const EdgeInsets.only(right: 5),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
             ),

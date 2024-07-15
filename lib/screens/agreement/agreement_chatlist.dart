@@ -121,6 +121,7 @@ class _AgreementChatListScreenState extends State<AgreementChatListScreen> {
                   children: [
                     IconButton(
                       onPressed: (){
+                        // Navigator.pushNamed(context, "/agreement");
                         Navigator.pop(context);
                       }, 
                       icon: Icon(

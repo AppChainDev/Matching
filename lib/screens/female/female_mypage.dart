@@ -5,16 +5,17 @@ import 'package:drone/components/custom_button.dart';
 import 'package:drone/components/custom_container.dart';
 import 'package:drone/components/custom_text.dart';
 import 'package:flutter/material.dart';
-class MaleMyPage extends StatefulWidget {
+class FemaleMyPage extends StatefulWidget {
 
-  const MaleMyPage({super.key});
+  const FemaleMyPage({super.key});
 
   @override
-  State<MaleMyPage> createState() => _MaleMyPageState();
+  State<FemaleMyPage> createState() => _FemaleMyPageState();
 }
 
-class _MaleMyPageState extends State<MaleMyPage> {
+class _FemaleMyPageState extends State<FemaleMyPage> {
   final TextEditingController questionController= TextEditingController();
+  final bool verify = false;
 
   @override
   void initState() {
@@ -386,9 +387,177 @@ class _MaleMyPageState extends State<MaleMyPage> {
     );
   }
 
+  // ignore: non_constant_identifier_names
+  Widget CenterCard(){
+    if(!verify){
+      return
+        Container(
+          width: MediaQuery.of(context).size.width,
+          padding: const EdgeInsets.only(top: 6, left: 18, right: 18, bottom: 20),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.topRight,
+              colors: [
+                AppColors.secondaryGreen,
+                AppColors.primaryGreen.withOpacity(0.5)
+              ],
+            ),
+          ),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment:MainAxisAlignment.end,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(right: 5, bottom: 5),
+                    child: CustomText(
+                      text: "500Pゲット", 
+                      fontSize: 11, 
+                      fontWeight: FontWeight.normal, 
+                      lineHeight: 1, 
+                      letterSpacing: 1, 
+                      color: AppColors.primaryWhite
+                    ),
+                  )
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        width: 32,
+                        height: 23,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5),
+                          image: const DecorationImage(
+                            image: AssetImage("assets/images/verify_icon.png"),
+                            fit: BoxFit.contain
+                          )
+                        )
+                      ),
+                      const SizedBox(
+                        width: 18,
+                      ),
+                      CustomText(
+                        text: "本人確認をして\nメッセージを開始しよう", 
+                        fontSize: 13, 
+                        fontWeight: FontWeight.normal, 
+                        lineHeight: 1.5, 
+                        letterSpacing: -1, 
+                        color: AppColors.primaryWhite
+                      )
+                    ],
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      
+                    },
+                    child: Container(
+                      width: 132,
+                      height: 38,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(50),
+                        border: Border.all(
+                          color: AppColors.primaryWhite,
+                          width: 2
+                        )
+                      ),
+                      child: Center(
+                        child: CustomText(
+                          text: "開始する", 
+                          fontSize: 16, 
+                          fontWeight: FontWeight.normal, 
+                          lineHeight: 1, 
+                          letterSpacing: -1, 
+                          color: AppColors.primaryWhite
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              )
+            ],
+          ),
+        );
+    }else{
+      return Container(
+          width: MediaQuery.of(context).size.width,
+          padding: const EdgeInsets.only(top: 26, left: 18, right: 18, bottom: 20),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.topRight,
+              colors: [
+                AppColors.secondaryGreen,
+                AppColors.primaryGreen.withOpacity(0.5)
+              ],
+            ),
+          ),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Row(
+                    children: [
+                      ImageIcon(
+                        const AssetImage("assets/images/message.png"),
+                        color: AppColors.primaryWhite
+                      ),
+                      const SizedBox(
+                        width: 18,
+                      ),
+                      CustomText(
+                        text: "無料でいいねをして\nメッセージをしよう", 
+                        fontSize: 13, 
+                        fontWeight: FontWeight.normal, 
+                        lineHeight: 1.5, 
+                        letterSpacing: -1, 
+                        color: AppColors.primaryWhite
+                      )
+                    ],
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      
+                    },
+                    child: Container(
+                      width: 132,
+                      height: 38,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(50),
+                        border: Border.all(
+                          color: AppColors.primaryWhite,
+                          width: 2
+                        )
+                      ),
+                      child: Center(
+                        child: CustomText(
+                          text: "無料でいいね", 
+                          fontSize: 16, 
+                          fontWeight: FontWeight.normal, 
+                          lineHeight: 1, 
+                          letterSpacing: -1, 
+                          color: AppColors.primaryWhite
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              )
+            ],
+          ),
+        );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
     return BaseScreen(
       child: Stack(
         children: [
@@ -458,7 +627,7 @@ class _MaleMyPageState extends State<MaleMyPage> {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         CustomText(
-                                          text: "ゆうた", 
+                                          text: "かなえ", 
                                           fontSize: 17, 
                                           fontWeight: FontWeight.bold, 
                                           lineHeight: 1.5, 
@@ -468,7 +637,7 @@ class _MaleMyPageState extends State<MaleMyPage> {
                                         Row(
                                           children: [
                                             CustomText(
-                                              text: "55歳", 
+                                              text: "39歳", 
                                               fontSize: 10, 
                                               fontWeight: FontWeight.normal, 
                                               lineHeight: 1, 
@@ -524,11 +693,11 @@ class _MaleMyPageState extends State<MaleMyPage> {
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.only(top:22, left: 10, right: 10, bottom: 22 ),
+                            padding: const EdgeInsets.only(top:33, left: 10, right: 10, bottom: 30 ),
                             child: SizedBox(
                               height: 66,
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Container(
                                     width: 99,
@@ -550,7 +719,7 @@ class _MaleMyPageState extends State<MaleMyPage> {
                                           color: AppColors.primaryBlack
                                         ),
                                         CustomText(
-                                          text: "未確認", 
+                                          text: !verify?"未確認":"確認済", 
                                           fontSize: 17, 
                                           fontWeight: FontWeight.normal, 
                                           lineHeight: 1, 
@@ -560,35 +729,8 @@ class _MaleMyPageState extends State<MaleMyPage> {
                                       ],
                                     )
                                   ),
-                                  Container(
-                                    width: 99,
-                                    height: 66,
-                                    decoration: BoxDecoration(
-                                      color: AppColors.secondaryGreen.withOpacity(0.2),
-                                      borderRadius: BorderRadius.circular(10)
-                                    ),
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        CustomText(
-                                          text: "ステータス", 
-                                          fontSize: 10, 
-                                          fontWeight: FontWeight.normal, 
-                                          lineHeight: 2, 
-                                          letterSpacing: 1, 
-                                          color: AppColors.primaryBlack
-                                        ),
-                                        CustomText(
-                                          text: "無料", 
-                                          fontSize: 17, 
-                                          fontWeight: FontWeight.normal, 
-                                          lineHeight: 1, 
-                                          letterSpacing: 1, 
-                                          color: AppColors.primaryBlack
-                                        )
-                                      ],
-                                    )
+                                  const SizedBox(
+                                    width: 30,
                                   ),
                                   Container(
                                     width: 99,
@@ -633,23 +775,12 @@ class _MaleMyPageState extends State<MaleMyPage> {
                               ),
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 10, right: 10),
-                            child: Container(
-                              height: 350,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                image: const DecorationImage(
-                                  image: AssetImage("assets/images/sale_card.png")
-                                )
-                              ),
-                            ),
-                          ),
                         ],
                       ),
                     ),
+                    CenterCard(),
                     Padding(
-                      padding: const EdgeInsets.only(top: 25, bottom: 23),
+                      padding: const EdgeInsets.only(top: 40, bottom: 23),
                       child: Wrap(
                         alignment: WrapAlignment.start,
                         children: [

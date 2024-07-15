@@ -102,10 +102,7 @@ class _MatchingCompleteScreenState extends State<MatchingCompleteScreen> {
                           color: AppColors.primaryWhite, 
                           titleColor: AppColors.secondaryGreen, 
                           onTap: () { 
-                              Navigator.pushNamed(context, "/introduce");
-                            // if(isCompleted()){
-                            //   Navigator.pushNamed(context, "/registerprofile_photo");
-                            // }     
+                            
                           }
                         ),
                         const SizedBox(
@@ -119,8 +116,8 @@ class _MatchingCompleteScreenState extends State<MatchingCompleteScreen> {
                           fontWeight: FontWeight.normal, 
                           color: Colors.transparent, 
                           titleColor: AppColors.primaryWhite, 
-                          onTap: () { 
-                            Navigator.pushNamed(context, "/agreenment_chatlist");  
+                          onTap: () {
+                            Navigator.pop(context);  
                           }
                         ),
                       ],
