@@ -1,13 +1,18 @@
+import 'dart:io';
+
 import 'package:drone/components/app_colors.dart';
 import 'package:drone/components/base_screen.dart';
 import 'package:drone/components/custom_button.dart';
 import 'package:drone/components/custom_container.dart';
 import 'package:drone/components/custom_text.dart';
 import 'package:drone/components/post/post_card.dart';
+import 'package:drone/models/image_model.dart';
 import 'package:drone/models/pilotid_model.dart';
 import 'package:drone/models/post_model.dart';
 import 'package:drone/utils/const_file.dart';
 import 'package:flutter/material.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
 
 class PostScreen extends StatefulWidget {
 
@@ -26,6 +31,8 @@ class _PostScreenState extends State<PostScreen> {
     PostModel(2, "こうき", "食べ歩き行きたいですね。\n新座とかで。", 14, 60, "avatar1.png", "post_backimage2.png"),
     PostModel(3, "YUUTA", "お花見の時期ですね", 13, 56, "avatar1.png", "post_backimage3.png"),
   ];
+  late File? image;
+  final picker = ImagePicker();
 
   @override
   void initState() {
@@ -44,6 +51,58 @@ class _PostScreenState extends State<PostScreen> {
     setState(() {
       messageLength = messageController.text.length;
     });
+  }
+
+  void saveMessage(int id){
+    setState(() {
+      posts.removeWhere((post)=>post.id==id);
+    });
+  }
+
+  Future getImageFromCamera() async {
+    // ignore: deprecated_member_use
+    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      File? croppedFile = await cropImage(File(pickedFile.path));
+      if (croppedFile != null) {
+         Navigator.pushNamed(context, "/create_post", arguments: ImageModel(croppedFile));
+      }
+    }
+  }
+  Future<File?> cropImage(File imageFile) async {
+    CroppedFile? croppedFile = await ImageCropper().cropImage(
+      sourcePath: imageFile.path,
+      uiSettings: [
+        AndroidUiSettings(
+        toolbarTitle: 'Cropper',
+        toolbarColor: Colors.deepOrange,
+        toolbarWidgetColor: Colors.white,
+        aspectRatioPresets: [
+          CropAspectRatioPreset.original,
+          CropAspectRatioPreset.square,
+          CropAspectRatioPreset.ratio3x2,
+          CropAspectRatioPreset.ratio4x3,
+          CropAspectRatioPreset.ratio16x9
+        ],
+      ),
+      IOSUiSettings(
+        title: 'Cropper',
+        aspectRatioPresets: [
+          CropAspectRatioPreset.original,
+          CropAspectRatioPreset.square,
+          CropAspectRatioPreset.ratio3x2,
+          CropAspectRatioPreset.ratio4x3,
+          CropAspectRatioPreset.ratio16x9
+        ],
+      ),
+      ],
+    );
+    if(croppedFile != null){
+      return File(croppedFile.path);
+    }else{
+      return null;
+    }
   }
 
   Future<void> sendMessage(int id, String name, String avatar, int age, int prefectureId) async {
@@ -175,6 +234,7 @@ class _PostScreenState extends State<PostScreen> {
                         titleColor: AppColors.primaryWhite, 
                         onTap: () async{ 
                           Navigator.pop(context);
+                          saveMessage(id);
                         }
                       ),
                       const SizedBox(
@@ -207,6 +267,170 @@ class _PostScreenState extends State<PostScreen> {
       });
   }
 
+  Widget bottomBar(){
+    return 
+      Center(
+        child: CustomContainer(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: AppColors.primaryWhite
+                ),
+                width: MediaQuery.of(context).size.width,
+                height: 70,
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width/5,
+                      child: MaterialButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, "/postpage");
+                        },
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ImageIcon(
+                              const AssetImage("assets/images/agreement.png"),
+                              color: AppColors.secondaryGreen
+                            ),
+                            const SizedBox(
+                              height: 9,
+                            ),
+                            Text(
+                              '共感',
+                              style: TextStyle(
+                                color: AppColors.secondaryGreen,
+                                fontSize: 9,
+                                fontWeight: FontWeight.normal
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width/5,
+                      child: MaterialButton(
+                        onPressed: () {
+                          
+                        },
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ImageIcon(
+                              const AssetImage("assets/images/detection.png"),
+                              color: AppColors.secondaryGray.withOpacity(0.5)
+                            ),
+                            const SizedBox(
+                              height: 9,
+                            ),
+                            Text(
+                              '発見',
+                              style: TextStyle(
+                                color: AppColors.secondaryGray.withOpacity(0.5),
+                                fontSize: 9,
+                                fontWeight: FontWeight.normal
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width/5,
+                      child: MaterialButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, "/likelist");
+                        },
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ImageIcon(
+                              const AssetImage("assets/images/like.png"),
+                              color: AppColors.secondaryGray.withOpacity(0.5)
+                            ),
+                            const SizedBox(
+                              height: 9,
+                            ),
+                            Text(
+                              'いいね',
+                              style: TextStyle(
+                                color: AppColors.secondaryGray.withOpacity(0.5),
+                                fontSize: 9,
+                                fontWeight: FontWeight.normal
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width/5,
+                      child: MaterialButton(
+                        onPressed: () {
+                          
+                        },
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ImageIcon(
+                              const AssetImage("assets/images/message.png"),
+                              color: AppColors.secondaryGray.withOpacity(0.5)
+                            ),
+                            const SizedBox(
+                              height: 9,
+                            ),
+                            Text(
+                              'メッセージ',
+                              style: TextStyle(
+                                color: AppColors.secondaryGray.withOpacity(0.5),
+                                fontSize: 9,
+                                fontWeight: FontWeight.normal
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width/5,
+                      child: MaterialButton(
+                        onPressed: () {
+                          
+                        },
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ImageIcon(
+                              const AssetImage("assets/images/profile.png"),
+                              color: AppColors.secondaryGray.withOpacity(0.5)
+                            ),
+                            const SizedBox(
+                              height: 9,
+                            ),
+                            Text(
+                              'マイページ',
+                              style: TextStyle(
+                                color: AppColors.secondaryGray.withOpacity(0.5),
+                                fontSize: 9,
+                                fontWeight: FontWeight.normal
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              )
+            ],
+          ),
+        ),
+      );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BaseScreen(
@@ -219,7 +443,7 @@ class _PostScreenState extends State<PostScreen> {
               ),
                child: SingleChildScrollView(
                  child: Padding(
-                   padding: const EdgeInsets.only(top: 144, bottom: 50),
+                   padding: const EdgeInsets.only(top: 144, bottom: 100),
                    child: Column(
                      children: [
                       Padding(
@@ -270,13 +494,17 @@ class _PostScreenState extends State<PostScreen> {
                       fontWeight: FontWeight.normal, 
                       color: AppColors.secondaryGreen, 
                       titleColor: AppColors.primaryWhite, 
-                      onTap: (){}
+                      onTap: (){
+                        // Navigator.pushNamed(context, "/create_post");
+                        getImageFromCamera();
+                      }
                     )
                   ],
                 ),
               ),
             ),
           ),
+          bottomBar()
           
         ],
       )

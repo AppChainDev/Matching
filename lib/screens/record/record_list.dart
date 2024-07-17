@@ -3,6 +3,7 @@ import 'package:drone/components/base_screen.dart';
 import 'package:drone/components/custom_container.dart';
 import 'package:drone/components/custom_text.dart';
 import 'package:drone/components/record/record_card.dart';
+import 'package:drone/models/pilotid_model.dart';
 import 'package:drone/models/record_model.dart';
 import 'package:flutter/material.dart';
 
@@ -59,14 +60,14 @@ class _RecordListScreenState extends State<RecordListScreen> {
                           children: records.map((item){
                             return GestureDetector(
                               onTap: () {
-                                Navigator.pushNamed(context, "/view_profile");
+                                Navigator.pushNamed(context, "/view_profile", arguments: UserTransforIdModel(id: item.id, beforePage: 'record_list'));
                               },
                               child: RecordItem(
                                 name: item.name, 
                                 prefectureId: item.prefectureId, 
                                 age: item.age, 
                                 avatarImage: item.avatar, 
-                                id: 1, 
+                                id: item.id, 
                                 onPressed:(){
                                   processLike(item.id);
                                 } 

@@ -25,6 +25,7 @@ dependencies:
   image_cropper: ^7.1.0
   modal_bottom_sheet: ^3.0.0
   permission_handler: ^10.0.0
+  swipe_to: ^1.0.6
 
 
 dev_dependencies:

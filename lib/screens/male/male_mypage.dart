@@ -180,7 +180,7 @@ class _MaleMyPageState extends State<MaleMyPage> {
                       width: MediaQuery.of(context).size.width/5,
                       child: MaterialButton(
                         onPressed: () {
-                          
+                          Navigator.pushNamed(context, "/likelist");
                         },
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,

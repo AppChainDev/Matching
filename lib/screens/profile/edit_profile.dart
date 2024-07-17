@@ -2,6 +2,7 @@ import 'package:drone/components/app_colors.dart';
 import 'package:drone/components/base_screen.dart';
 import 'package:drone/components/custom_container.dart';
 import 'package:drone/components/custom_text.dart';
+import 'package:drone/models/pilotid_model.dart';
 import 'package:drone/screens/profile/component/groupedit_component.dart';
 import 'package:drone/screens/profile/component/introdcution_component.dart';
 import 'package:drone/screens/profile/component/mainphoto_component.dart';
@@ -118,7 +119,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         ),
                         TextButton(
                           onPressed: (){
-                            Navigator.pushNamed(context, '/view_profile');
+                            Navigator.pushNamed(context, "/view_profile", arguments: UserTransforIdModel(id: 1, beforePage: 'edit_profile'));
                           }, 
                           child: CustomText(
                             text: "相手からの見え方", 

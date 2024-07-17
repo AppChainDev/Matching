@@ -24,28 +24,33 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
   final int community3 = 1;
   final int community4 = 1;
   
-  late int id;
-  late String name;
-  late String avatar;
-  late int prefectureId;
-  late int age;
+  final int id = 1;
+  final String name = "ゆうた";
+  late  String currentAvatar;
+  final List<String> avatars = ["gfd.png", "aaa.png", "post_backimage1.png"];
+  // final String currentAvatar = "gfd.png";
+  final int prefectureId = 12;
+  final int age = 50;
+
+  final String? memoryImage = "memory_image.png";
+  final String? memoryDescription = "ゲームが大好きなんです";
+
 
   @override
   void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      setState(() {
-        final args = ModalRoute.of(context)!.settings.arguments as UserTransforIdModel;
-        id = args.id;
-        name = "ゆうた";
-        
-      });
+    setState(() {
+      currentAvatar = avatars[0];
     });
+    super.initState();
   }
 
   @override
   void dispose() {
     super.dispose();
+  }
+
+  void saveMessage(){
+    Navigator.pop(context);
   }
 
   Future<void> sendMessage(int id, String name, String avatar, int age, int prefectureId) async {
@@ -99,7 +104,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               CustomText(
-                                text: "ゆうた", 
+                                text: name, 
                                 fontSize: 10, 
                                 fontWeight: FontWeight.bold, 
                                 lineHeight: 1.5, 
@@ -175,8 +180,9 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
                         fontWeight: FontWeight.normal, 
                         color: AppColors.secondaryGreen, 
                         titleColor: AppColors.primaryWhite, 
-                        onTap: () async{ 
+                        onTap: () async{
                           Navigator.pop(context);
+                          saveMessage(); 
                         }
                       ),
                       const SizedBox(
@@ -223,12 +229,12 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
               child: SingleChildScrollView(
                 child: Stack(
                   children: [
-                    const Center(
+                    Center(
                       child: CustomContainer(
                         height: 424,
                         decoration: BoxDecoration(
                           image: DecorationImage(
-                            image: AssetImage("assets/images/gfd.png"),
+                            image: AssetImage("assets/images/$currentAvatar"),
                             fit: BoxFit.cover     
                           )
                         ),
@@ -247,7 +253,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   CustomText(
-                                    text: "ゆうた", 
+                                    text: name, 
                                     fontSize: 17, 
                                     fontWeight: FontWeight.bold, 
                                     lineHeight: 1.5, 
@@ -257,7 +263,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
                                   Row(
                                     children: [
                                       Text(
-                                        "東京都",
+                                        ConstFile.prefectureItems[prefectureId],
                                         style: TextStyle(  
                                           fontSize: 12, 
                                           fontWeight: FontWeight.bold, 
@@ -277,7 +283,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
                                         width: 5,
                                       ),
                                       Text(
-                                        "55歳",
+                                        "$age歳",
                                         style: TextStyle(  
                                           fontSize: 12, 
                                           fontWeight: FontWeight.bold, 
@@ -299,20 +305,27 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
                               ),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    width: 61,
-                                    height: 61,
-                                    margin: const EdgeInsets.only(top: 5),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                      image: const DecorationImage(
-                                        image: AssetImage("assets/images/gfd.png"),
-                                        fit: BoxFit.cover
-                                      )
+                                children: avatars.map( (avatar){
+                                  return GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        currentAvatar = avatar;            
+                                      });
+                                    },
+                                    child: Container(
+                                      width: 61,
+                                      height: 61,
+                                      margin: const EdgeInsets.only(top: 5, right: 5),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(10),
+                                        image: DecorationImage(
+                                          image: AssetImage("assets/images/$avatar"),
+                                          fit: BoxFit.cover
+                                        )
+                                      ),
                                     ),
-                                  )
-                                ],
+                                  );
+                                }).toList(),
                               ),
                             ],
                           ),
@@ -434,8 +447,75 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
                                 ],
                               ),
                             ),
+                            Container(
+                              width: MediaQuery.of(context).size.width,
+                              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                              margin: const EdgeInsets.only(top: 17),
+                              decoration: BoxDecoration(
+                                color: AppColors.primaryWhite,
+                                borderRadius: BorderRadius.circular(20)
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  CustomText(
+                                    text: "ともへこさん の思い出の1枚", 
+                                    fontSize: 15, 
+                                    fontWeight: FontWeight.normal, 
+                                    lineHeight: 1, 
+                                    letterSpacing: -1, 
+                                    color: AppColors.primaryBlack
+                                  ),
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        width: 176,
+                                        height: 162,
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(10),
+                                          image: DecorationImage(
+                                            image: AssetImage("assets/images/$memoryImage"),
+                                            fit: BoxFit.cover
+                                          )
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  Container(
+                                    width: MediaQuery.of(context).size.width,
+                                    margin: const EdgeInsets.only(top: 20),
+                                    padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.primaryWhite,
+                                      borderRadius: BorderRadius.circular(5),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: AppColors.secondaryGray.withOpacity(0.5), // Shadow color
+                                          spreadRadius: 0.5, // Spread radius
+                                          blurRadius: 5, // Blur radius
+                                          offset: const Offset(0, 1), // Shadow position (x, y)
+                                        ),
+                                      ],
+                                    ),
+                                    child: CustomText(
+                                      text: "ゲームが大好きなんです", 
+                                      fontSize: 14, 
+                                      fontWeight: FontWeight.normal, 
+                                      lineHeight: 1, 
+                                      letterSpacing: -1, 
+                                      color: AppColors.secondaryGreen
+                                    ),
+                                  )
+                                  
+                                ],
+                              ),
+                            ),
                             const SizedBox(
-                              height: 17,
+                              height: 20,
                             ),
                             Container(
                               width: MediaQuery.of(context).size.width,
@@ -525,7 +605,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
               ),
             ),
           ),
-          if(args.beforePage == "postpage")
+          if(args.beforePage == "postpage" )
             Center(
               child: CustomContainer(
                 child: Column(
@@ -547,7 +627,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
                           color: AppColors.primaryWhite, 
                           titleColor: AppColors.secondaryGreen, 
                           onTap: () async{ 
-                            
+                            sendMessage(id, name, currentAvatar, age, prefectureId);
                           }
                         ),
                       ),
@@ -556,7 +636,70 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
                 ),
               ),
             ),
-
+          if(args.beforePage == "likepage" )
+            Center(
+              child: CustomContainer(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 20, right: 20, bottom: 16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            width: 132,
+                            height: 48,
+                            decoration: BoxDecoration(
+                              color: AppColors.secondaryGray,
+                              borderRadius: BorderRadius.circular(5)
+                            ),
+                            child: MaterialButton(
+                              onPressed: (){
+                      
+                              },
+                              child: Center(
+                                child: CustomText(
+                                  text: "スキップ", 
+                                  fontSize: 16, 
+                                  fontWeight: FontWeight.normal, 
+                                  lineHeight: 1, 
+                                  letterSpacing: -1, 
+                                  color: AppColors.primaryWhite
+                                ),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            width: 132,
+                            height: 48,
+                            decoration: BoxDecoration(
+                              color: AppColors.secondaryGreen,
+                              borderRadius: BorderRadius.circular(5)
+                            ),
+                            child: MaterialButton(
+                              onPressed: (){
+                      
+                              },
+                              child: Center(
+                                child: CustomText(
+                                  text: "ありがとう", 
+                                  fontSize: 16, 
+                                  fontWeight: FontWeight.normal, 
+                                  lineHeight: 1, 
+                                  letterSpacing: -1, 
+                                  color: AppColors.primaryWhite
+                                ),
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            )
         ],
       )
     );

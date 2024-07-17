@@ -4,10 +4,12 @@ import 'package:drone/screens/agreement/matching_complete.dart';
 import 'package:drone/screens/auth/phone_screen.dart';
 import 'package:drone/screens/auth/phoneverify_screen.dart';
 import 'package:drone/screens/female/female_mypage.dart';
+import 'package:drone/screens/like/like_screen.dart';
 import 'package:drone/screens/login_screen.dart';
 import 'package:drone/screens/male/male_mypage.dart';
 import 'package:drone/screens/notification/notification.dart';
 import 'package:drone/screens/notification/notification_detail.dart';
+import 'package:drone/screens/post/create_post.dart';
 import 'package:drone/screens/post/postpage.dart';
 import 'package:drone/screens/profile/component/edit_introductoin.dart';
 import 'package:drone/screens/profile/component/group/group_edit.dart';
@@ -73,6 +75,8 @@ class Routes {
     '/edit_name': (context) => const EditNameScreen(),
     '/edit_group': (context) => const GroupEditScreen(),
     '/postpage': (context) => const PostScreen(),
+    '/create_post': (context) => const CreatePostScreen(),
+    '/likelist': (context) => const LikeListScreen(),
     
   };
 }
