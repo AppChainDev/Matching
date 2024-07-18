@@ -6,6 +6,7 @@ import 'package:drone/components/like/like_card.dart';
 import 'package:drone/models/like_model.dart';
 import 'package:drone/models/pilotid_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 
 class LikeListScreen extends StatefulWidget {
 
@@ -148,7 +149,7 @@ class _LikeListScreenState extends State<LikeListScreen> {
                       width: MediaQuery.of(context).size.width/5,
                       child: MaterialButton(
                         onPressed: () {
-                          
+                          Navigator.pushNamed(context, "/chattinglist");
                         },
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -220,39 +221,56 @@ class _LikeListScreenState extends State<LikeListScreen> {
                 decoration: BoxDecoration(
                   color: AppColors.primaryBackground
                 ),
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 80, bottom: 100),
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(left: 12, right: 12),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: likes.map((item){
-                              return LikeItem(
-                                id: item.id, 
-                                name: item.name,
-                                description: item.description, 
-                                prefectureId: item.prefectureId, 
-                                age: item.age, 
-                                avatars: item.avatars, 
-                                pressSkip: ()=> skipClick(item.id), 
-                                pressThanks: ()=> thanksClick(item.id),
-                                pressProfile: () {
-                                  Navigator.pushNamed(context, "/view_profile", arguments: UserTransforIdModel(id: item.id, beforePage: 'likepage'));
-                                }, 
-                                verify: item.verify, 
-                                favourite: item.favourite,
-                                favouriteTitle: item.favouriteTitle,
-                                favouriteText: item.favouriteText,
-                                favouriteImage: item.favouriteImage,
-                              );
-                            }).toList(),
+                child: Container(
+                  padding: const EdgeInsets.only(top: 100),
+                  child: likes.length>=2? CardSwiper(
+                    cardsCount: likes.length,
+                    scale: 1.0,
+                    isLoop: true,
+                    maxAngle: 90,
+                    allowedSwipeDirection: const AllowedSwipeDirection.only(left: true, right: true),
+                    cardBuilder: (context, index, percentThresholdX, percentThresholdY) {
+                      var item = likes[index];
+                      return LikeItem(
+                        id: item.id, 
+                        name: item.name,
+                        description: item.description, 
+                        prefectureId: item.prefectureId, 
+                        age: item.age, 
+                        avatars: item.avatars, 
+                        pressSkip: ()=> skipClick(item.id), 
+                        pressThanks: ()=> thanksClick(item.id),
+                        pressProfile: () {
+                          Navigator.pushNamed(context, "/view_profile", arguments: UserTransforIdModel(id: item.id, beforePage: 'likepage'));
+                        }, 
+                        verify: item.verify, 
+                        favourite: item.favourite,
+                        favouriteTitle: item.favouriteTitle,
+                        favouriteText: item.favouriteText,
+                        favouriteImage: item.favouriteImage,
+                      );               
+                    }, 
+                  ):Column(
+                    children: likes.map((item){
+                      return Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: LikeItem(
+                            id: item.id, 
+                            name: item.name, 
+                            prefectureId: item.prefectureId, 
+                            age: item.age, 
+                            avatars: item.avatars, 
+                            pressSkip: ()=> skipClick(item.id),
+                            pressThanks: ()=> thanksClick(item.id), 
+                            verify: item.verify, 
+                            favourite: item.favourite,
+                            favouriteTitle: item.favouriteTitle,
+                            favouriteText: item.favouriteText,
+                            favouriteImage: item.favouriteImage,
                           ),
-                        ),
-                      ],
-                    ),
+                      );
+                    }).toList()
+                    
                   ),
                 ),
               ),

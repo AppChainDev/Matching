@@ -370,7 +370,7 @@ class _PostScreenState extends State<PostScreen> {
                       width: MediaQuery.of(context).size.width/5,
                       child: MaterialButton(
                         onPressed: () {
-                          
+                          Navigator.pushNamed(context, "/chattinglist");
                         },
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,

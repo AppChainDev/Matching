@@ -3,6 +3,11 @@ import 'package:drone/screens/agreement/agreement_chatlist.dart';
 import 'package:drone/screens/agreement/matching_complete.dart';
 import 'package:drone/screens/auth/phone_screen.dart';
 import 'package:drone/screens/auth/phoneverify_screen.dart';
+import 'package:drone/screens/chatting/chatinglist_screen.dart';
+import 'package:drone/screens/chatting/chattingdetail_screen.dart';
+import 'package:drone/screens/chatting/editphrase_screen.dart';
+import 'package:drone/screens/chatting/violation_screen.dart';
+import 'package:drone/screens/chatting/violationconfirm_screen.dart';
 import 'package:drone/screens/female/female_mypage.dart';
 import 'package:drone/screens/like/like_screen.dart';
 import 'package:drone/screens/login_screen.dart';
@@ -77,6 +82,11 @@ class Routes {
     '/postpage': (context) => const PostScreen(),
     '/create_post': (context) => const CreatePostScreen(),
     '/likelist': (context) => const LikeListScreen(),
+    '/chattinglist': (context) => const ChattingListScreen(),
+    '/chatting_detail': (context) => const ChattingDetailScreen(),
+    '/edit_phrase': (context) => const EditPhraseScreen(),
+    '/violation_screen': (context) => const ViolationScreen(),
+    '/violationconfirm_screen': (context) => const ViolationConfirmScreen(),
     
   };
 }

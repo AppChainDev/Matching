@@ -2,8 +2,8 @@ import 'package:drone/components/app_colors.dart';
 import 'package:drone/components/base_screen.dart';
 import 'package:drone/components/custom_container.dart';
 import 'package:drone/components/custom_text.dart';
-import 'package:drone/components/message/received_message_card.dart';
-import 'package:drone/components/message/send_message_card.dart';
+import 'package:drone/components/message/received_support_message_card.dart';
+import 'package:drone/components/message/send_support_message_card.dart';
 import 'package:flutter/material.dart';
 
 class SupportScreen extends StatefulWidget {
@@ -17,9 +17,9 @@ class _SupportScreenState extends State<SupportScreen> {
   final TextEditingController introduceController = TextEditingController();
   int textCount = 0;
   final List<Widget> messages = [
-    const ReceivedMessageItem(text: "こんにちは。こちらは公式サポートへの相談チャットになります。"),
-    const ReceivedMessageItem(text: "お困りごとやアプリに対しての意見などをご送信ください。順次担当が確認します。"),
-    const SendMessageItem(text: "魅力的なプロフィール文がわかりません。\nおすすめを教えて欲しいです。\n自分なりの。\nお願いします。")
+    const ReceivedSupportMessageItem(text: "こんにちは。こちらは公式サポートへの相談チャットになります。"),
+    const ReceivedSupportMessageItem(text: "お困りごとやアプリに対しての意見などをご送信ください。順次担当が確認します。"),
+    const SendSupportMessageItem(text: "魅力的なプロフィール文がわかりません。\nおすすめを教えて欲しいです。\n自分なりの。\nお願いします。")
   ];
 
   @override
@@ -44,7 +44,7 @@ class _SupportScreenState extends State<SupportScreen> {
   void _sendMessage() {
     if (introduceController.text.isNotEmpty) {
       setState(() {
-        messages.add(SendMessageItem(text: introduceController.text));
+        messages.add(SendSupportMessageItem(text: introduceController.text));
         introduceController.clear();
       });
     }

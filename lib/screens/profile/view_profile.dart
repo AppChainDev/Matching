@@ -53,6 +53,15 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
     Navigator.pop(context);
   }
 
+  void _sendMessage() {
+    if (messageController.text.isNotEmpty) {
+      setState(() {
+        messageController.clear();
+      });
+      Navigator.pop(context);
+    }
+  }
+
   Future<void> sendMessage(int id, String name, String avatar, int age, int prefectureId) async {
     showModalBottomSheet(
       context: context,
@@ -696,6 +705,78 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
                         ],
                       ),
                     )
+                  ],
+                ),
+              ),
+            ),
+          if(args.beforePage == "chattingpage" )
+            Center(
+              child: CustomContainer(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      padding: const EdgeInsets.only(top: 8),
+                      decoration: BoxDecoration(
+                        color: AppColors.primaryWhite,
+                        border: Border(
+                          top: BorderSide(
+                            color: AppColors.secondaryGray.withOpacity(0.5),
+                            width: 2,
+                          ),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            width: 317,
+                            height: 65,
+                            child: TextField(
+                              controller: messageController,
+                              textAlign: TextAlign.left,
+                              keyboardType: TextInputType.multiline,
+                              maxLines: null,
+                              cursorColor: AppColors.primaryBlack,
+                              style: TextStyle(
+                                color: AppColors.primaryBlack,
+                              ),
+                              decoration: InputDecoration(
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: AppColors.secondaryGray.withOpacity(0.5),
+                                    width: 1,
+                                  ),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: AppColors.secondaryGray.withOpacity(0.5),
+                                    width: 1,
+                                  ),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 10,
+                                  horizontal: 15,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 14),
+                          IconButton(
+                            onPressed: _sendMessage,
+                            icon: Icon(
+                              Icons.send,
+                              color: AppColors.secondaryGreen,
+                              size: 40,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),

@@ -61,149 +61,151 @@ class _LikeItemState extends State<LikeItem> {
   @override
   Widget build(BuildContext context){
     if (widget.description != null) {   
-      return Padding(
-        padding: const EdgeInsets.only(left:20, right: 20, top: 50),
-        child: SizedBox(
-          width: MediaQuery.of(context).size.width,
-          height: 610,
-          child: Stack(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 50),
-                child: Column(
+      return Container(
+        decoration: BoxDecoration(
+          color: AppColors.primaryBackground
+        ),
+        width: MediaQuery.of(context).size.width,
+        height: 610,
+        child: Stack(
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: 439,
+                  padding: const EdgeInsets.only(top: 100, bottom: 32, left: 20, right: 20),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryWhite,
+                    borderRadius: BorderRadius.circular(10)
+                  ),
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        width: 289, 
+                        height: 22,
+                        child: Image.asset("assets/images/like_line.png", fit: BoxFit.contain),
+                      ),
+                      Expanded(
+                        child: CustomText(
+                          text: widget.description!, 
+                          fontSize: 14, 
+                          fontWeight: FontWeight.normal, 
+                          lineHeight: 1.5, 
+                          letterSpacing: -1, 
+                          color: AppColors.secondaryGreen
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                const SizedBox(
+                  height: 73,
+                ),
+                Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Container(
-                      width: MediaQuery.of(context).size.width,
-                      height: 439,
-                      padding: const EdgeInsets.only(top: 100, bottom: 32, left: 20, right: 20),
+                      width: 132,
+                      height: 48,
                       decoration: BoxDecoration(
-                        color: AppColors.primaryWhite,
-                        borderRadius: BorderRadius.circular(10)
+                        color: AppColors.secondaryGray,
+                        borderRadius: BorderRadius.circular(5)
                       ),
-                      child: Column(
-                        children: [
-                          SizedBox(
-                            width: 289, 
-                            height: 22,
-                            child: Image.asset("assets/images/like_line.png", fit: BoxFit.contain),
-                          ),
-                          Expanded(
-                            child: CustomText(
-                              text: widget.description!, 
-                              fontSize: 14, 
-                              fontWeight: FontWeight.normal, 
-                              lineHeight: 1.5, 
-                              letterSpacing: -1, 
-                              color: AppColors.secondaryGreen
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                          width: 132,
-                          height: 48,
-                          decoration: BoxDecoration(
-                            color: AppColors.secondaryGray,
-                            borderRadius: BorderRadius.circular(5)
-                          ),
-                          child: MaterialButton(
-                            onPressed: widget.pressSkip,
-                            child: Center(
-                              child: CustomText(
-                                text: "スキップ", 
-                                fontSize: 16, 
-                                fontWeight: FontWeight.normal, 
-                                lineHeight: 1, 
-                                letterSpacing: -1, 
-                                color: AppColors.primaryWhite
-                              ),
-                            ),
-                          ),
-                        ),
-                        Container(
-                          width: 132,
-                          height: 48,
-                          decoration: BoxDecoration(
-                            color: AppColors.secondaryGreen,
-                            borderRadius: BorderRadius.circular(5)
-                          ),
-                          child: MaterialButton(
-                            onPressed: widget.pressThanks,
-                            child: Center(
-                              child: CustomText(
-                                text: "ありがとう", 
-                                fontSize: 16, 
-                                fontWeight: FontWeight.normal, 
-                                lineHeight: 1, 
-                                letterSpacing: -1, 
-                                color: AppColors.primaryWhite
-                              ),
-                            ),
-                          ),
-                        )
-                      ],
-                    )
-                  ],
-                ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
-                        width: 100,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage("assets/images/${widget.avatars[0]}"),
-                            fit: BoxFit.cover     
-                          ),
-                          borderRadius: BorderRadius.circular(50),
-                          border: Border.all(
+                      child: MaterialButton(
+                        onPressed: widget.pressSkip,
+                        child: Center(
+                          child: CustomText(
+                            text: "スキップ", 
+                            fontSize: 16, 
+                            fontWeight: FontWeight.normal, 
+                            lineHeight: 1, 
+                            letterSpacing: -1, 
                             color: AppColors.primaryWhite
                           ),
                         ),
                       ),
-                      CustomText(
-                        text: widget.name, 
-                        fontSize: 12, 
-                        fontWeight: FontWeight.normal, 
-                        lineHeight: 1.5, 
-                        letterSpacing: 1, 
-                        color: AppColors.secondaryGreen
+                    ),
+                    Container(
+                      width: 132,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: AppColors.secondaryGreen,
+                        borderRadius: BorderRadius.circular(5)
                       ),
-                      CustomText(
-                        text: "特別なメッセージが届きました", 
-                        fontSize: 12, 
-                        fontWeight: FontWeight.normal, 
-                        lineHeight: 1.5, 
-                        letterSpacing: 1, 
-                        color: AppColors.secondaryGreen
-                      )
-                    ],
-                  ),
-                ],
-              ),
-
-            ],
-          ),
+                      child: MaterialButton(
+                        onPressed: widget.pressThanks,
+                        child: Center(
+                          child: CustomText(
+                            text: "ありがとう", 
+                            fontSize: 16, 
+                            fontWeight: FontWeight.normal, 
+                            lineHeight: 1, 
+                            letterSpacing: -1, 
+                            color: AppColors.primaryWhite
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
+                )
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 100,
+                      height: 100,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage("assets/images/${widget.avatars[0]}"),
+                          fit: BoxFit.cover     
+                        ),
+                        borderRadius: BorderRadius.circular(50),
+                        border: Border.all(
+                          color: AppColors.primaryWhite
+                        ),
+                      ),
+                    ),
+                    CustomText(
+                      text: widget.name, 
+                      fontSize: 12, 
+                      fontWeight: FontWeight.normal, 
+                      lineHeight: 1.5, 
+                      letterSpacing: 1, 
+                      color: AppColors.secondaryGreen
+                    ),
+                    CustomText(
+                      text: "特別なメッセージが届きました", 
+                      fontSize: 12, 
+                      fontWeight: FontWeight.normal, 
+                      lineHeight: 1.5, 
+                      letterSpacing: 1, 
+                      color: AppColors.secondaryGreen
+                    )
+                  ],
+                ),
+              ],
+            ),
+      
+          ],
         ),
       );
     } else{
       return Container(
+        decoration: BoxDecoration(
+          color: AppColors.primaryBackground
+        ),
         width: MediaQuery.of(context).size.width,
-        padding: const EdgeInsets.only(left:5, right: 5, top: 50),
         child: SizedBox(
           height: 623,
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Stack(
                 alignment: Alignment.bottomCenter,
@@ -302,7 +304,7 @@ class _LikeItemState extends State<LikeItem> {
                             changeAvatarLeft();
                           },
                           child: Container(
-                            width: (MediaQuery.of(context).size.width-40)/2,
+                            width: (MediaQuery.of(context).size.width-40)/4,
                             height: 560,
                             color: Colors.transparent,
                           ),
@@ -317,7 +319,7 @@ class _LikeItemState extends State<LikeItem> {
                             changeAvatarRight();
                           },
                           child: Container(
-                            width: (MediaQuery.of(context).size.width-40)/2,
+                            width: (MediaQuery.of(context).size.width-40)/4,
                             height: 560,
                             color: Colors.transparent,
                           ),
@@ -361,7 +363,7 @@ class _LikeItemState extends State<LikeItem> {
                                     if(widget.favourite == true)
                                       Container(
                                         height: 74,
-                                        width: MediaQuery.of(context).size.width*0.83,
+                                        width: MediaQuery.of(context).size.width*0.8,
                                         padding: const EdgeInsets.all(5),
                                         decoration: BoxDecoration(
                                           color: AppColors.primaryWhite,
@@ -423,6 +425,9 @@ class _LikeItemState extends State<LikeItem> {
                       ],
                     ),
                 ],
+              ),
+              const SizedBox(
+                height: 14,
               ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
