@@ -3,7 +3,7 @@ import 'package:drone/components/base_screen.dart';
 import 'package:drone/components/custom_container.dart';
 import 'package:drone/components/custom_text.dart';
 import 'package:drone/components/record/record_card.dart';
-import 'package:drone/models/pilotid_model.dart';
+import 'package:drone/models/usertransfer_model.dart';
 import 'package:drone/models/record_model.dart';
 import 'package:flutter/material.dart';
 

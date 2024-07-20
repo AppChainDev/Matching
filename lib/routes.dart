@@ -40,6 +40,8 @@ import 'package:drone/screens/setting/blockaccount/block_list.dart';
 import 'package:drone/screens/setting/notification/notification_setting.dart';
 import 'package:drone/screens/setting/settings.dart';
 import 'package:drone/screens/support/support_screen.dart';
+import 'package:drone/screens/swipe/swipe_message_screen.dart';
+import 'package:drone/screens/swipe/swipe_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:drone/screens/first_screen.dart';
 class Routes {
@@ -87,6 +89,8 @@ class Routes {
     '/edit_phrase': (context) => const EditPhraseScreen(),
     '/violation_screen': (context) => const ViolationScreen(),
     '/violationconfirm_screen': (context) => const ViolationConfirmScreen(),
-    
+    '/swipe': (context) => const SwipeScreen(),
+    '/messagescreen': (context) => const SwipeMessageScreen(),
+
   };
 }

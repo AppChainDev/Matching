@@ -3,7 +3,8 @@ import 'package:drone/components/base_screen.dart';
 import 'package:drone/components/custom_button.dart';
 import 'package:drone/components/custom_container.dart';
 import 'package:drone/components/custom_text.dart';
-import 'package:drone/models/pilotid_model.dart';
+import 'package:drone/models/chattingtransfer_model.dart';
+import 'package:drone/models/usertransfer_model.dart';
 import 'package:drone/screens/register/registerprofile_group.dart';
 import 'package:drone/utils/const_file.dart';
 import 'package:flutter/material.dart';
@@ -777,6 +778,87 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
                         ],
                       ),
                     ),
+                  ],
+                ),
+              ),
+            ),
+          if(args.beforePage == "swipepage" )
+            Center(
+              child: CustomContainer(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 20),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            width: 55,
+                            height: 55,
+                            decoration: BoxDecoration(
+                              color: AppColors.secondaryGray.withOpacity(0.5),
+                              borderRadius: BorderRadius.circular(50)
+                            ),
+                            child: Center(
+                              child: IconButton(
+                                onPressed: (){
+                      
+                                }, 
+                                icon: ImageIcon(
+                                  const AssetImage("assets/images/close_button.png"),
+                                  color: AppColors.primaryWhite
+                                )
+                              )
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 28.6,
+                          ),
+                          Container(
+                            width: 55,
+                            height: 55,
+                            decoration: BoxDecoration(
+                              color: AppColors.secondaryRed,
+                              borderRadius: BorderRadius.circular(50)
+                            ),
+                            child: Center(
+                              child: IconButton(
+                                onPressed: (){
+                                  Navigator.pushNamed(context, "/messagescreen", arguments: ChattingTransferModel(id, name, avatars[0], prefectureId, age));
+                                }, 
+                                icon: ImageIcon(
+                                  const AssetImage("assets/images/like.png"),
+                                  color: AppColors.primaryWhite
+                                )
+                              )
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 28.6,
+                          ),
+                          Container(
+                            width: 55,
+                            height: 55,
+                            decoration: BoxDecoration(
+                              color: AppColors.secondaryGreen,
+                              borderRadius: BorderRadius.circular(50)
+                            ),
+                            child: Center(
+                              child: IconButton(
+                                onPressed: (){
+                                  
+                                }, 
+                                icon: ImageIcon(
+                                  const AssetImage("assets/images/heart.png"),
+                                  color: AppColors.primaryWhite
+                                )
+                              )
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
                   ],
                 ),
               ),

@@ -1,6 +1,6 @@
 import 'package:drone/components/app_colors.dart';
 import 'package:drone/components/custom_text.dart';
-import 'package:drone/models/requestjop_model.dart';
+import 'package:drone/models/phrase_model.dart';
 import 'package:flutter/material.dart';
 
 class PhraseItem extends StatelessWidget{

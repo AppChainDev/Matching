@@ -8,7 +8,7 @@ import 'package:drone/components/custom_text.dart';
 import 'package:drone/components/message/received_message_card.dart';
 import 'package:drone/components/message/send_message_card.dart';
 import 'package:drone/models/chattingtransfer_model.dart';
-import 'package:drone/models/requestjop_model.dart';
+import 'package:drone/models/phrase_model.dart';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';

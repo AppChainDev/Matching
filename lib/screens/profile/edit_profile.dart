@@ -2,7 +2,7 @@ import 'package:drone/components/app_colors.dart';
 import 'package:drone/components/base_screen.dart';
 import 'package:drone/components/custom_container.dart';
 import 'package:drone/components/custom_text.dart';
-import 'package:drone/models/pilotid_model.dart';
+import 'package:drone/models/usertransfer_model.dart';
 import 'package:drone/screens/profile/component/groupedit_component.dart';
 import 'package:drone/screens/profile/component/introdcution_component.dart';
 import 'package:drone/screens/profile/component/mainphoto_component.dart';

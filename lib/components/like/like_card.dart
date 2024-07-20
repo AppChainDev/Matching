@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:swipe_to/swipe_to.dart';
 
 class LikeItem extends StatefulWidget{
- const LikeItem({super.key, required this.id, required this.name, required this.prefectureId, required this.age, required this.avatars, required this.pressSkip, required this.pressThanks, required this.verify, this.description, this.pressProfile, required this.favourite, this.favouriteTitle, this.favouriteText, this.favouriteImage});
+ const LikeItem({super.key, required this.id, required this.name, required this.prefectureId, required this.age, required this.avatars, required this.pressSkip, required this.pressThanks, required this.verify, this.description, this.pressProfile, required this.favourite, this.favouriteText, this.favouriteImage});
  final int id;
  final String name;
  final int prefectureId;
@@ -17,7 +17,6 @@ class LikeItem extends StatefulWidget{
  final VoidCallback? pressProfile;
  final bool verify;
  final bool favourite;
- final String? favouriteTitle;
  final String? favouriteText;
  final String? favouriteImage;
 
@@ -26,11 +25,10 @@ class LikeItem extends StatefulWidget{
 }
 
 class _LikeItemState extends State<LikeItem> {
-  late String currentAvatar;
+  int index = 0;
   @override
   void initState() {
     super.initState();
-    currentAvatar = widget.avatars[0];
   }
 
   @override
@@ -40,41 +38,40 @@ class _LikeItemState extends State<LikeItem> {
 
   void changeAvatarRight(){
     int length = widget.avatars.length;
-    print("right");
-    int index = widget.avatars.indexOf(currentAvatar);
     if(index+1 < length){
       setState(() {
-        currentAvatar = widget.avatars[index+1];
+        index++;
       });
     }
   }
   void changeAvatarLeft(){
-    print("right");
-    int index = widget.avatars.indexOf(currentAvatar);
     if(index > 0){
       setState(() {
-        currentAvatar = widget.avatars[index-1];
+        index--;
       });
     }
   }
 
   @override
   Widget build(BuildContext context){
+    if (index >= widget.avatars.length) {
+      index = 0;
+    }
     if (widget.description != null) {   
       return Container(
         decoration: BoxDecoration(
           color: AppColors.primaryBackground
         ),
         width: MediaQuery.of(context).size.width,
-        height: 610,
         child: Stack(
           children: [
             Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Container(
                   width: MediaQuery.of(context).size.width,
                   height: 439,
+                  margin: const EdgeInsets.only(top: 50),
                   padding: const EdgeInsets.only(top: 100, bottom: 32, left: 20, right: 20),
                   decoration: BoxDecoration(
                     color: AppColors.primaryWhite,
@@ -100,56 +97,6 @@ class _LikeItemState extends State<LikeItem> {
                     ],
                   ),
                 ),
-                const SizedBox(
-                  height: 73,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      width: 132,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: AppColors.secondaryGray,
-                        borderRadius: BorderRadius.circular(5)
-                      ),
-                      child: MaterialButton(
-                        onPressed: widget.pressSkip,
-                        child: Center(
-                          child: CustomText(
-                            text: "スキップ", 
-                            fontSize: 16, 
-                            fontWeight: FontWeight.normal, 
-                            lineHeight: 1, 
-                            letterSpacing: -1, 
-                            color: AppColors.primaryWhite
-                          ),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      width: 132,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: AppColors.secondaryGreen,
-                        borderRadius: BorderRadius.circular(5)
-                      ),
-                      child: MaterialButton(
-                        onPressed: widget.pressThanks,
-                        child: Center(
-                          child: CustomText(
-                            text: "ありがとう", 
-                            fontSize: 16, 
-                            fontWeight: FontWeight.normal, 
-                            lineHeight: 1, 
-                            letterSpacing: -1, 
-                            color: AppColors.primaryWhite
-                          ),
-                        ),
-                      ),
-                    )
-                  ],
-                )
               ],
             ),
             Row(
@@ -202,8 +149,9 @@ class _LikeItemState extends State<LikeItem> {
           color: AppColors.primaryBackground
         ),
         width: MediaQuery.of(context).size.width,
+        height: 560,
         child: SizedBox(
-          height: 623,
+          height: 560,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
@@ -214,7 +162,7 @@ class _LikeItemState extends State<LikeItem> {
                     height: 560,
                     decoration: BoxDecoration(
                       image: DecorationImage(
-                        image: AssetImage("assets/images/$currentAvatar"),
+                        image: AssetImage("assets/images/${widget.avatars[index]}"),
                         fit: BoxFit.cover     
                       ),
                       color: AppColors.darkGray,
@@ -235,7 +183,7 @@ class _LikeItemState extends State<LikeItem> {
                                 width: 60,
                                 height: 3,
                                 margin: const EdgeInsets.only(right: 5),
-                                color: avatar == currentAvatar?AppColors.primaryWhite:AppColors.primaryBlack.withOpacity(0.3),
+                                color: avatar == widget.avatars[index]?AppColors.primaryWhite:AppColors.primaryBlack.withOpacity(0.3),
                               );
                             }).toList(),
                           ),
@@ -394,7 +342,7 @@ class _LikeItemState extends State<LikeItem> {
                                                 Padding(
                                                   padding: const EdgeInsets.only(left: 5),
                                                   child: CustomText(
-                                                    text: widget.favouriteTitle!, 
+                                                    text: "お気に入りの写真！", 
                                                     fontSize: 12, 
                                                     fontWeight: FontWeight.normal, 
                                                     lineHeight: 2, 
@@ -426,61 +374,6 @@ class _LikeItemState extends State<LikeItem> {
                     ),
                 ],
               ),
-              const SizedBox(
-                height: 14,
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        width: 132,
-                        height: 48,
-                        decoration: BoxDecoration(
-                          color: AppColors.secondaryGray,
-                          borderRadius: BorderRadius.circular(5)
-                        ),
-                        child: MaterialButton(
-                          onPressed: widget.pressSkip,
-                          child: Center(
-                            child: CustomText(
-                              text: "スキップ", 
-                              fontSize: 16, 
-                              fontWeight: FontWeight.normal, 
-                              lineHeight: 1, 
-                              letterSpacing: -1, 
-                              color: AppColors.primaryWhite
-                            ),
-                          ),
-                        ),
-                      ),
-                      Container(
-                        width: 132,
-                        height: 48,
-                        decoration: BoxDecoration(
-                          color: AppColors.secondaryGreen,
-                          borderRadius: BorderRadius.circular(5)
-                        ),
-                        child: MaterialButton(
-                          onPressed: widget.pressThanks,
-                          child: Center(
-                            child: CustomText(
-                              text: "ありがとう", 
-                              fontSize: 16, 
-                              fontWeight: FontWeight.normal, 
-                              lineHeight: 1, 
-                              letterSpacing: -1, 
-                              color: AppColors.primaryWhite
-                            ),
-                          ),
-                        ),
-                      )
-                    ],
-                  )
-                ],
-              )
 
             ],
           ),

@@ -7,7 +7,7 @@ import 'package:drone/components/custom_container.dart';
 import 'package:drone/components/custom_text.dart';
 import 'package:drone/components/post/post_card.dart';
 import 'package:drone/models/image_model.dart';
-import 'package:drone/models/pilotid_model.dart';
+import 'package:drone/models/usertransfer_model.dart';
 import 'package:drone/models/post_model.dart';
 import 'package:drone/utils/const_file.dart';
 import 'package:flutter/material.dart';
@@ -286,7 +286,6 @@ class _PostScreenState extends State<PostScreen> {
                       width: MediaQuery.of(context).size.width/5,
                       child: MaterialButton(
                         onPressed: () {
-                          Navigator.pushNamed(context, "/postpage");
                         },
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -314,7 +313,7 @@ class _PostScreenState extends State<PostScreen> {
                       width: MediaQuery.of(context).size.width/5,
                       child: MaterialButton(
                         onPressed: () {
-                          
+                          Navigator.pushNamed(context, "/swipe");
                         },
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,

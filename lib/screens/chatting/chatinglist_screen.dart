@@ -98,7 +98,7 @@ class _ChattingListScreenState extends State<ChattingListScreen> {
                       width: MediaQuery.of(context).size.width/5,
                       child: MaterialButton(
                         onPressed: () {
-                          
+                          Navigator.pushNamed(context, "/swipe");
                         },
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -182,6 +182,7 @@ class _ChattingListScreenState extends State<ChattingListScreen> {
                       width: MediaQuery.of(context).size.width/5,
                       child: MaterialButton(
                         onPressed: () {
+                          
                         },
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,

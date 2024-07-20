@@ -7,9 +7,8 @@ class LikeModel {
   final List<String> avatars;
   final bool verify;
   final bool favourite;
-  final String? favouriteTitle;
   final String? favouriteText;
   final String? favouriteImage;
 
-  LikeModel(this.id, this.name, this.description, this.prefectureId, this.age, this.avatars, this.verify, this.favourite, this.favouriteTitle, this.favouriteText, this.favouriteImage);
+  LikeModel(this.id, this.name, this.description, this.prefectureId, this.age, this.avatars, this.verify, this.favourite, this.favouriteText, this.favouriteImage);
 }

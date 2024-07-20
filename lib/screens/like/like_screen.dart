@@ -4,7 +4,7 @@ import 'package:drone/components/custom_container.dart';
 import 'package:drone/components/custom_text.dart';
 import 'package:drone/components/like/like_card.dart';
 import 'package:drone/models/like_model.dart';
-import 'package:drone/models/pilotid_model.dart';
+import 'package:drone/models/usertransfer_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 
@@ -19,11 +19,12 @@ class LikeListScreen extends StatefulWidget {
 class _LikeListScreenState extends State<LikeListScreen> {
 
   final List<LikeModel> likes = [
-    LikeModel(1, "TONBOさんから", "こんにちは。\nあなたがすごく好みなのでメッセージ付きいいねを初めて送ってみました。", 12, 50, ["gfd.png", "aaa.png", "post_backimage1.png"], false, false, null, null, null),
-    LikeModel(2, "ゆうじ", null, 14, 60, ["gfd.png", "aaa.png", "post_backimage1.png"], true, false, null, null, null),
-    LikeModel(3, "ゆうじssss", null, 13, 60, ["post_backimage1.png", "gfd.png", "aaa.png"], true, false, null, null, null),
-    LikeModel(4, "ゆうじ111", null, 16, 56, ["post_backimage1.png", "gfd.png", "aaa.png"], false, true, "お気に入りの写真！", "3年前から飼育しているペットのジョンです。\nかわいいでしょ", "pet.png")
+    LikeModel(1, "TONBOさんから", "こんにちは。\nあなたがすごく好みなのでメッセージ付きいいねを初めて送ってみました。", 12, 50, ["gfd.png", "aaa.png", "post_backimage1.png"], false, false, null, null),
+    LikeModel(2, "ゆうじ", null, 14, 60, ["gfd.png", "aaa.png", "post_backimage1.png"], true, false, null, null),
+    LikeModel(3, "ゆうじssss", null, 13, 60, ["post_backimage1.png", "gfd.png", "aaa.png"], true, false, null, null),
+    LikeModel(4, "ゆうじ111", null, 16, 56, ["post_backimage1.png", "gfd.png", "aaa.png"], false, true, "3年前から飼育しているペットのジョンです。\nかわいいでしょ", "pet.png")
   ];
+  int currenIndex = 0;
 
   @override
   void initState() {
@@ -37,12 +38,22 @@ class _LikeListScreenState extends State<LikeListScreen> {
 
   void skipClick(int id){
     setState(() {
-      likes.removeWhere((item)=>item.id==id);
+      likes.removeWhere((item)=>item.id == id);
+      if (likes.isEmpty) {
+        currenIndex = 0;
+      } else {
+        currenIndex = (currenIndex >= likes.length) ? likes.length - 1 : currenIndex;
+      }
     });
   }
   void thanksClick(int id){
     setState(() {
       likes.removeWhere((item)=>item.id==id);
+      if (likes.isEmpty) {
+        currenIndex = 0;
+      } else {
+        currenIndex = (currenIndex >= likes.length) ? likes.length - 1 : currenIndex;
+      }
     });
   }
   
@@ -93,7 +104,7 @@ class _LikeListScreenState extends State<LikeListScreen> {
                       width: MediaQuery.of(context).size.width/5,
                       child: MaterialButton(
                         onPressed: () {
-                          
+                          Navigator.pushNamed(context, "/swipe");
                         },
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -216,64 +227,158 @@ class _LikeListScreenState extends State<LikeListScreen> {
       child: Stack(
         children: [
           if(likes.isNotEmpty)
-            Center(
-              child: CustomContainer(
-                decoration: BoxDecoration(
-                  color: AppColors.primaryBackground
-                ),
-                child: Container(
-                  padding: const EdgeInsets.only(top: 100),
-                  child: likes.length>=2? CardSwiper(
-                    cardsCount: likes.length,
-                    scale: 1.0,
-                    isLoop: true,
-                    maxAngle: 90,
-                    allowedSwipeDirection: const AllowedSwipeDirection.only(left: true, right: true),
-                    cardBuilder: (context, index, percentThresholdX, percentThresholdY) {
-                      var item = likes[index];
-                      return LikeItem(
-                        id: item.id, 
-                        name: item.name,
-                        description: item.description, 
-                        prefectureId: item.prefectureId, 
-                        age: item.age, 
-                        avatars: item.avatars, 
-                        pressSkip: ()=> skipClick(item.id), 
-                        pressThanks: ()=> thanksClick(item.id),
-                        pressProfile: () {
-                          Navigator.pushNamed(context, "/view_profile", arguments: UserTransforIdModel(id: item.id, beforePage: 'likepage'));
-                        }, 
-                        verify: item.verify, 
-                        favourite: item.favourite,
-                        favouriteTitle: item.favouriteTitle,
-                        favouriteText: item.favouriteText,
-                        favouriteImage: item.favouriteImage,
-                      );               
-                    }, 
-                  ):Column(
-                    children: likes.map((item){
-                      return Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: LikeItem(
+            Stack(
+              children: [
+                Center(
+                  child: CustomContainer(
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryBackground
+                    ),
+                    child: Container(
+                      padding: const EdgeInsets.only(top: 100),
+                      child: likes.length>=2? CardSwiper(
+                        cardsCount: likes.length,
+                        scale: 1.0,
+                        isLoop: true,
+                        maxAngle: 90,
+                        initialIndex: 0,
+                        padding: const EdgeInsets.symmetric(horizontal: 18),
+                        allowedSwipeDirection: const AllowedSwipeDirection.only(left: true, right: true),
+                        cardBuilder: (context, index, percentThresholdX, percentThresholdY) {
+                          currenIndex = index-1;
+                          if(index >= likes.length) {
+                            return LikeItem(
+                              id: likes[likes.length-1].id, 
+                              name: likes[likes.length-1].name,
+                              description: likes[likes.length-1].description, 
+                              prefectureId: likes[likes.length-1].prefectureId, 
+                              age: likes[likes.length-1].age, 
+                              avatars: likes[likes.length-1].avatars, 
+                              pressSkip: ()=> skipClick(likes[likes.length-1].id), 
+                              pressThanks: ()=> thanksClick(likes[likes.length-1].id),
+                              pressProfile: () {
+                                Navigator.pushNamed(context, "/view_profile", arguments: UserTransforIdModel(id: likes[likes.length-1].id, beforePage: 'likepage'));
+                              }, 
+                              verify: likes[likes.length-1].verify, 
+                              favourite: likes[likes.length-1].favourite,
+                              favouriteText: likes[likes.length-1].favouriteText,
+                              favouriteImage: likes[likes.length-1].favouriteImage,
+                            );  
+                          }
+                          var item = likes[index];
+                          if(index != 0){
+                            currenIndex = index-1;
+                          } else{
+                            currenIndex = (likes.length > 1) ? likes.length -1 : 0;
+                          }
+                          return LikeItem(
                             id: item.id, 
-                            name: item.name, 
+                            name: item.name,
+                            description: item.description, 
                             prefectureId: item.prefectureId, 
                             age: item.age, 
                             avatars: item.avatars, 
-                            pressSkip: ()=> skipClick(item.id),
-                            pressThanks: ()=> thanksClick(item.id), 
+                            pressSkip: ()=> skipClick(likes[currenIndex].id), 
+                            pressThanks: ()=> thanksClick(likes[currenIndex].id),
+                            pressProfile: () {
+                              Navigator.pushNamed(context, "/view_profile", arguments: UserTransforIdModel(id: item.id, beforePage: 'likepage'));
+                            }, 
                             verify: item.verify, 
                             favourite: item.favourite,
-                            favouriteTitle: item.favouriteTitle,
                             favouriteText: item.favouriteText,
                             favouriteImage: item.favouriteImage,
-                          ),
-                      );
-                    }).toList()
-                    
+                          );               
+                        }, 
+                      )
+                      :Column(
+                        children: likes.map((item){
+                          return Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: LikeItem(
+                                id: item.id, 
+                                name: item.name, 
+                                description: item.description,
+                                prefectureId: item.prefectureId, 
+                                age: item.age, 
+                                avatars: item.avatars, 
+                                pressSkip: ()=> skipClick(item.id),
+                                pressThanks: ()=> thanksClick(item.id), 
+                                verify: item.verify, 
+                                favourite: item.favourite,
+                                favouriteText: item.favouriteText,
+                                favouriteImage: item.favouriteImage,
+                              ),
+                          );
+                        }).toList()
+                        
+                      ),
+                    ),
                   ),
                 ),
-              ),
+                Center(
+                  child: CustomContainer(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 20, right: 20, bottom: 90),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                width: 132,
+                                height: 48,
+                                decoration: BoxDecoration(
+                                  color: AppColors.secondaryGray,
+                                  borderRadius: BorderRadius.circular(5)
+                                ),
+                                child: MaterialButton(
+                                  onPressed: (){
+                                    skipClick(likes[currenIndex].id);
+                                  },
+                                  child: Center(
+                                    child: CustomText(
+                                      text: "スキップ", 
+                                      fontSize: 16, 
+                                      fontWeight: FontWeight.normal, 
+                                      lineHeight: 1, 
+                                      letterSpacing: -1, 
+                                      color: AppColors.primaryWhite
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                width: 132,
+                                height: 48,
+                                decoration: BoxDecoration(
+                                  color: AppColors.secondaryGreen,
+                                  borderRadius: BorderRadius.circular(5)
+                                ),
+                                child: MaterialButton(
+                                  onPressed: (){
+                                    thanksClick(likes[currenIndex].id);
+                                  },
+                                  child: Center(
+                                    child: CustomText(
+                                      text: "ありがとう", 
+                                      fontSize: 16, 
+                                      fontWeight: FontWeight.normal, 
+                                      lineHeight: 1, 
+                                      letterSpacing: -1, 
+                                      color: AppColors.primaryWhite
+                                    ),
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           if(likes.isEmpty)
             Center(
