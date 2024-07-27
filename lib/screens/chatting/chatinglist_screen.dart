@@ -7,6 +7,7 @@ import 'package:drone/components/custom_text.dart';
 import 'package:drone/models/chatting_model.dart';
 import 'package:drone/models/chattingtransfer_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ChattingListScreen extends StatefulWidget {
 
@@ -50,6 +51,18 @@ class _ChattingListScreenState extends State<ChattingListScreen> {
     super.dispose();
   }
 
+  Future moveProfile() async{
+    const storage = FlutterSecureStorage();
+    String? gender =  await storage.read(key: 'gender');
+    if (gender != null) {
+      // ignore: unrelated_type_equality_checks
+      if (int.parse(gender) == 1) {
+        Navigator.pushNamed(context, "/malemypage");
+      } else {
+        Navigator.pushNamed(context, "/femalemypage");
+      }
+    }
+  }
   
   Widget bottomBar(){
     return 
@@ -182,7 +195,7 @@ class _ChattingListScreenState extends State<ChattingListScreen> {
                       width: MediaQuery.of(context).size.width/5,
                       child: MaterialButton(
                         onPressed: () {
-                          
+                          moveProfile();
                         },
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,

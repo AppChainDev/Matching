@@ -59,9 +59,9 @@ class _LikeItemState extends State<LikeItem> {
     }
     if (widget.description != null) {   
       return Container(
-        decoration: BoxDecoration(
-          color: AppColors.primaryBackground
-        ),
+        // decoration: BoxDecoration(
+        //   color: AppColors.primaryBackground
+        // ),
         width: MediaQuery.of(context).size.width,
         child: Stack(
           children: [
@@ -70,7 +70,7 @@ class _LikeItemState extends State<LikeItem> {
               children: [
                 Container(
                   width: MediaQuery.of(context).size.width,
-                  height: 439,
+                  height: 500,
                   margin: const EdgeInsets.only(top: 50),
                   padding: const EdgeInsets.only(top: 100, bottom: 32, left: 20, right: 20),
                   decoration: BoxDecoration(
@@ -145,9 +145,9 @@ class _LikeItemState extends State<LikeItem> {
       );
     } else{
       return Container(
-        decoration: BoxDecoration(
-          color: AppColors.primaryBackground
-        ),
+        // decoration: BoxDecoration(
+        //   color: AppColors.primaryBackground
+        // ),
         width: MediaQuery.of(context).size.width,
         height: 560,
         child: SizedBox(

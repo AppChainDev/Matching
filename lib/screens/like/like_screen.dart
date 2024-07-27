@@ -7,6 +7,7 @@ import 'package:drone/models/like_model.dart';
 import 'package:drone/models/usertransfer_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class LikeListScreen extends StatefulWidget {
 
@@ -55,6 +56,19 @@ class _LikeListScreenState extends State<LikeListScreen> {
         currenIndex = (currenIndex >= likes.length) ? likes.length - 1 : currenIndex;
       }
     });
+  }
+  
+  Future moveProfile() async{
+    const storage = FlutterSecureStorage();
+    String? gender =  await storage.read(key: 'gender');
+    if (gender != null) {
+      // ignore: unrelated_type_equality_checks
+      if (int.parse(gender) == 1) {
+        Navigator.pushNamed(context, "/malemypage");
+      } else {
+        Navigator.pushNamed(context, "/femalemypage");
+      }
+    }
   }
   
   Widget bottomBar(){
@@ -188,7 +202,7 @@ class _LikeListScreenState extends State<LikeListScreen> {
                       width: MediaQuery.of(context).size.width/5,
                       child: MaterialButton(
                         onPressed: () {
-                          
+                          moveProfile();
                         },
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -238,7 +252,7 @@ class _LikeListScreenState extends State<LikeListScreen> {
                       padding: const EdgeInsets.only(top: 100),
                       child: likes.length>=2? CardSwiper(
                         cardsCount: likes.length,
-                        scale: 1.0,
+                        scale: 0.7,
                         isLoop: true,
                         maxAngle: 90,
                         initialIndex: 0,

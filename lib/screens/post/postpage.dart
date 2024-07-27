@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:drone/components/app_colors.dart';
@@ -11,6 +12,7 @@ import 'package:drone/models/usertransfer_model.dart';
 import 'package:drone/models/post_model.dart';
 import 'package:drone/utils/const_file.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -57,6 +59,19 @@ class _PostScreenState extends State<PostScreen> {
     setState(() {
       posts.removeWhere((post)=>post.id==id);
     });
+  }
+
+  Future moveProfile() async{
+    const storage = FlutterSecureStorage();
+    String? gender =  await storage.read(key: 'gender');
+    if (gender != null) {
+      // ignore: unrelated_type_equality_checks
+      if (int.parse(gender) == 1) {
+        Navigator.pushNamed(context, "/malemypage");
+      } else {
+        Navigator.pushNamed(context, "/femalemypage");
+      }
+    }
   }
 
   Future getImageFromCamera() async {
@@ -397,7 +412,7 @@ class _PostScreenState extends State<PostScreen> {
                       width: MediaQuery.of(context).size.width/5,
                       child: MaterialButton(
                         onPressed: () {
-                          
+                          moveProfile();
                         },
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,

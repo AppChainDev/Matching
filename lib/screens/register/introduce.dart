@@ -3,6 +3,7 @@ import 'package:drone/components/base_screen.dart';
 import 'package:drone/components/custom_container.dart';
 import 'package:drone/components/custom_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class IntroduceScreen extends StatefulWidget {
   const IntroduceScreen({super.key});
@@ -32,6 +33,21 @@ class _IntroduceScreenState extends State<IntroduceScreen> {
     setState(() {
       textCount = introduceController.text.length;
     });
+  }
+
+  Future moveMyPage() async{
+    const storage = FlutterSecureStorage();
+    String? gender =  await storage.read(key: 'gender');
+    print(gender);
+    if (gender != null) {
+      // ignore: unrelated_type_equality_checks
+      if (int.parse(gender) == 1) {
+        Navigator.pushNamed(context, "/malemypage");
+      } else {
+        Navigator.pushNamed(context, "/femalemypage");
+      }
+    }
+
   }
 
   @override
@@ -207,8 +223,7 @@ class _IntroduceScreenState extends State<IntroduceScreen> {
                                       //   Navigator.pushNamed(context, "/malemypage");
                                       // }
                                         // Navigator.pop(context);
-                                        
-                                        Navigator.pushNamed(context, "/malemypage");
+                                        moveMyPage();
                                     },
                                     child: Center(
                                       child: Text(

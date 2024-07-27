@@ -1,13 +1,22 @@
+
 import 'package:drone/components/app_colors.dart';
 import 'package:drone/components/base_screen.dart';
+import 'package:drone/components/custom_button.dart';
 import 'package:drone/components/custom_container.dart';
 import 'package:drone/components/custom_text.dart';
+import 'package:drone/components/swipe/circle_thumbshape.dart';
+import 'package:drone/components/swipe/group_card.dart';
+import 'package:drone/components/swipe/group_other_card.dart';
+import 'package:drone/components/swipe/group_prefecture_card.dart';
 import 'package:drone/components/swipe/swipe_card.dart';
 import 'package:drone/models/chattingtransfer_model.dart';
 import 'package:drone/models/like_model.dart';
+import 'package:drone/models/swipegroup_model.dart';
 import 'package:drone/models/usertransfer_model.dart';
+import 'package:drone/utils/const_file.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class SwipeScreen extends StatefulWidget {
 
@@ -16,7 +25,7 @@ class SwipeScreen extends StatefulWidget {
   @override
   State<SwipeScreen> createState() => _SwipeScreenState();
 }
-
+String pageKey = "swipe";
 class _SwipeScreenState extends State<SwipeScreen> {
 
   final List<LikeModel> users = [
@@ -25,8 +34,34 @@ class _SwipeScreenState extends State<SwipeScreen> {
     LikeModel(3, "ゆうじssss", null, 13, 60, ["post_backimage1.png", "gfd.png", "aaa.png"], true, false, null, null),
     LikeModel(4, "ゆうじ111", null, 16, 56, ["post_backimage1.png", "gfd.png", "aaa.png"], false, true, "3年前から飼育しているペットのジョンです。\nかわいいでしょ", "pet.png")
   ];
+  final List<SwipeGroupModel> topGroup = [
+    SwipeGroupModel(id: 1, name: "Group1", members: 1000, thumbnail: "football.png"),
+    SwipeGroupModel(id: 2, name: "Group2", members: 3000, thumbnail: "fishing.png"),
+    SwipeGroupModel(id: 3, name: "Group3", members: 1500, thumbnail: "basketball.png"),
+    SwipeGroupModel(id: 4, name: "Group4", members: 2000, thumbnail: "games.png"),
+  ];
+  final List<SwipeGroupModel> group1 = [
+    SwipeGroupModel(id: 1, name: "釣り好き", members: 1000, thumbnail: "fishing.png"),
+    SwipeGroupModel(id: 2, name: "釣り好き", members: 2000, thumbnail: "fishing.png"),
+    SwipeGroupModel(id: 3, name: "釣り好き", members: 3000, thumbnail: "fishing.png"),
+    SwipeGroupModel(id: 4, name: "釣り好き", members: 4000, thumbnail: "fishing.png"),
+    SwipeGroupModel(id: 5, name: "釣り好き", members: 5000, thumbnail: "fishing.png"),
+    SwipeGroupModel(id: 6, name: "釣り好き", members: 6000, thumbnail: "fishing.png"),
+    SwipeGroupModel(id: 7, name: "釣り好き", members: 7000, thumbnail: "fishing.png"),
+    SwipeGroupModel(id: 8, name: "釣り好き", members: 8000, thumbnail: "fishing.png"),
+    SwipeGroupModel(id: 9, name: "釣り好き", members: 9000, thumbnail: "fishing.png"),
+    SwipeGroupModel(id: 10, name: "釣り好き", members: 10000, thumbnail: "fishing.png"),
+    SwipeGroupModel(id: 11, name: "釣り好き", members: 11000, thumbnail: "fishing.png"),
+  ];
   int currenIndex = 0;
   int point = 1;
+  bool clickedSearch = false;
+  List<int> prefectureIds = [];
+  List<int> bodyTypes= [];
+  List<int> maritalHistories = [];
+  List<int> attitudes = [];
+  RangeValues ageRangeValues = const RangeValues(40, 40);
+  RangeValues heightRangeValues = const RangeValues(130, 130);
 
   @override
   void initState() {
@@ -60,9 +95,63 @@ class _SwipeScreenState extends State<SwipeScreen> {
       point--;
     });
   }
+  void handleChange(String text) {
+    setState(() {
+      pageKey = text;
+    });
+  }
+  void handlePrefecture(String text) {
+    setState(() {
+      if (prefectureIds.contains(ConstFile.prefectureItems.indexOf(text))) {
+        prefectureIds.remove(ConstFile.prefectureItems.indexOf(text));
+      } else {
+        prefectureIds.add(ConstFile.prefectureItems.indexOf(text));
+      }
+    });
+  }
+  void handleBodyTypes(String text) {
+    setState(() {
+      if (bodyTypes.contains(ConstFile.bodyTypes.indexOf(text))) {
+        bodyTypes.remove(ConstFile.bodyTypes.indexOf(text));
+      } else {
+        bodyTypes.add(ConstFile.bodyTypes.indexOf(text));
+      }
+    });
+  }
+  void handleMaritalHistories(String text) {
+    setState(() {
+      if (maritalHistories.contains(ConstFile.maritalHistories.indexOf(text))) {
+        maritalHistories.remove(ConstFile.maritalHistories.indexOf(text));
+      } else {
+        maritalHistories.add(ConstFile.maritalHistories.indexOf(text));
+      }
+    });
+  }
+  void handleAttitudes(String text) {
+    setState(() {
+      if (attitudes.contains(ConstFile.attitudes.indexOf(text))) {
+        attitudes.remove(ConstFile.attitudes.indexOf(text));
+      } else {
+        attitudes.add(ConstFile.attitudes.indexOf(text));
+      }
+    });
+  }
+
+  Future moveProfile() async{
+    const storage = FlutterSecureStorage();
+    String? gender =  await storage.read(key: 'gender');
+    if (gender != null) {
+      // ignore: unrelated_type_equality_checks
+      if (int.parse(gender) == 1) {
+        Navigator.pushNamed(context, "/malemypage");
+      } else {
+        Navigator.pushNamed(context, "/femalemypage");
+      }
+    }
+  }
   
   Widget bottomBar(){
-    return 
+    return
       Center(
         child: CustomContainer(
           child: Column(
@@ -192,7 +281,7 @@ class _SwipeScreenState extends State<SwipeScreen> {
                       width: MediaQuery.of(context).size.width/5,
                       child: MaterialButton(
                         onPressed: () {
-                          
+                          moveProfile();
                         },
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -220,6 +309,429 @@ class _SwipeScreenState extends State<SwipeScreen> {
                 ),
               )
             ],
+          ),
+        ),
+      );
+  }
+
+  Widget searchWidget(){
+    return 
+      Center(
+        child: CustomContainer(
+          decoration: BoxDecoration(
+            color: AppColors.primaryBlack.withOpacity(0.3)
+          ),
+          child: Padding(
+            padding: const EdgeInsets.only(top:130),
+            child: Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height-118,
+              decoration: BoxDecoration(
+                color: AppColors.primaryWhite,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(10),
+                  topRight: Radius.circular(10)
+                )
+              ),
+              child: Stack(
+                children: [
+                  Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 20, bottom: 60),
+                        child: Center(
+                          child: CustomText(
+                            text: "検索条件", 
+                            fontSize: 14, 
+                            fontWeight: FontWeight.normal, 
+                            lineHeight: 1, 
+                            letterSpacing: 1, 
+                            color: AppColors.primaryBlack
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 100),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Column(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 16),
+                                margin: const EdgeInsets.only(bottom: 15),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    CustomText(
+                                      text: "年齢", 
+                                      fontSize: 14, 
+                                      fontWeight: FontWeight.normal, 
+                                      lineHeight: 1, 
+                                      letterSpacing: 1, 
+                                      color: AppColors.primaryBlack
+                                    ),
+                                    CustomText(
+                                      text: (ageRangeValues.start == 40 && ageRangeValues.end == 40)?"問わない":"${(ageRangeValues.start).toInt()}~${(ageRangeValues.end).toInt()}", 
+                                      fontSize: 14, 
+                                      fontWeight: FontWeight.normal, 
+                                      lineHeight: 1, 
+                                      letterSpacing: 1, 
+                                      color: AppColors.primaryBlack
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 5),
+                                child: SliderTheme(
+                                  data: SliderThemeData(
+                                    rangeThumbShape: const CircleThumbShape(),
+                                    inactiveTrackColor: AppColors.primaryGray
+                                  ),
+                                  child: RangeSlider(
+                                    values: ageRangeValues,
+                                    max: 110,
+                                    min: 40,
+                                    divisions: 70,
+                                    activeColor: AppColors.secondaryGreen,
+                                    labels: RangeLabels(
+                                      ageRangeValues.start.round().toString(),
+                                      ageRangeValues.end.round().toString(),
+                                    ),
+                                    onChanged: (RangeValues values) {
+                                      setState(() {
+                                        ageRangeValues = values;
+                                      });
+                                    },
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 30,
+                          ),
+                          Column(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 16),
+                                margin: const EdgeInsets.only(bottom: 15),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    CustomText(
+                                      text: "身長", 
+                                      fontSize: 14, 
+                                      fontWeight: FontWeight.normal, 
+                                      lineHeight: 1, 
+                                      letterSpacing: 1, 
+                                      color: AppColors.primaryBlack
+                                    ),
+                                    CustomText(
+                                      text: (heightRangeValues.start == 130 && heightRangeValues.end == 130)?"問わない":"${(heightRangeValues.start).toInt()}cm~${(heightRangeValues.end).toInt()}cm", 
+                                      fontSize: 14, 
+                                      fontWeight: FontWeight.normal, 
+                                      lineHeight: 1, 
+                                      letterSpacing: 1, 
+                                      color: AppColors.primaryBlack
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 5),
+                                child: SliderTheme(
+                                  data: SliderThemeData(
+                                    rangeThumbShape: const CircleThumbShape(),
+                                    inactiveTrackColor: AppColors.primaryGray
+                                  ),
+                                  child: RangeSlider(
+                                    values: heightRangeValues,
+                                    max: 210,
+                                    min: 130,
+                                    divisions: 80,
+                                    activeColor: AppColors.secondaryGreen,
+                                    
+                                    labels: RangeLabels(
+                                      heightRangeValues.start.round().toString(),
+                                      heightRangeValues.end.round().toString(),
+                                    ),
+                                    onChanged: (RangeValues values) {
+                                      setState(() {
+                                        heightRangeValues = values;
+                                      });
+                                    },
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 25,
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(left: 16),
+                                child: CustomText(
+                                  text: "居住地(右にスクロール)", 
+                                  fontSize: 14, 
+                                  fontWeight: FontWeight.normal, 
+                                  lineHeight: 1, 
+                                  letterSpacing: -1, 
+                                  color: AppColors.primaryBlack
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 14,
+                              ),
+                              Container(
+                                height: 150,
+                                padding: const EdgeInsets.only(left: 20),
+                                child: ListView(
+                                  scrollDirection: Axis.horizontal,
+                                  children: [
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: ConstFile.prefectureItems.sublist(0,16).map((item){
+                                            return GestureDetector(
+                                              onTap: () {
+                                                handlePrefecture(item);
+                                              },
+                                              child: GroupPrefectureItem(
+                                                id: ConstFile.prefectureItems.indexOf(item), 
+                                                text: item, 
+                                                inChecked: prefectureIds.contains(ConstFile.prefectureItems.indexOf(item))
+                                              ),
+                                            );
+                      
+                                          }).toList(),
+                                        ),
+                                        Row(
+                                          children: ConstFile.prefectureItems.sublist(16,32).map((item){
+                                            return GestureDetector(
+                                              onTap: () {
+                                                handlePrefecture(item);
+                                              },
+                                              child: GroupPrefectureItem(
+                                                id: ConstFile.prefectureItems.indexOf(item), 
+                                                text: item, 
+                                                inChecked: prefectureIds.contains(ConstFile.prefectureItems.indexOf(item))
+                                              ),
+                                            );
+                      
+                                          }).toList(),
+                                        ),
+                                        Row(
+                                          children: ConstFile.prefectureItems.sublist(32,ConstFile.prefectureItems.length).map((item){
+                                            return GestureDetector(
+                                              onTap: () {
+                                                handlePrefecture(item);
+                                              },
+                                              child: GroupPrefectureItem(
+                                                id: ConstFile.prefectureItems.indexOf(item), 
+                                                text: item, 
+                                                inChecked: prefectureIds.contains(ConstFile.prefectureItems.indexOf(item))
+                                              ),
+                                            );
+                      
+                                          }).toList(),
+                                        )
+                                      ],
+                                    )
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(left: 16),
+                                child: CustomText(
+                                  text: "体型", 
+                                  fontSize: 14, 
+                                  fontWeight: FontWeight.normal, 
+                                  lineHeight: 1, 
+                                  letterSpacing: -1, 
+                                  color: AppColors.primaryBlack
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 20, right: 20),
+                                child: Wrap(
+                                  crossAxisAlignment: WrapCrossAlignment.start,
+                                  children: ConstFile.bodyTypes.map((item){
+                                    return GestureDetector(
+                                      onTap: () {
+                                        handleBodyTypes(item);
+                                      },
+                                      child: GroupOtherItem(
+                                        id: ConstFile.bodyTypes.indexOf(item), 
+                                        text: item, 
+                                        inChecked: bodyTypes.contains(ConstFile.bodyTypes.indexOf(item))
+                                      ),
+                                    );
+                                  }).toList(),
+                                ),
+                              )
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(left: 16),
+                                child: CustomText(
+                                  text: "結婚歴", 
+                                  fontSize: 14, 
+                                  fontWeight: FontWeight.normal, 
+                                  lineHeight: 1, 
+                                  letterSpacing: -1, 
+                                  color: AppColors.primaryBlack
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 20),
+                                child: Wrap(
+                                  crossAxisAlignment: WrapCrossAlignment.start,
+                                  children: ConstFile.maritalHistories.map((item){
+                                    return GestureDetector(
+                                      onTap: () {
+                                        handleMaritalHistories(item);
+                                      },
+                                      child: GroupOtherItem(
+                                        id: ConstFile.maritalHistories.indexOf(item), 
+                                        text: item, 
+                                        inChecked: maritalHistories.contains(ConstFile.maritalHistories.indexOf(item))
+                                      ),
+                                    );
+                                  }).toList(),
+                                ),
+                              )
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(left: 16),
+                                child: CustomText(
+                                  text: "結婚に対する意思", 
+                                  fontSize: 14, 
+                                  fontWeight: FontWeight.normal, 
+                                  lineHeight: 1, 
+                                  letterSpacing: -1, 
+                                  color: AppColors.primaryBlack
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 20),
+                                child: Wrap(
+                                  crossAxisAlignment: WrapCrossAlignment.start,
+                                  children: ConstFile.attitudes.map((item){
+                                    return GestureDetector(
+                                      onTap: () {
+                                        handleAttitudes(item);
+                                      },
+                                      child: GroupOtherItem(
+                                        id: ConstFile.attitudes.indexOf(item), 
+                                        text: item, 
+                                        inChecked: attitudes.contains(ConstFile.attitudes.indexOf(item))
+                                      ),
+                                    );
+                                  }).toList(),
+                                ),
+                              )
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 40,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 40),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                CustomButton(
+                                  title: "この条件で検索", 
+                                  width: 343, 
+                                  fontSize: 15, 
+                                  fontWeight: FontWeight.normal, 
+                                  color: AppColors.secondaryGreen, 
+                                  titleColor: AppColors.primaryWhite, 
+                                  onTap: (){
+                                    
+                                  }
+                                ),
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      IconButton(
+                        onPressed: (){
+                          setState(() {
+                            clickedSearch = false;
+                          });
+                        }, 
+                        icon: Icon(
+                          Icons.close,
+                          color: AppColors.primaryBlack,
+                          size: 40,
+                        )
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 20),
+                        child: TextButton(
+                          onPressed: (){
+                            setState(() {
+                              clickedSearch = false;
+                            });
+                          }, 
+                          child: CustomText(
+                            text: "リセット", 
+                            fontSize: 14, 
+                            fontWeight: FontWeight.normal, 
+                            lineHeight: 1, 
+                            letterSpacing: -1, 
+                            color: AppColors.secondaryGreen
+                          )
+                        ),
+                      )
+                    ],
+                  )
+                ],
+              ),
+            )
           ),
         ),
       );
@@ -449,7 +961,7 @@ void buyBottomSheet() {
   @override
   Widget build(BuildContext context) {
     return BaseScreen(
-      child: Stack(
+      child: pageKey=="swipe"? Stack(
         children: [
           if(users.isNotEmpty)
             Stack(
@@ -463,7 +975,7 @@ void buyBottomSheet() {
                       padding: const EdgeInsets.only(top: 100),
                       child: users.length>=2? CardSwiper(
                         cardsCount: users.length,
-                        scale: 1.0,
+                        scale: 0.8,
                         isLoop: true,
                         maxAngle: 90,
                         allowedSwipeDirection: const AllowedSwipeDirection.only(left: true, right: true),
@@ -726,63 +1238,28 @@ void buyBottomSheet() {
                       children: [
                         Row(
                           children: [
-                            Container(
-                              width: 120,
-                              height: 40,
-                              decoration: BoxDecoration(
-                                color: AppColors.secondaryGreen,
-                                borderRadius: BorderRadius.circular(50)
-                              ),
-                              child: MaterialButton(
-                                onPressed: () {
-                                  
-                                },
-                                child: Center(
-                                  child: CustomText(
-                                    text: "おすすめ", 
-                                    fontSize: 16, 
-                                    fontWeight: FontWeight.normal, 
-                                    lineHeight: 1, 
-                                    letterSpacing: -1, 
-                                    color: AppColors.primaryWhite
-                                  ),
-                                ),
-                              ),
+                            SelectItem(
+                              text: "おすすめ", 
+                              keyText: "swipe", 
+                              inChecked: pageKey == "swipe", 
+                              onCartChanged: handleChange
                             ),
                             const SizedBox(
                               width: 10,
                             ),
-                            Container(
-                              width: 120,
-                              height: 40,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(50),
-                                border: Border.all(
-                                  color: AppColors.secondaryGreen,
-                                  width: 2
-                                )
-                              ),
-                              child: MaterialButton(
-                                onPressed: () {
-                                  
-                                },
-                                child: Center(
-                                  child: CustomText(
-                                    text: "さがす", 
-                                    fontSize: 16, 
-                                    fontWeight: FontWeight.normal, 
-                                    lineHeight: 1, 
-                                    letterSpacing: -1, 
-                                    color: AppColors.secondaryGreen
-                                  ),
-                                ),
-                              ),
+                            SelectItem(
+                              text: "さがす", 
+                              keyText: "search", 
+                              inChecked: pageKey == "search", 
+                              onCartChanged: handleChange
                             )
                           ],
                         ),
                         GestureDetector(
                           onTap: () {
-                            
+                            setState(() {
+                              clickedSearch = true;
+                            });
                           },
                           child: ImageIcon(
                             const AssetImage("assets/images/search.png"),
@@ -797,10 +1274,371 @@ void buyBottomSheet() {
               ),
             ),
           ),
-          bottomBar()
-          
+          bottomBar(),
+          if(clickedSearch)
+           searchWidget()  
+        ]
+      ):Stack(
+        children: [
+          Center(
+            child: CustomContainer(
+              decoration: BoxDecoration(
+                color: AppColors.primaryWhite
+              ),
+              child: Padding(
+                padding: const EdgeInsets.only(top: 120),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: MediaQuery.of(context).size.width,
+                        height: 260,
+                        padding: const EdgeInsets.only(top: 18.5, left: 20),
+                        decoration: BoxDecoration(
+                          color: AppColors.primaryBackground
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            CustomText(
+                              text: "みんなに人気のグループはコレ！", 
+                              fontSize: 8, 
+                              fontWeight: FontWeight.normal, 
+                              lineHeight: 2.5, 
+                              letterSpacing: 1, 
+                              color: AppColors.secondaryGreen
+                            ),
+                            CustomText(
+                              text: "unique text", 
+                              fontSize: 22, 
+                              fontWeight: FontWeight.normal, 
+                              lineHeight: 1, 
+                              letterSpacing: 1, 
+                              color: AppColors.primaryBlack
+                            ),
+                            Container(
+                              height: 160,
+                              margin: const EdgeInsets.only(top: 15),
+                              child: ListView(
+                                scrollDirection: Axis.horizontal,
+                                children: topGroup.map((item){
+                                  return Container(
+                                    width: 98,
+                                    margin: const EdgeInsets.only(right: 13),
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Container(
+                                          width: 98,
+                                          height: 98,
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(10),
+                                            image: DecorationImage(
+                                              image: AssetImage("assets/images/${item.thumbnail}"),
+                                              fit: BoxFit.cover     
+                                            )
+                                          ),
+                                          child: MaterialButton(
+                                            onPressed: () {
+                                              Navigator.pushNamed(context, "/group_member", arguments: SwipeGroupModel(id: item.id, name: item.name, members: item.members, thumbnail: item.thumbnail));
+                                            },
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        Column(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            CustomText(
+                                              text: item.name, 
+                                              fontSize: 12, 
+                                              fontWeight: FontWeight.normal, 
+                                              lineHeight: 1.5, 
+                                              letterSpacing: -1, 
+                                              color: AppColors.primaryBlack
+                                            ),
+                                            CustomText(
+                                              text: "${item.members}人", 
+                                              fontSize: 12, 
+                                              fontWeight: FontWeight.normal, 
+                                              lineHeight: 1.5, 
+                                              letterSpacing: -1, 
+                                              color: AppColors.secondaryGray
+                                            )
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                  );
+                                }).toList()
+                                
+                              ),
+                            ),
+
+                          ],
+                        ),
+                      ),
+                      Column(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.only(top: 18, left: 22, bottom: 25),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                CustomText(
+                                  text: "参加者が多い話題", 
+                                  fontSize: 17, 
+                                  fontWeight: FontWeight.normal, 
+                                  lineHeight: 1, 
+                                  letterSpacing: -1, 
+                                  color: AppColors.secondaryGreen
+                                ),
+                                Container(
+                                  height: 120,
+                                  margin: const EdgeInsets.only(top: 15),
+                                  child: ListView(
+                                    scrollDirection: Axis.horizontal,
+                                    children: group1.sublist(0, (group1.length/2).ceil()).map((item){
+                                      return GroupItem(
+                                        id: item.id, 
+                                        name: item.name, 
+                                        members: item.members, 
+                                        thumbnail: item.thumbnail
+                                      );
+                                    }).toList(),
+                                  )
+                                ),
+                                Container(
+                                  height: 120,
+                                  margin: const EdgeInsets.only(top: 15),
+                                  child: ListView(
+                                    scrollDirection: Axis.horizontal,
+                                    children: group1.sublist((group1.length/2).ceil(), group1.length).map((item){
+                                      return GroupItem(
+                                        id: item.id, 
+                                        name: item.name, 
+                                        members: item.members, 
+                                        thumbnail: item.thumbnail
+                                      );
+                                    }).toList(),
+                                  )
+                                )
+                              ],
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.only(top: 18, left: 22, bottom: 25),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                CustomText(
+                                  text: "人気の話題", 
+                                  fontSize: 17, 
+                                  fontWeight: FontWeight.normal, 
+                                  lineHeight: 1, 
+                                  letterSpacing: -1, 
+                                  color: AppColors.secondaryGreen
+                                ),
+                                Container(
+                                  height: 120,
+                                  margin: const EdgeInsets.only(top: 15),
+                                  child: ListView(
+                                    scrollDirection: Axis.horizontal,
+                                    children: group1.sublist(0, (group1.length/2).ceil()).map((item){
+                                      return GroupItem(
+                                        id: item.id, 
+                                        name: item.name, 
+                                        members: item.members, 
+                                        thumbnail: item.thumbnail
+                                      );
+                                    }).toList(),
+                                  )
+                                ),
+                                Container(
+                                  height: 120,
+                                  margin: const EdgeInsets.only(top: 15),
+                                  child: ListView(
+                                    scrollDirection: Axis.horizontal,
+                                    children: group1.sublist((group1.length/2).ceil(), group1.length).map((item){
+                                      return GroupItem(
+                                        id: item.id, 
+                                        name: item.name, 
+                                        members: item.members, 
+                                        thumbnail: item.thumbnail
+                                      );
+                                    }).toList(),
+                                  )
+                                )
+                              ],
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.only(top: 18, left: 22, bottom: 25),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                CustomText(
+                                  text: "趣味で話す", 
+                                  fontSize: 17, 
+                                  fontWeight: FontWeight.normal, 
+                                  lineHeight: 1, 
+                                  letterSpacing: -1, 
+                                  color: AppColors.secondaryGreen
+                                ),
+                                Container(
+                                  height: 120,
+                                  margin: const EdgeInsets.only(top: 15),
+                                  child: ListView(
+                                    scrollDirection: Axis.horizontal,
+                                    children: group1.sublist(0, (group1.length/2).ceil()).map((item){
+                                      return GroupItem(
+                                        id: item.id, 
+                                        name: item.name, 
+                                        members: item.members, 
+                                        thumbnail: item.thumbnail
+                                      );
+                                    }).toList(),
+                                  )
+                                ),
+                                Container(
+                                  height: 120,
+                                  margin: const EdgeInsets.only(top: 15),
+                                  child: ListView(
+                                    scrollDirection: Axis.horizontal,
+                                    children: group1.sublist((group1.length/2).ceil(), group1.length).map((item){
+                                      return GroupItem(
+                                        id: item.id, 
+                                        name: item.name, 
+                                        members: item.members, 
+                                        thumbnail: item.thumbnail
+                                      );
+                                    }).toList(),
+                                  )
+                                )
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 100,
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Center(
+            child: CustomContainer(
+              height: 120,
+              decoration: BoxDecoration(
+                color: AppColors.primaryWhite
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8, right: 15, bottom: 20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Row(
+                          children: [
+                            SelectItem(
+                              text: "おすすめ", 
+                              keyText: "swipe", 
+                              inChecked: pageKey == "swipe", 
+                              onCartChanged: handleChange
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            SelectItem(
+                              text: "さがす", 
+                              keyText: "search", 
+                              inChecked: pageKey == "search", 
+                              onCartChanged: handleChange
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ),
+          bottomBar(),
         ],
       )
+    );
+  }
+}
+
+typedef CartChangedCallback = Function(String text);
+
+class SelectItem extends StatelessWidget {
+  const SelectItem(
+    {required this.text,
+    required this.keyText,
+    required this.inChecked,
+    required this.onCartChanged,
+    super.key});
+
+  final String text;
+  final String keyText;
+  final bool inChecked;
+  final CartChangedCallback onCartChanged;
+
+  Color backColor(BuildContext context) {
+    return inChecked
+      ? AppColors.secondaryGreen
+      : AppColors.primaryWhite;
+  }
+  Color textColor(BuildContext context) {
+    return inChecked
+      ? AppColors.primaryWhite
+      : AppColors.secondaryGreen;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 120,
+      height: 40,
+      decoration: BoxDecoration(
+        color: backColor(context),
+        borderRadius: BorderRadius.circular(50),
+        border: Border.all(
+          color: AppColors.secondaryGreen,
+          width: 2
+        )
+      ),
+      child: MaterialButton(
+        onPressed: () {
+          onCartChanged(keyText);
+        },
+        child: Center(
+          child: CustomText(
+            text: text, 
+            fontSize: 13, 
+            fontWeight: FontWeight.normal, 
+            lineHeight: 1, 
+            letterSpacing: -1, 
+            color: textColor(context)
+          ),
+        ),
+      ),
     );
   }
 }

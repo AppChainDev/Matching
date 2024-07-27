@@ -1,6 +1,7 @@
 import 'package:drone/screens/agreement/agreement.dart';
 import 'package:drone/screens/agreement/agreement_chatlist.dart';
 import 'package:drone/screens/agreement/matching_complete.dart';
+import 'package:drone/screens/auth/loginhome_screen.dart';
 import 'package:drone/screens/auth/phone_screen.dart';
 import 'package:drone/screens/auth/phoneverify_screen.dart';
 import 'package:drone/screens/chatting/chatinglist_screen.dart';
@@ -14,6 +15,7 @@ import 'package:drone/screens/login_screen.dart';
 import 'package:drone/screens/male/male_mypage.dart';
 import 'package:drone/screens/notification/notification.dart';
 import 'package:drone/screens/notification/notification_detail.dart';
+import 'package:drone/screens/plan/plan_screen.dart';
 import 'package:drone/screens/post/create_post.dart';
 import 'package:drone/screens/post/postpage.dart';
 import 'package:drone/screens/profile/component/edit_introductoin.dart';
@@ -40,8 +42,12 @@ import 'package:drone/screens/setting/blockaccount/block_list.dart';
 import 'package:drone/screens/setting/notification/notification_setting.dart';
 import 'package:drone/screens/setting/settings.dart';
 import 'package:drone/screens/support/support_screen.dart';
+import 'package:drone/screens/swipe/groupmember_screen.dart';
 import 'package:drone/screens/swipe/swipe_message_screen.dart';
 import 'package:drone/screens/swipe/swipe_screen.dart';
+import 'package:drone/screens/verify/verify_screen.dart';
+import 'package:drone/screens/verify/verifysend_screen.dart';
+import 'package:drone/screens/verify/verifywaiting_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:drone/screens/first_screen.dart';
 class Routes {
@@ -53,6 +59,7 @@ class Routes {
     '/matching_complete': (context) => const MatchingCompleteScreen(),
     '/phone': (context) => const PhoneScreen(),
     '/phoneverify': (context) => const PhoneVerifyScreen(),
+    '/loginhome': (context) => const LoginHomeScreen(),
     '/registerprofile_first': (context) => const RegisterProfileFirstScreen(),
     '/registerprofile_second': (context) => const RegisterProfileSecondScreen(),
     '/registerprofile_third': (context) => const RegisterProfileThirdScreen(),
@@ -90,7 +97,13 @@ class Routes {
     '/violation_screen': (context) => const ViolationScreen(),
     '/violationconfirm_screen': (context) => const ViolationConfirmScreen(),
     '/swipe': (context) => const SwipeScreen(),
+    '/group_member': (context) => const GroupMemberScreen(),
     '/messagescreen': (context) => const SwipeMessageScreen(),
+
+    '/planscreen': (context) => const PlanScreen(),
+    '/verifyscreen': (context) => const VerifyScreen(),
+    '/verify_send': (context) => const VerifySendScreen(),
+    '/verify_waiting': (context) => const VerifyWaitingScreen(),
 
   };
 }

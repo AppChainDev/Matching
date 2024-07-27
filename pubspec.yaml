@@ -41,4 +41,4 @@ flutter:
   fonts:
     - family: HiraginoMinchoPro
       fonts:
-        - asset: assets/fonts/HiraginoMinchoPro/HiraginoMinchoProW6.otf
+        - asset: assets/fonts/HiraginoMinchoPro/hiragino-sans-gb-w3.otf

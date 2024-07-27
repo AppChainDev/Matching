@@ -6,6 +6,7 @@ import 'package:drone/components/custom_text.dart';
 import 'package:drone/components/picker/cupertinopicker.dart';
 import 'package:drone/utils/const_file.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class RegisterProfileThirdScreen extends StatefulWidget {
 
@@ -76,6 +77,13 @@ class _RegisterProfileThirdScreenState extends State<RegisterProfileThirdScreen>
     } else {
       return false;
     }
+  }
+
+  Future moveProfilePhoto() async{
+    const storage = FlutterSecureStorage();
+    storage.delete(key: 'gender');
+    await storage.write(key: 'gender', value: gender.toString());
+    Navigator.pushNamed(context, "/registerprofile_photo");
   }
 
   @override
@@ -422,7 +430,7 @@ class _RegisterProfileThirdScreenState extends State<RegisterProfileThirdScreen>
                       titleColor: AppColors.primaryWhite,
                       onTap: () {
                         if(isCompleted()==true){
-                          Navigator.pushNamed(context, "/registerprofile_photo");
+                          moveProfilePhoto();
                           // Navigator.pushNamed(context, "/registerprofile_first");
                           
                         }     

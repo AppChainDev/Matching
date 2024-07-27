@@ -60,9 +60,9 @@ class _SwipeItemState extends State<SwipeItem> {
       index = 0;
     }
       return Container(
-        decoration: BoxDecoration(
-          color: AppColors.primaryWhite
-        ),
+        // decoration: BoxDecoration(
+        //   color: AppColors.primaryWhite
+        // ),
         width: MediaQuery.of(context).size.width,
         child: SizedBox(
           height: 630,

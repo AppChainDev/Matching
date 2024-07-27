@@ -15,6 +15,7 @@ class MaleMyPage extends StatefulWidget {
 
 class _MaleMyPageState extends State<MaleMyPage> {
   final TextEditingController questionController= TextEditingController();
+  int point = 50;
 
   @override
   void initState() {
@@ -98,6 +99,145 @@ class _MaleMyPageState extends State<MaleMyPage> {
                         allowNotification(context);
                       }
                     ),
+                ],
+              ),
+            )
+        );
+      });
+  }
+
+  void buyBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext builder) {
+        return Container(
+            decoration: BoxDecoration(
+              color: AppColors.primaryWhite,
+              borderRadius: const BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10))
+            ),
+            height: MediaQuery.of(context).copyWith().size.height*0.4,
+            child: Container(
+              padding: const EdgeInsets.only(top: 65, left: 13, right: 13),
+              width: MediaQuery.of(context).size.width,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      CustomText(
+                        text: "ポイント購入", 
+                        fontSize: 17, 
+                        fontWeight: FontWeight.normal, 
+                        lineHeight: 1, 
+                        letterSpacing: 1, 
+                        color: AppColors.primaryBlack
+                      ),
+                      Container(
+                        width: 112,
+                        height: 30,
+                        decoration: BoxDecoration(
+                          color: AppColors.primaryBackground,
+                          borderRadius: BorderRadius.circular(50),
+                        ),
+                        child: Stack(
+                          children: [
+                            Center(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    width: 23,
+                                    height: 23,
+                                    margin: const EdgeInsets.only(left: 8),
+                                    child: Image.asset("assets/images/point.png", fit:BoxFit.cover)
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Center(
+                              child: CustomText(
+                                  text: "$point", 
+                                  fontSize: 17, 
+                                  fontWeight: FontWeight.bold, 
+                                  lineHeight: 1, 
+                                  letterSpacing: -1, 
+                                  color: AppColors.secondaryGreen
+                                ),
+                            )
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      CustomText(
+                        text: "ポイントを購入することで\nお相手にいいねを送ることができます", 
+                        fontSize: 12, 
+                        fontWeight: FontWeight.normal, 
+                        lineHeight: 1.5, 
+                        letterSpacing: -1, 
+                        color: AppColors.primaryBlack
+                      )
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 35,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        width: 110,
+                        height: 110,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          image: const DecorationImage(
+                            image: AssetImage("assets/images/10_point.png"),
+                            fit: BoxFit.cover     
+                          ),
+                        ),
+                        child: MaterialButton(
+                          onPressed: (){}
+                        )
+                      ),
+                      Container(
+                        width: 110,
+                        height: 110,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          image: const DecorationImage(
+                            image: AssetImage("assets/images/50_point.png"),
+                            fit: BoxFit.cover     
+                          ),
+                        ),
+                        child: MaterialButton(
+                          onPressed: (){}
+                        )
+                      ),
+                      Container(
+                        width: 110,
+                        height: 110,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          image: const DecorationImage(
+                            image: AssetImage("assets/images/100_point.png"),
+                            fit: BoxFit.cover     
+                          ),
+                        ),
+                        child: MaterialButton(
+                          onPressed: (){}
+                        )
+                      )
+                    ],
+                  )
                 ],
               ),
             )
@@ -529,35 +669,40 @@ class _MaleMyPageState extends State<MaleMyPage> {
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Container(
-                                    width: 99,
-                                    height: 66,
-                                    decoration: BoxDecoration(
-                                      color: AppColors.secondaryGreen.withOpacity(0.2),
-                                      borderRadius: BorderRadius.circular(10)
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.pushNamed(context, "/verifyscreen");
+                                    },
+                                    child: Container(
+                                      width: 99,
+                                      height: 66,
+                                      decoration: BoxDecoration(
+                                        color: AppColors.secondaryGreen.withOpacity(0.2),
+                                        borderRadius: BorderRadius.circular(10)
+                                      ),
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          CustomText(
+                                            text: "本人確認", 
+                                            fontSize: 10, 
+                                            fontWeight: FontWeight.normal, 
+                                            lineHeight: 2, 
+                                            letterSpacing: 1, 
+                                            color: AppColors.primaryBlack
+                                          ),
+                                          CustomText(
+                                            text: "未確認", 
+                                            fontSize: 17, 
+                                            fontWeight: FontWeight.normal, 
+                                            lineHeight: 1, 
+                                            letterSpacing: 1, 
+                                            color: AppColors.primaryBlack
+                                          )
+                                        ],
+                                      )
                                     ),
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        CustomText(
-                                          text: "本人確認", 
-                                          fontSize: 10, 
-                                          fontWeight: FontWeight.normal, 
-                                          lineHeight: 2, 
-                                          letterSpacing: 1, 
-                                          color: AppColors.primaryBlack
-                                        ),
-                                        CustomText(
-                                          text: "未確認", 
-                                          fontSize: 17, 
-                                          fontWeight: FontWeight.normal, 
-                                          lineHeight: 1, 
-                                          letterSpacing: 1, 
-                                          color: AppColors.primaryBlack
-                                        )
-                                      ],
-                                    )
                                   ),
                                   Container(
                                     width: 99,
@@ -589,44 +734,49 @@ class _MaleMyPageState extends State<MaleMyPage> {
                                       ],
                                     )
                                   ),
-                                  Container(
-                                    width: 99,
-                                    height: 66,
-                                    decoration: BoxDecoration(
-                                      color: AppColors.secondaryGreen.withOpacity(0.2),
-                                      borderRadius: BorderRadius.circular(10)
+                                  GestureDetector(
+                                    onTap: () {
+                                      buyBottomSheet();
+                                    },
+                                    child: Container(
+                                      width: 99,
+                                      height: 66,
+                                      decoration: BoxDecoration(
+                                        color: AppColors.secondaryGreen.withOpacity(0.2),
+                                        borderRadius: BorderRadius.circular(10)
+                                      ),
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          CustomText(
+                                            text: "ポイント", 
+                                            fontSize: 10, 
+                                            fontWeight: FontWeight.normal, 
+                                            lineHeight: 2, 
+                                            letterSpacing: 1, 
+                                            color: AppColors.primaryBlack
+                                          ),
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              Image.asset("assets/images/p_icon.png", fit: BoxFit.cover),
+                                              const SizedBox(
+                                                width: 5,
+                                              ),
+                                              CustomText(
+                                                text: "50", 
+                                                fontSize: 17, 
+                                                fontWeight: FontWeight.normal, 
+                                                lineHeight: 1, 
+                                                letterSpacing: 1, 
+                                                color: AppColors.primaryBlack
+                                              ),
+                                            ],
+                                          )
+                                        ],
+                                      )
                                     ),
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        CustomText(
-                                          text: "ポイント", 
-                                          fontSize: 10, 
-                                          fontWeight: FontWeight.normal, 
-                                          lineHeight: 2, 
-                                          letterSpacing: 1, 
-                                          color: AppColors.primaryBlack
-                                        ),
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            Image.asset("assets/images/p_icon.png", fit: BoxFit.cover),
-                                            const SizedBox(
-                                              width: 5,
-                                            ),
-                                            CustomText(
-                                              text: "50", 
-                                              fontSize: 17, 
-                                              fontWeight: FontWeight.normal, 
-                                              lineHeight: 1, 
-                                              letterSpacing: 1, 
-                                              color: AppColors.primaryBlack
-                                            ),
-                                          ],
-                                        )
-                                      ],
-                                    )
                                   )
                                 ],
                               ),
@@ -634,12 +784,17 @@ class _MaleMyPageState extends State<MaleMyPage> {
                           ),
                           Padding(
                             padding: const EdgeInsets.only(left: 10, right: 10),
-                            child: Container(
-                              height: 350,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                image: const DecorationImage(
-                                  image: AssetImage("assets/images/sale_card.png")
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(context, "/planscreen");
+                              },
+                              child: Container(
+                                height: 350,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  image: const DecorationImage(
+                                    image: AssetImage("assets/images/sale_card.png")
+                                  )
                                 )
                               ),
                             ),
