@@ -43,7 +43,6 @@ class FirstScreen extends StatelessWidget {
                         // borderColor: AppColors.primaryBlue, 
                         titleColor: AppColors.primaryWhite, 
                         onTap: (){
-                          Navigator.pushNamed(context, "/phone");
                         }
                       ),
                       const SizedBox(
@@ -57,7 +56,7 @@ class FirstScreen extends StatelessWidget {
                         color: AppColors.primaryGreen,
                         titleColor: AppColors.primaryWhite, 
                         onTap: (){
-                          Navigator.pushNamed(context, "/femalemypage");
+                          // Navigator.pushNamed(context, "/femalemypage");
                         }
                       ),
                       const SizedBox(
@@ -71,7 +70,7 @@ class FirstScreen extends StatelessWidget {
                         color: AppColors.primaryBlue, 
                         titleColor: AppColors.primaryWhite, 
                         onTap: (){
-                          Navigator.pushNamed(context, "/malemypage");
+                          // Navigator.pushNamed(context, "/malemypage");
                         }
                       ),
                       const SizedBox(
@@ -85,7 +84,7 @@ class FirstScreen extends StatelessWidget {
                         color: AppColors.darkGray, 
                         titleColor: AppColors.primaryWhite, 
                         onTap: (){
-                          
+                          Navigator.pushNamed(context, "/phone");
                         }
                       ),
                       const SizedBox(
