@@ -275,7 +275,7 @@ class _GroupMemberScreenState extends State<GroupMemberScreen> {
                                               },
                                               child: GroupPrefectureItem(
                                                 id: ConstFile.prefectureItems.indexOf(item), 
-                                                text: item, 
+                                                text: item.replaceAll(RegExp(r'[県]'), ''), 
                                                 inChecked: prefectureIds.contains(ConstFile.prefectureItems.indexOf(item))
                                               ),
                                             );
@@ -290,7 +290,7 @@ class _GroupMemberScreenState extends State<GroupMemberScreen> {
                                               },
                                               child: GroupPrefectureItem(
                                                 id: ConstFile.prefectureItems.indexOf(item), 
-                                                text: item, 
+                                                text: item.replaceAll(RegExp(r'[県]'), ''), 
                                                 inChecked: prefectureIds.contains(ConstFile.prefectureItems.indexOf(item))
                                               ),
                                             );
@@ -305,7 +305,7 @@ class _GroupMemberScreenState extends State<GroupMemberScreen> {
                                               },
                                               child: GroupPrefectureItem(
                                                 id: ConstFile.prefectureItems.indexOf(item), 
-                                                text: item, 
+                                                text: item.replaceAll(RegExp(r'[県]'), ''), 
                                                 inChecked: prefectureIds.contains(ConstFile.prefectureItems.indexOf(item))
                                               ),
                                             );

@@ -507,7 +507,7 @@ class _SwipeScreenState extends State<SwipeScreen> {
                                               },
                                               child: GroupPrefectureItem(
                                                 id: ConstFile.prefectureItems.indexOf(item), 
-                                                text: item, 
+                                                text: item.replaceAll(RegExp(r'[県]'), ''), 
                                                 inChecked: prefectureIds.contains(ConstFile.prefectureItems.indexOf(item))
                                               ),
                                             );
@@ -522,7 +522,7 @@ class _SwipeScreenState extends State<SwipeScreen> {
                                               },
                                               child: GroupPrefectureItem(
                                                 id: ConstFile.prefectureItems.indexOf(item), 
-                                                text: item, 
+                                                text: item.replaceAll(RegExp(r'[県]'), ''), 
                                                 inChecked: prefectureIds.contains(ConstFile.prefectureItems.indexOf(item))
                                               ),
                                             );
@@ -537,7 +537,7 @@ class _SwipeScreenState extends State<SwipeScreen> {
                                               },
                                               child: GroupPrefectureItem(
                                                 id: ConstFile.prefectureItems.indexOf(item), 
-                                                text: item, 
+                                                text: item.replaceAll(RegExp(r'[県]'), ''), 
                                                 inChecked: prefectureIds.contains(ConstFile.prefectureItems.indexOf(item))
                                               ),
                                             );

@@ -18,7 +18,7 @@ class RegisterProfileSecondScreen extends StatefulWidget {
 class _RegisterProfileSecondScreenState extends State<RegisterProfileSecondScreen> {
 
   final TextEditingController birthdayController = TextEditingController();
-   final int maxAge = 40;
+   final int minAge = 40;
    int age = 0;
 
   @override
@@ -189,13 +189,13 @@ class _RegisterProfileSecondScreenState extends State<RegisterProfileSecondScree
                       color: birthdayController.text.isEmpty?AppColors.secondaryGreen.withOpacity(0.5):AppColors.secondaryGreen, 
                       titleColor: AppColors.primaryWhite, 
                       onTap: () async{                        
-                        if (age > maxAge) {
+                        if (age < minAge) {
                           showDialog(
                             context: context,
                             builder: (BuildContext context) {
                               return AlertDialog(
                                 title: const Text(''),
-                                content: Text('$maxAge歳以上のお客様はご利用いただけません。'),
+                                content: Text('$minAge歳以下の方はご利用いただけません。'),
                                 actions: <Widget>[
                                   TextButton(
                                     child: const Text('OK'),
