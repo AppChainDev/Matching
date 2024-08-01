@@ -4,8 +4,10 @@ import 'package:drone/components/custom_button.dart';
 import 'package:drone/components/custom_container.dart';
 import 'package:drone/components/custom_text.dart';
 import 'package:drone/models/phone_number.dart';
+import 'package:drone/state/user_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 class PhoneScreen extends StatefulWidget {
 
@@ -17,7 +19,7 @@ class PhoneScreen extends StatefulWidget {
 
 class _PhoneScreenState extends State<PhoneScreen> {
   final TextEditingController phoneController = TextEditingController();
-  final int minPhoneNumberLength = 7;  // Set your minimum length here
+  final int minPhoneNumberLength = 11;  // Set your minimum length here
   final int maxPhoneNumberLength = 15; // Set your maximum length here
 
   @override
@@ -37,6 +39,87 @@ class _PhoneScreenState extends State<PhoneScreen> {
     setState(() {
 
     });
+  }
+
+  bool checkPhoneNumber(){
+    var str = phoneController.text.substring(0, 3);
+    if(phoneController.text.length < minPhoneNumberLength || phoneController.text.length > maxPhoneNumberLength || str != "090"){
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  Future<void> handleLogin() async {
+    final isSend = await Provider.of<UserState>(context, listen: false).phoneNumberSend(phoneController.text);
+    if(isSend){
+      Navigator.pushNamed(context, "/phoneverify", arguments: Phonenumber(num: phoneController.text));     
+    } else{
+      showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (_) => Center( // Aligns the container to center
+          child: Container( // A simplified version of dialog. 
+            width: 300,
+            height: 150,
+            padding: const EdgeInsets.only(top:35),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: AppColors.primaryWhite
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  "電話番号の送信に失敗しました。",
+                  textAlign:TextAlign.center,
+                  style: TextStyle(
+                    color: AppColors.primaryBlack,
+                    fontWeight: FontWeight.normal,
+                    fontSize:15,
+                    letterSpacing: -1,
+                    decoration: TextDecoration.none
+                  ),
+                ),
+                const SizedBox(
+                  height: 24,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Container(
+                    width: 343,
+                    height: 42,
+                    margin: const EdgeInsets.only(top: 5),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        top: BorderSide(
+                          color: AppColors.secondaryGray.withOpacity(0.5)
+                        )
+                      )
+                    ),
+                    child: MaterialButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Center(
+                        child: CustomText(
+                          text: "OK", 
+                          fontSize: 15, 
+                          fontWeight: FontWeight.normal, 
+                          lineHeight: 1, 
+                          letterSpacing: -1, 
+                          color: AppColors.alertBlue
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+            )
+          )
+      );
+    }
   }
 
   @override
@@ -155,62 +238,73 @@ class _PhoneScreenState extends State<PhoneScreen> {
                       color: phoneController.text.isEmpty?AppColors.secondaryGreen.withOpacity(0.5):AppColors.secondaryGreen, 
                       titleColor: AppColors.primaryWhite, 
                       onTap: () async{ 
-                        // Navigator.pushNamed(context, "/findpilot");
-                        // final isAuthenticated = Provider.of<UserState>(context, listen: false).isAuthenticated;
-                        // if (isAuthenticated) {
-                        //   if(Provider.of<UserState>(context, listen: false).user?.isPilot == false){
-                        //     await Provider.of<UserState>(context, listen: false).login(emailController.text, passwordController.text);     
-                        //   }
-                        // }
-                        if (phoneController.text.length < minPhoneNumberLength || phoneController.text.length > maxPhoneNumberLength) {  
+                        if (!checkPhoneNumber()) {  
                           showDialog(
+                            barrierDismissible: false,
                             context: context,
-                            builder: (context) => AlertDialog(
-                              content: Padding(
-                                padding: const EdgeInsets.only(top: 40, left: 30, right: 30),
-                                child:CustomText(
-                                  text: "正しい電話番号を入力してください。", 
-                                  fontSize: 18, 
-                                  fontWeight: FontWeight.normal, 
-                                  lineHeight: 1.5, 
-                                  letterSpacing: 1, 
-                                  color: AppColors.primaryBlack
-                                )
-                              ),
-                              actions: [
-                                Container(
-                                  decoration: BoxDecoration(
-                                    border: Border(
-                                      top: BorderSide(
-                                        width: 2,
-                                        color: AppColors.primaryGray
-                                      )
-                                    )
-                                  ),
-                                  child: Center(
-                                    child: TextButton(
-                                      onPressed: () => Navigator.pop(context),
-                                      child: TextButton(
-                                        onPressed: (){
-                                          Navigator.pop(context);
-                                        }, 
-                                        child: CustomText(
-                                          text: "OK", 
-                                          fontSize: 20, 
-                                          fontWeight: FontWeight.bold, 
-                                          lineHeight: 1, 
-                                          letterSpacing: 1, 
-                                          color: AppColors.primaryBlue
-                                        )
+                            builder: (_) => Center( // Aligns the container to center
+                              child: Container( // A simplified version of dialog. 
+                                width: 300,
+                                height: 150,
+                                padding: const EdgeInsets.only(top:35),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: AppColors.primaryWhite
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      "正しい電話番号を入力してください。",
+                                      textAlign:TextAlign.center,
+                                      style: TextStyle(
+                                        color: AppColors.primaryBlack,
+                                        fontWeight: FontWeight.normal,
+                                        fontSize:15,
+                                        letterSpacing: -1,
+                                        decoration: TextDecoration.none
                                       ),
                                     ),
-                                  ),
+                                    const SizedBox(
+                                      height: 24,
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                                      child: Container(
+                                        width: 343,
+                                        height: 42,
+                                        margin: const EdgeInsets.only(top: 5),
+                                        decoration: BoxDecoration(
+                                          border: Border(
+                                            top: BorderSide(
+                                              color: AppColors.secondaryGray.withOpacity(0.5)
+                                            )
+                                          )
+                                        ),
+                                        child: MaterialButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                          child: Center(
+                                            child: CustomText(
+                                              text: "OK", 
+                                              fontSize: 15, 
+                                              fontWeight: FontWeight.normal, 
+                                              lineHeight: 1, 
+                                              letterSpacing: -1, 
+                                              color: AppColors.alertBlue
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  ],
                                 ),
-                              ],
-                            ),
+                                )
+                              )
                           );
                         } else {
-                          Navigator.pushNamed(context, "/phoneverify", arguments: Phonenumber(num: phoneController.text));
+                          handleLogin();
                         }
                       }
                     ),

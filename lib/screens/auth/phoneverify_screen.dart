@@ -4,8 +4,10 @@ import 'package:drone/components/custom_button.dart';
 import 'package:drone/components/custom_container.dart';
 import 'package:drone/components/custom_text.dart';
 import 'package:drone/models/phone_number.dart';
+import 'package:drone/state/user_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 class PhoneVerifyScreen extends StatefulWidget {
 
@@ -34,6 +36,78 @@ class _PhoneVerifyScreenState extends State<PhoneVerifyScreen> {
   void _updateButtonColor() {
     setState(() {
     });
+  }
+  Future<void> phoneLogin(String phoneNumber) async{
+    final isSend = await Provider.of<UserState>(context, listen: false).loginPhoneNumber(phoneNumber, verifyController.text);
+    if (isSend) {
+      Navigator.pushNamed(context, "/loginhome");
+    } else {
+      showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (_) => Center( // Aligns the container to center
+          child: Container( // A simplified version of dialog. 
+            width: 300,
+            height: 150,
+            padding: const EdgeInsets.only(top:35),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: AppColors.primaryWhite
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  "認証コードが正しくありません。\n正しい認証コードを入力してください。",
+                  textAlign:TextAlign.center,
+                  style: TextStyle(
+                    color: AppColors.primaryBlack,
+                    fontWeight: FontWeight.normal,
+                    fontSize:15,
+                    letterSpacing: -1,
+                    decoration: TextDecoration.none
+                  ),
+                ),
+                const SizedBox(
+                  height: 24,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Container(
+                    width: 343,
+                    height: 42,
+                    margin: const EdgeInsets.only(top: 5),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        top: BorderSide(
+                          color: AppColors.secondaryGray.withOpacity(0.5)
+                        )
+                      )
+                    ),
+                    child: MaterialButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Center(
+                        child: CustomText(
+                          text: "OK", 
+                          fontSize: 15, 
+                          fontWeight: FontWeight.normal, 
+                          lineHeight: 1, 
+                          letterSpacing: -1, 
+                          color: AppColors.alertBlue
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+            )
+          )
+      );
+    }
+
   }
 
   @override
@@ -155,13 +229,7 @@ class _PhoneVerifyScreenState extends State<PhoneVerifyScreen> {
                       color: verifyController.text.isEmpty?AppColors.secondaryGreen.withOpacity(0.5):AppColors.secondaryGreen, 
                       titleColor: AppColors.primaryWhite, 
                       onTap: () async{ 
-                        Navigator.pushNamed(context, "/loginhome");
-                        // final isAuthenticated = Provider.of<UserState>(context, listen: false).isAuthenticated;
-                        // if (isAuthenticated) {
-                        //   if(Provider.of<UserState>(context, listen: false).user?.isPilot == false){
-                        //     await Provider.of<UserState>(context, listen: false).login(emailController.text, passwordController.text);     
-                        //   }
-                        // }
+                        phoneLogin(args.num);
                       }
                     ),
                   ],

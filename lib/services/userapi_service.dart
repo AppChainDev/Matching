@@ -11,6 +11,47 @@ class UserApiService {
   UserApiService({required this.baseUrl});
 
   // Example of a login function
+  Future<bool> phoneNumberSend(String phoneNumber) async{
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/auth/phone_register'),
+      body: jsonEncode(<String, String>{
+        'phone_number': phoneNumber
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    );
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  Future<bool> loginPhoneNumber(String phoneNumber, String verifyCode) async{
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/auth/phone_login'),
+      body: jsonEncode(<String, String>{
+        'phone_number': phoneNumber,
+        'verify_code': verifyCode
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    );
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      int userId = data['id'];
+      String accessToken = data['accessToken'];
+      String refreshToken = data['refreshToken'];
+      await storage.write(key: 'userId', value: jsonEncode(userId));
+      await storage.write(key: 'accessToken', value: accessToken);
+      await storage.write(key: 'refreshToken', value: refreshToken);
+      return true;
+    } else {
+      return false;
+    }
+  }
+  
   Future<UserModel> login(String email, String password) async {
     final response = await http.post(
       Uri.parse('$baseUrl/api/auth/login/'),

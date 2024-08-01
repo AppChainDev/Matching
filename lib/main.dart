@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'state/user_state.dart';
 import 'state/settings_state.dart';
@@ -7,6 +8,7 @@ import 'routes.dart';
 
 void main() async{
   runApp(const MyApp());
+  await dotenv.load();
 }
 
 class MyApp extends StatelessWidget {
@@ -16,15 +18,15 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) {
-          final authProvider = UserState(userApiService: UserApiService(baseUrl: 'http://localhost:5000'));
-          authProvider.checkAuthStatus().then((_) {
-            authProvider.scheduleTokenRefresh();
-          });
-          return authProvider;
-        }),
+        // ChangeNotifierProvider(create: (_) {
+        //   final authProvider = UserState(userApiService: UserApiService(baseUrl: 'http://localhost:5000'));
+        //   authProvider.checkAuthStatus().then((_) {
+        //     authProvider.scheduleTokenRefresh();
+        //   });
+        //   return authProvider;
+        // }),
         ChangeNotifierProvider(
-          create: (_) => UserState(userApiService: UserApiService(baseUrl: 'http://localhost:5000')),
+          create: (_) => UserState(userApiService: UserApiService(baseUrl: dotenv.get('BASE_URL'))),
         ),
         ChangeNotifierProvider(create: (_) => SettingsState()),
       ],

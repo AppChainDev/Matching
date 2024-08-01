@@ -12,6 +12,14 @@ class UserState with ChangeNotifier {
   UserModel? get user => _user;
   bool get isAuthenticated => _isAuthenticated;
 
+  Future<bool> phoneNumberSend(String phoneNumber) async {
+    return await userApiService.phoneNumberSend(phoneNumber);
+  }
+
+  Future<bool> loginPhoneNumber(String phoneNumber, String verifyCode) async {
+    return await userApiService.loginPhoneNumber(phoneNumber, verifyCode);
+  }
+
   Future<void> login(String email, String password) async {
     _user = await userApiService.login(email, password);
     if (_user?.id != 0) {
