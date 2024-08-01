@@ -20,6 +20,10 @@ class UserState with ChangeNotifier {
     return await userApiService.loginPhoneNumber(phoneNumber, verifyCode);
   }
 
+  Future<bool> saveName(String name) async {
+    return await userApiService.saveName(name);
+  }
+
   Future<void> login(String email, String password) async {
     _user = await userApiService.login(email, password);
     if (_user?.id != 0) {

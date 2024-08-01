@@ -27,6 +27,7 @@ class UserApiService {
       return false;
     }
   }
+
   Future<bool> loginPhoneNumber(String phoneNumber, String verifyCode) async{
     final response = await http.post(
       Uri.parse('$baseUrl/api/auth/phone_login'),
@@ -46,6 +47,27 @@ class UserApiService {
       await storage.write(key: 'userId', value: jsonEncode(userId));
       await storage.write(key: 'accessToken', value: accessToken);
       await storage.write(key: 'refreshToken', value: refreshToken);
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<bool> saveName(String name) async{
+    String? userId = await storage.read(key: 'userId');
+    String? accessToken = await storage.read(key: 'accessToken');
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/auth/save_name'),
+      body: jsonEncode(<String, String>{
+        'id': userId!,
+        'name': name,
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+    if (response.statusCode == 200) {
       return true;
     } else {
       return false;

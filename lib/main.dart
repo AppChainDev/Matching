@@ -18,13 +18,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        // ChangeNotifierProvider(create: (_) {
-        //   final authProvider = UserState(userApiService: UserApiService(baseUrl: 'http://localhost:5000'));
-        //   authProvider.checkAuthStatus().then((_) {
-        //     authProvider.scheduleTokenRefresh();
-        //   });
-        //   return authProvider;
-        // }),
+        ChangeNotifierProvider(create: (_) {
+          final authProvider = UserState(userApiService: UserApiService(baseUrl: 'http://localhost:5000'));
+          authProvider.checkAuthStatus().then((_) {
+            authProvider.scheduleTokenRefresh();
+          });
+          return authProvider;
+        }),
         ChangeNotifierProvider(
           create: (_) => UserState(userApiService: UserApiService(baseUrl: dotenv.get('BASE_URL'))),
         ),
