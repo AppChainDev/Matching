@@ -28,6 +28,7 @@ dependencies:
   swipe_to: ^1.0.6
   flutter_card_swiper: ^7.0.1
   flutter_dotenv: ^5.1.0
+  path: ^1.9.0
 
 
 dev_dependencies:

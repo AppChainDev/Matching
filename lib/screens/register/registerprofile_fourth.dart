@@ -4,8 +4,10 @@ import 'package:drone/components/custom_button.dart';
 import 'package:drone/components/custom_container.dart';
 import 'package:drone/components/custom_text.dart';
 import 'package:drone/components/picker/cupertinopicker.dart';
+import 'package:drone/state/user_state.dart';
 import 'package:drone/utils/const_file.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class RegisterProfileFourthScreen extends StatefulWidget {
 
@@ -136,6 +138,78 @@ class _RegisterProfileFourthScreenState extends State<RegisterProfileFourthScree
     }
   }
 
+  Future saveSecondStep() async{
+    final isSaved = await Provider.of<UserState>(context, listen: false).saveSecondStep(blood, birth, education, jobType, maritalHistory, income, children, housework, hopeMeet, dateCost);
+    if(isSaved){
+      Navigator.pushNamed(context, "/registerprofile_group");
+    } else{
+      showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (_) => Center( // Aligns the container to center
+          child: Container( // A simplified version of dialog. 
+            width: 300,
+            height: 150,
+            padding: const EdgeInsets.only(top:35),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: AppColors.primaryWhite
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  "情報を保存できませんでした。",
+                  textAlign:TextAlign.center,
+                  style: TextStyle(
+                    color: AppColors.primaryBlack,
+                    fontWeight: FontWeight.normal,
+                    fontSize:15,
+                    letterSpacing: -1,
+                    decoration: TextDecoration.none
+                  ),
+                ),
+                const SizedBox(
+                  height: 24,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Container(
+                    width: 343,
+                    height: 42,
+                    margin: const EdgeInsets.only(top: 5),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        top: BorderSide(
+                          color: AppColors.secondaryGray.withOpacity(0.5)
+                        )
+                      )
+                    ),
+                    child: MaterialButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Center(
+                        child: CustomText(
+                          text: "OK", 
+                          fontSize: 15, 
+                          fontWeight: FontWeight.normal, 
+                          lineHeight: 1, 
+                          letterSpacing: -1, 
+                          color: AppColors.alertBlue
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+            )
+          )
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BaseScreen(
@@ -161,7 +235,7 @@ class _RegisterProfileFourthScreenState extends State<RegisterProfileFourthScree
                       titleColor: AppColors.primaryWhite, 
                       onTap: () { 
                         if(isCompleted()){
-                          Navigator.pushNamed(context, "/registerprofile_group");
+                          saveSecondStep();
                         }     
                       }
                     ),
