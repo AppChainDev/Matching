@@ -66,30 +66,30 @@ class _GroupEditWidgetState extends State<GroupEditWidget> {
             child: ListView(
               scrollDirection: Axis.horizontal,
               children: [
-                GroupItem(
-                  inChecked: false, 
-                  id: community1, 
-                  text: ConstFile.sportsGroupDatas[community1].text, 
-                  image: ConstFile.sportsGroupDatas[community1].image
-                ),
-                GroupItem(
-                  inChecked: false, 
-                  id: community2, 
-                  text: ConstFile.personalityGroupDatas[community2].text, 
-                  image: ConstFile.personalityGroupDatas[community2].image
-                ),
-                GroupItem(
-                  inChecked: false, 
-                  id: community3, 
-                  text: ConstFile.outingDetailDatas[community3].text, 
-                  image: ConstFile.outingDetailDatas[community3].image
-                ),
-                GroupItem(
-                  inChecked: false, 
-                  id: community4, 
-                  text: ConstFile.lifeStyleDatas[community4].text, 
-                  image: ConstFile.lifeStyleDatas[community4].image
-                )
+                // GroupItem(
+                //   inChecked: false, 
+                //   id: community1, 
+                //   text: ConstFile.sportsGroupDatas[community1].name, 
+                //   image: ConstFile.sportsGroupDatas[community1].image
+                // ),
+                // GroupItem(
+                //   inChecked: false, 
+                //   id: community2, 
+                //   text: ConstFile.personalityGroupDatas[community2].name, 
+                //   image: ConstFile.personalityGroupDatas[community2].image
+                // ),
+                // GroupItem(
+                //   inChecked: false, 
+                //   id: community3, 
+                //   text: ConstFile.outingDetailDatas[community3].name, 
+                //   image: ConstFile.outingDetailDatas[community3].image
+                // ),
+                // GroupItem(
+                //   inChecked: false, 
+                //   id: community4, 
+                //   text: ConstFile.lifeStyleDatas[community4].name, 
+                //   image: ConstFile.lifeStyleDatas[community4].image
+                // )
               ],
             ),
           ),

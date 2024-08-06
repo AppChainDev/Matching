@@ -3,8 +3,12 @@ import 'package:drone/components/base_screen.dart';
 import 'package:drone/components/custom_button.dart';
 import 'package:drone/components/custom_container.dart';
 import 'package:drone/components/custom_text.dart';
-import 'package:drone/utils/const_file.dart';
+import 'package:drone/models/category_model.dart';
+import 'package:drone/models/community_model.dart';
+import 'package:drone/state/user_state.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:provider/provider.dart';
 
 class RegisterProfileGroupScreen extends StatefulWidget {
 
@@ -15,13 +19,14 @@ class RegisterProfileGroupScreen extends StatefulWidget {
 }
 
 class _RegisterProfileGroupScreenState extends State<RegisterProfileGroupScreen> {
-  final List<int> community1 = [];
-  final List<int> community2 = [];
-  final List<int> community3 = [];
-  final List<int> community4 = [];
+  final List<int> community = [];
+  List<CommunityModel> groupsArray = [];
+  List<Category> categoryList = [];
   @override
   void initState() {
     super.initState();
+    getGroupList();
+    getCategoryList();
   }
 
   @override
@@ -29,37 +34,110 @@ class _RegisterProfileGroupScreenState extends State<RegisterProfileGroupScreen>
     super.dispose();
   }
   
-  void handleCommunityChanged1(int id) {
+  void handleCommunityChanged(int id) {
     setState(() {
-      community1.clear();
-      community1.add(id);
-    });
-  }
-  void handleCommunityChanged2(int id) {
-    setState(() {
-      community2.clear();
-      community2.add(id);
-    });
-  }
-  void handleCommunityChanged3(int id) {
-    setState(() {
-      community3.clear();
-      community3.add(id);
-    });
-  }
-  void handleCommunityChanged4(int id) {
-    setState(() {
-      community4.clear();
-      community4.add(id);
+      if(community.contains(id)){
+        community.remove(id);
+      }else{
+        community.add(id);
+      }
     });
   }
   bool isCompleted(){
-    if(community1.isNotEmpty && community2.isNotEmpty && community3.isNotEmpty && community4.isNotEmpty){
+    if(community.length >= 3 ){
       return true;
     }else{
       return false;
     }
   }
+
+  Future<void> getGroupList() async{
+    await Provider.of<UserState>(context, listen: false).getGroupList();
+    setState(() {
+      groupsArray = Provider.of<UserState>(context, listen: false).groups;
+    });                                 
+  }
+
+  Future<void> getCategoryList() async{
+    await Provider.of<UserState>(context, listen: false).getCategoryList();
+    setState(() {
+      categoryList = Provider.of<UserState>(context, listen: false).categories;
+    });                                 
+  }
+
+  Future<void> saveGroups() async{
+    final result = await Provider.of<UserState>(context, listen: false).saveGroups(community);
+    if (result) {
+      community.clear();
+      Navigator.pushNamed(context, "/preference");
+    } else {
+      showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (_) => Center( // Aligns the container to center
+          child: Container( // A simplified version of dialog. 
+            width: 300,
+            height: 150,
+            padding: const EdgeInsets.only(top:35),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: AppColors.primaryWhite
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  "グループ登録に失敗しました。",
+                  textAlign:TextAlign.center,
+                  style: TextStyle(
+                    color: AppColors.primaryBlack,
+                    fontWeight: FontWeight.normal,
+                    fontSize:15,
+                    letterSpacing: -1,
+                    decoration: TextDecoration.none
+                  ),
+                ),
+                const SizedBox(
+                  height: 24,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Container(
+                    width: 343,
+                    height: 42,
+                    margin: const EdgeInsets.only(top: 5),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        top: BorderSide(
+                          color: AppColors.secondaryGray.withOpacity(0.5)
+                        )
+                      )
+                    ),
+                    child: MaterialButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Center(
+                        child: CustomText(
+                          text: "OK", 
+                          fontSize: 15, 
+                          fontWeight: FontWeight.normal, 
+                          lineHeight: 1, 
+                          letterSpacing: -1, 
+                          color: AppColors.alertBlue
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+            )
+          )
+      );
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +164,7 @@ class _RegisterProfileGroupScreenState extends State<RegisterProfileGroupScreen>
                       titleColor: AppColors.primaryWhite, 
                       onTap: () { 
                         if(isCompleted()){
-                          Navigator.pushNamed(context, "/preference");
+                          saveGroups();
                         }     
                       }
                     ),
@@ -98,159 +176,59 @@ class _RegisterProfileGroupScreenState extends State<RegisterProfileGroupScreen>
           Center(
              child: CustomContainer(
               height: MediaQuery.of(context).size.height - 70,
-               child: SingleChildScrollView(
+               child: groupsArray.isNotEmpty ? SingleChildScrollView(
                  child: Padding(
                    padding: const EdgeInsets.only(top:227, bottom: 50),
                    child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                     children: [
-// ---------sport-------------
-                      Padding(
-                        padding: const EdgeInsets.only(top:20, left: 30, right: 30, bottom: 10),
-                        child: CustomText(
-                          text: "趣味", 
-                          fontSize: 12, 
-                          fontWeight: FontWeight.normal, 
-                          lineHeight: 1, 
-                          letterSpacing: 1, 
-                          color: AppColors.primaryBlack
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 38, right: 38),
-                        child: Column(
-                          children: [
-                            Wrap(
-                              crossAxisAlignment: WrapCrossAlignment.start,
-                              spacing: 13,
-                              children: ConstFile.sportsGroupDatas.map((data){
-                                return GestureDetector(
-                                  onTap: () {
-                                    handleCommunityChanged1(data.id);
-                                  },
-                                  child: GroupItem(
-                                    inChecked: community1.contains(data.id), 
-                                    id: data.id, 
-                                    text: data.text, 
-                                    image: data.image
-                                  ),
-                                );
-                              }).toList(),
+                     children: categoryList.map((item){
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(top:20, left: 30, right: 30, bottom: 10),
+                            child: CustomText(
+                              text: item.label, 
+                              fontSize: 12, 
+                              fontWeight: FontWeight.normal, 
+                              lineHeight: 1, 
+                              letterSpacing: 1, 
+                              color: AppColors.primaryBlack
                             ),
-                          ],
-                        ),
-                      ),
-// ---------personality-------------
-                      Padding(
-                        padding: const EdgeInsets.only(left: 30, right: 30, bottom: 10),
-                        child: CustomText(
-                          text: "性格", 
-                          fontSize: 12, 
-                          fontWeight: FontWeight.normal, 
-                          lineHeight: 1, 
-                          letterSpacing: 1, 
-                          color: AppColors.primaryBlack
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 38, right: 38),
-                        child: Column(
-                          children: [
-                            Wrap(
-                              crossAxisAlignment: WrapCrossAlignment.start,
-                              spacing: 13,
-                              children: ConstFile.personalityGroupDatas.map((data){
-                                return GestureDetector(
-                                  onTap: () {
-                                    handleCommunityChanged2(data.id);
-                                  },
-                                  child: GroupItem(
-                                    inChecked: community2.contains(data.id), 
-                                    id: data.id, 
-                                    text: data.text, 
-                                    image: data.image
-                                  ),
-                                );
-                              }).toList(),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 38, right: 38),
+                            child: Column(
+                              children: [
+                                Wrap(
+                                  crossAxisAlignment: WrapCrossAlignment.start,
+                                  spacing: 13,
+                                  children: groupsArray.where((groupItem){
+                                    return groupItem.categoryId == item.id;
+                                  }).map((data){
+                                    return GestureDetector(
+                                      onTap: () {
+                                        handleCommunityChanged(data.id);
+                                      },
+                                      child: GroupItem(
+                                        inChecked: community.contains(data.id), 
+                                        id: data.id, 
+                                        text: data.name, 
+                                        image: data.image
+                                      ),
+                                    );
+                                  }).toList(),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      ),
-// ---------outing detail-------------
-                      Padding(
-                        padding: const EdgeInsets.only(top:20, left: 30, right: 30, bottom: 10),
-                        child: CustomText(
-                          text: "おでかけ内容", 
-                          fontSize: 12, 
-                          fontWeight: FontWeight.normal, 
-                          lineHeight: 1, 
-                          letterSpacing: 1, 
-                          color: AppColors.primaryBlack
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 38, right: 38),
-                        child: Column(
-                          children: [
-                            Wrap(
-                              crossAxisAlignment: WrapCrossAlignment.start,
-                              spacing: 13,
-                              children: ConstFile.outingDetailDatas.map((data){
-                                return GestureDetector(
-                                  onTap: () {
-                                    handleCommunityChanged3(data.id);
-                                  },
-                                  child: GroupItem(
-                                    inChecked: community3.contains(data.id), 
-                                    id: data.id, 
-                                    text: data.text, 
-                                    image: data.image
-                                  ),
-                                );
-                              }).toList(),
-                            ),
-                          ],
-                        ),
-                      ),
-// ---------lifeStyle-------------
-                      Padding(
-                        padding: const EdgeInsets.only(top:20, left: 30, right: 30, bottom: 10),
-                        child: CustomText(
-                          text: "ライフスタイル", 
-                          fontSize: 12, 
-                          fontWeight: FontWeight.normal, 
-                          lineHeight: 1, 
-                          letterSpacing: 1, 
-                          color: AppColors.primaryBlack
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 38, right: 38),
-                        child: Column(
-                          children: [
-                            Wrap(
-                              crossAxisAlignment: WrapCrossAlignment.start,
-                              spacing: 13,
-                              children: ConstFile.lifeStyleDatas.map((data){
-                                return GestureDetector(
-                                  onTap: () {
-                                    handleCommunityChanged4(data.id);
-                                  },
-                                  child: GroupItem(
-                                    inChecked: community4.contains(data.id), 
-                                    id: data.id, 
-                                    text: data.text, 
-                                    image: data.image
-                                  ),
-                                );
-                              }).toList(),
-                            ),
-                          ],
-                        ),
-                      ),
-                     ],
-                   ),
+                          ),
+                        ],
+                      );
+                     }).toList()
+                   )
                  ),
+               ):const Center(
+                  child: CircularProgressIndicator()
                ),
              ),
            ),
@@ -350,9 +328,14 @@ class GroupItem extends StatelessWidget {
             ),
             child: Stack(
               children: [
-                Image.asset(
-                  "assets/images/$image",
-                  fit: BoxFit.cover
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    image: DecorationImage(
+                      image: NetworkImage("${dotenv.get('BASE_URL')}/img/$image"),
+                    fit: BoxFit.cover,
+                    )
+                  ),
                 ),
                 if(inChecked)
                   Center(

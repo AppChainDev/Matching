@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:drone/models/category_model.dart';
+import 'package:drone/models/community_model.dart';
 import 'package:flutter/material.dart';
 import '../models/user_model.dart';
 import '../services/userapi_service.dart';
@@ -8,11 +10,15 @@ class UserState with ChangeNotifier {
   UserModel? _user;
   final UserApiService userApiService;
   bool _isAuthenticated = false;
+  List<CommunityModel> _groups = [];
+  List<Category> _categories = [];
 
   UserState({required this.userApiService});
 
   UserModel? get user => _user;
   bool get isAuthenticated => _isAuthenticated;
+  List<CommunityModel> get groups => _groups;
+  List<Category> get categories => _categories;
 
   Future<bool> phoneNumberSend(String phoneNumber) async {
     return await userApiService.phoneNumberSend(phoneNumber);
@@ -42,14 +48,36 @@ class UserState with ChangeNotifier {
     return await userApiService.saveAvatar1(avatar);
   }
 
-
-  Future<void> login(String email, String password) async {
-    _user = await userApiService.login(email, password);
-    if (_user?.id != 0) {
-      _isAuthenticated = true;
-    }
+  Future<void> getGroupList() async {
+    _groups = await userApiService.getGroupList();
     notifyListeners();
   }
+
+  Future<void> getCategoryList() async {
+    _categories = await userApiService.getCategoryList();
+    notifyListeners();
+  }
+  Future<bool> saveGroups(List<int> groups) async {
+    return await userApiService.saveGroups(groups);
+  }
+
+  Future<bool> saveIntroduce(String introduce) async {
+    return await userApiService.saveIntroduce(introduce);
+  }
+
+  Future<void> getUserInformation() async {
+    _user = await userApiService.getUserInformation();
+    notifyListeners();
+  }
+
+
+  // Future<void> login(String email, String password) async {
+  //   _user = await userApiService.login(email, password);
+  //   if (_user?.id != 0) {
+  //     _isAuthenticated = true;
+  //   }
+  //   notifyListeners();
+  // }
 
   Future<bool> register(String email) async {
     try {

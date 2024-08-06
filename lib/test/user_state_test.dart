@@ -10,7 +10,7 @@ void main() {
 
     expect(userState.isAuthenticated, false);
 
-    userState.login('email', 'password');
+    // userState.login('email', 'password');
     expect(userState.isAuthenticated, true);
     // expect(userState.user, user);
 

@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:drone/models/category_model.dart';
+import 'package:drone/models/community_model.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:jwt_decoder/jwt_decoder.dart';
@@ -170,34 +172,215 @@ class UserApiService {
       return false;
     }
   }
-  
-  Future<UserModel> login(String email, String password) async {
+
+  Future<List<CommunityModel>> getGroupList() async{
+    String? accessToken = await storage.read(key: 'accessToken');
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/groups/getallgroups'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+    if(response.statusCode == 200){
+      List<CommunityModel> array = [];
+      var reasonData = jsonDecode(response.body);
+      for(var singleItem in reasonData){
+        CommunityModel item = CommunityModel(id: singleItem["id"], name: singleItem["name"], image: singleItem["image"], members: singleItem["members"], categoryId: singleItem["categoryId"]);
+        array.add(item);
+      }
+      return array;
+    }else{
+      return [];
+    }
+  }
+
+  Future<List<Category>> getCategoryList() async{
+    String? accessToken = await storage.read(key: 'accessToken');
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/groups/getallcategories'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+    if(response.statusCode == 200){
+      List<Category> array = [];
+      var reasonData = jsonDecode(response.body);
+      for(var singleItem in reasonData){
+        Category item = Category(id: singleItem["id"], label: singleItem["name"]);
+        array.add(item);
+      }
+      return array;
+    }else{
+      return [];
+    }
+  }
+
+  Future<bool> saveGroups(List<int> groups) async{
+    String? userId = await storage.read(key: 'userId');
+    String? accessToken = await storage.read(key: 'accessToken');
     final response = await http.post(
-      Uri.parse('$baseUrl/api/auth/login/'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'email': email, 'password': password}),
+      Uri.parse('$baseUrl/api/groups/save_groups'),
+      body: jsonEncode(<String, String>{
+        'id': userId!,
+        'groups': jsonEncode(groups)
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
     );
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      String accessToken = data['access_token'];
-      String refreshToken = data['refresh_token'];
-      await storage.write(key: 'accessToken', value: accessToken);
-      await storage.write(key: 'refreshToken', value: refreshToken);
-      return UserModel.fromJson(data);
+      return true;
     } else {
+      return false;
+    }
+  }
+
+  Future<bool> saveIntroduce(String introduce) async{
+    String? userId = await storage.read(key: 'userId');
+    String? accessToken = await storage.read(key: 'accessToken');
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/auth/save_introduce'),
+      body: jsonEncode(<String, String>{
+        'id': userId!,
+        'introduce': introduce
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<UserModel> getUserInformation() async{
+    String? userId = await storage.read(key: 'userId');
+    String? accessToken = await storage.read(key: 'accessToken');
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/auth/getuser?userId=$userId'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+    if(response.statusCode == 200){
+      var responseData = jsonDecode(response.body);
+      List<String> avatars = (responseData["avatars"] as List).map((avatar) => avatar.toString()).toList();
+      List<int> groups = (responseData["groups"] as List).map((group) => int.parse(group.toString())).toList();
+      List<String> questions = (responseData["questions"] as List).map((question) => question.toString()).toList();
+      List<String> phrases = (responseData["phrases"] as List).map((phrase) => phrase.toString()).toList();
+      var str  = responseData;
+      return UserModel(
+        id: responseData["id"], 
+        name: responseData["name"], 
+        age: responseData["age"], 
+        gender: responseData["gender"], 
+        prefectureId: responseData["prefectureId"], 
+        height: responseData["height"], 
+        bodyType: responseData["bodyType"], 
+        attitude: responseData["attitude"], 
+        avatars: avatars, 
+        blood: responseData["blood"], 
+        birth: responseData["birth"], 
+        education: responseData["birth"], 
+        jobType: responseData["education"], 
+        income: responseData["income"], 
+        materialHistory: responseData["materialHistory"], 
+        children: responseData["children"], 
+        housework: responseData["housework"], 
+        hopeMeet: responseData["hopeMeet"], 
+        dateCost: responseData["dateCost"], 
+        holiday: responseData["holiday"],
+        roomate: responseData["roomate"], 
+        alcohol: responseData["alcohol"], 
+        smoking: responseData["smoking"], 
+        saving: responseData["saving"], 
+        favoriteImage: responseData["favoriteImage"], 
+        favoriteDescription: responseData["favoriteDescription"], 
+        groups: groups,
+        isVerify: responseData["isVerify"], 
+        pointCount: responseData["pointCount"], 
+        questions: questions, 
+        phrases: phrases, 
+        deadline: responseData["deadline"], 
+        createdAt: responseData["createdAt"], 
+        updateAt: responseData["updatedAt"]
+      );
+    }else{
       return UserModel(
         id: 0, 
         name: '', 
-        email: '', 
-        furigana: '', 
-        birthday: '', 
+        age: 0, 
         gender: 0, 
-        company: '', 
-        isPilot: null, 
-        isActivated: null, 
-        createdAt: '');
+        prefectureId: 0, 
+        height: 0, 
+        bodyType: 0, 
+        attitude: 0, 
+        avatars: [], 
+        blood: 0, 
+        birth: 0, 
+        education: 0, 
+        jobType: 0, 
+        income: 0, 
+        materialHistory: 0, 
+        children: 0, 
+        housework: 0, 
+        hopeMeet: 0, 
+        dateCost: 0, 
+        holiday: null,
+        roomate: null, 
+        alcohol: null, 
+        smoking: null, 
+        saving: null, 
+        favoriteImage: '', 
+        favoriteDescription: '', 
+        groups: [],
+        isVerify: false, 
+        pointCount: 0, 
+        questions: null, 
+        phrases: [], 
+        deadline: '', 
+        createdAt: '', 
+        updateAt: ''
+      );
     }
   }
+
+
+  
+  // Future<UserModel> login(String email, String password) async {
+  //   final response = await http.post(
+  //     Uri.parse('$baseUrl/api/auth/login/'),
+  //     headers: {'Content-Type': 'application/json'},
+  //     body: jsonEncode({'email': email, 'password': password}),
+  //   );
+  //   if (response.statusCode == 200) {
+  //     final data = jsonDecode(response.body);
+  //     String accessToken = data['access_token'];
+  //     String refreshToken = data['refresh_token'];
+  //     await storage.write(key: 'accessToken', value: accessToken);
+  //     await storage.write(key: 'refreshToken', value: refreshToken);
+  //     return UserModel.fromJson(data);
+  //   } else {
+  //     return UserModel(
+  //       id: 0, 
+  //       name: '', 
+  //       email: '', 
+  //       furigana: '', 
+  //       birthday: '', 
+  //       gender: 0, 
+  //       company: '', 
+  //       isPilot: null, 
+  //       isActivated: null, 
+  //       createdAt: '');
+  //   }
+  // }
 
   Future<bool> register(String email) async {
     final response = await http.post(

@@ -4,7 +4,9 @@ import 'package:drone/components/base_screen.dart';
 import 'package:drone/components/custom_button.dart';
 import 'package:drone/components/custom_container.dart';
 import 'package:drone/components/custom_text.dart';
+import 'package:drone/state/user_state.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 class MaleMyPage extends StatefulWidget {
 
   const MaleMyPage({super.key});
@@ -20,6 +22,7 @@ class _MaleMyPageState extends State<MaleMyPage> {
   @override
   void initState() {
     super.initState();
+    getUserInformation();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       notificationAlert();
     });
@@ -28,6 +31,10 @@ class _MaleMyPageState extends State<MaleMyPage> {
   @override
   void dispose() {
     super.dispose();
+  }
+
+  Future getUserInformation() async{
+    await Provider.of<UserState>(context, listen: false).getUserInformation();
   }
 
   void notificationAlert() {

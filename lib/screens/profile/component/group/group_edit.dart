@@ -146,56 +146,56 @@ class _GroupEditScreenState extends State<GroupEditScreen> {
                         padding: const EdgeInsets.only(left: 20, right: 38),
                         child: Column(
                           children: [
-                            Wrap(
-                              crossAxisAlignment: WrapCrossAlignment.start,
-                              spacing: 13,
-                              children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    handleCommunityChanged1(1);
-                                  },
-                                  child: DeleteGroupItem(
-                                    inChecked: community1.contains(1), 
-                                    id: 1, 
-                                    text: ConstFile.sportsGroupDatas[1].text, 
-                                    image: ConstFile.sportsGroupDatas[1].image
-                                  ),
-                                ),
-                                GestureDetector(
-                                  onTap: () {
-                                    handleCommunityChanged2(1);
-                                  },
-                                  child: DeleteGroupItem(
-                                    inChecked: community2.contains(1), 
-                                    id: 1, 
-                                    text: ConstFile.personalityGroupDatas[1].text, 
-                                    image: ConstFile.personalityGroupDatas[1].image
-                                  ),
-                                ),
-                                GestureDetector(
-                                  onTap: () {
-                                    handleCommunityChanged3(1);
-                                  },
-                                  child: DeleteGroupItem(
-                                    inChecked: community3.contains(1), 
-                                    id: 1, 
-                                    text: ConstFile.outingDetailDatas[1].text, 
-                                    image: ConstFile.outingDetailDatas[1].image
-                                  ),
-                                ),
-                                GestureDetector(
-                                  onTap: () {
-                                    handleCommunityChanged4(1);
-                                  },
-                                  child: DeleteGroupItem(
-                                    inChecked: community4.contains(1), 
-                                    id: 1, 
-                                    text: ConstFile.lifeStyleDatas[1].text, 
-                                    image: ConstFile.lifeStyleDatas[1].image
-                                  ),
-                                ),
-                              ],
-                            ),
+                            // Wrap(
+                            //   crossAxisAlignment: WrapCrossAlignment.start,
+                            //   spacing: 13,
+                            //   children: [
+                            //     GestureDetector(
+                            //       onTap: () {
+                            //         handleCommunityChanged1(1);
+                            //       },
+                            //       child: DeleteGroupItem(
+                            //         inChecked: community1.contains(1), 
+                            //         id: 1, 
+                            //         text: ConstFile.sportsGroupDatas[1].name, 
+                            //         image: ConstFile.sportsGroupDatas[1].image
+                            //       ),
+                            //     ),
+                            //     GestureDetector(
+                            //       onTap: () {
+                            //         handleCommunityChanged2(1);
+                            //       },
+                            //       child: DeleteGroupItem(
+                            //         inChecked: community2.contains(1), 
+                            //         id: 1, 
+                            //         text: ConstFile.personalityGroupDatas[1].name, 
+                            //         image: ConstFile.personalityGroupDatas[1].image
+                            //       ),
+                            //     ),
+                            //     GestureDetector(
+                            //       onTap: () {
+                            //         handleCommunityChanged3(1);
+                            //       },
+                            //       child: DeleteGroupItem(
+                            //         inChecked: community3.contains(1), 
+                            //         id: 1, 
+                            //         text: ConstFile.outingDetailDatas[1].name, 
+                            //         image: ConstFile.outingDetailDatas[1].image
+                            //       ),
+                            //     ),
+                            //     GestureDetector(
+                            //       onTap: () {
+                            //         handleCommunityChanged4(1);
+                            //       },
+                            //       child: DeleteGroupItem(
+                            //         inChecked: community4.contains(1), 
+                            //         id: 1, 
+                            //         text: ConstFile.lifeStyleDatas[1].name, 
+                            //         image: ConstFile.lifeStyleDatas[1].image
+                            //       ),
+                            //     ),
+                            //   ],
+                            // ),
                           ],
                         ),
                       ),

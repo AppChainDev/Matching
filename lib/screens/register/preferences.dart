@@ -4,25 +4,9 @@ import 'package:drone/components/custom_button.dart';
 import 'package:drone/components/custom_container.dart';
 import 'package:flutter/material.dart';
 
-class PreferenceScreen extends StatefulWidget {
+class PreferenceScreen extends StatelessWidget {
 
   const PreferenceScreen({super.key});
-
-  @override
-  State<PreferenceScreen> createState() => _PreferenceScreenState();
-}
-
-class _PreferenceScreenState extends State<PreferenceScreen> {
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,10 +37,7 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
                       color: AppColors.secondaryGreen, 
                       titleColor: AppColors.primaryWhite, 
                       onTap: () { 
-                          Navigator.pushNamed(context, "/introduce");
-                        // if(isCompleted()){
-                        //   Navigator.pushNamed(context, "/registerprofile_photo");
-                        // }     
+                        Navigator.pushNamed(context, "/introduce");    
                       }
                     ),
                   ),
