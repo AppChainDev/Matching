@@ -146,7 +146,7 @@ class ConstFile {
     "平日",
     "不定期",
   ];
-  static const List<String> roommateItem= <String>[
+  static const List<String> roomateItem= <String>[
     "一人暮らし",
     "実家暮らし",
     "社宅",

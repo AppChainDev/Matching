@@ -1,6 +1,8 @@
 import 'package:drone/components/app_colors.dart';
 import 'package:drone/components/custom_text.dart';
+import 'package:drone/state/user_state.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class QuestionsWidget extends StatelessWidget{
   const QuestionsWidget({
@@ -53,7 +55,7 @@ class QuestionsWidget extends StatelessWidget{
                 onTap: () {
                   Navigator.pushNamed(context, "/question1");
                 },
-                child: const QuestionsItem()
+                child: QuestionsItem(text:Provider.of<UserState>(context, listen: false).user!.questions![0])
               ),
               CustomText(
                 text: "連絡先の交換はどのタイミング？", 
@@ -67,7 +69,7 @@ class QuestionsWidget extends StatelessWidget{
                 onTap: () {
                   Navigator.pushNamed(context, "/question2");
                 },
-                child: const QuestionsItem()
+                child: QuestionsItem(text:Provider.of<UserState>(context, listen: false).user!.questions![1])
               ),
               CustomText(
                 text: "パートナーとしてみたいことは？", 
@@ -81,13 +83,10 @@ class QuestionsWidget extends StatelessWidget{
                 onTap: () {
                   Navigator.pushNamed(context, "/question3");
                 },
-                child: const QuestionsItem()
+                child: QuestionsItem(text:Provider.of<UserState>(context, listen: false).user!.questions![2])
               ),
             ],
-          )
-
-          
-          
+          )  
         ],
       ),
     );
@@ -96,8 +95,9 @@ class QuestionsWidget extends StatelessWidget{
 
 
 class QuestionsItem extends StatelessWidget{
+  final String text;
   const QuestionsItem({
-    super.key
+    super.key, required this.text
  });
 
   @override
@@ -130,35 +130,49 @@ class QuestionsItem extends StatelessWidget{
             const SizedBox(
               width: 8,
             ),
-            CustomText(
-              text: "設定して5ポイントゲット！", 
-              fontSize: 14, 
-              fontWeight: FontWeight.normal, 
-              lineHeight: 1, 
-              letterSpacing: -1, 
-              color: AppColors.secondaryGray
-            ),
-            const SizedBox(
-              width: 40,
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
+            text == "null" || text == ""? Row(
               children: [
-                Icon(
-                  Icons.add,
-                  color: AppColors.secondaryBlue,
-                  size: 20,
-                ),
                 CustomText(
-                  text: "5P", 
+                  text: "設定して5ポイントゲット！", 
                   fontSize: 14, 
-                  fontWeight: FontWeight.bold, 
+                  fontWeight: FontWeight.normal, 
                   lineHeight: 1, 
-                  letterSpacing: 1, 
-                  color: AppColors.secondaryBlue
+                  letterSpacing: -1, 
+                  color: AppColors.secondaryGray
                 ),
+                const SizedBox(
+                  width: 40,
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.add,
+                      color: AppColors.secondaryBlue,
+                      size: 20,
+                    ),
+                    CustomText(
+                      text: "5P", 
+                      fontSize: 14, 
+                      fontWeight: FontWeight.bold, 
+                      lineHeight: 1, 
+                      letterSpacing: 1, 
+                      color: AppColors.secondaryBlue
+                    ),
+                  ],
+                )
               ],
-            )
+            ):Text(
+                text,
+                maxLines: 1,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.normal,
+                  height: 1,
+                  letterSpacing: -1,
+                  color: AppColors.secondaryGray
+                ),
+              )
           ],
         ),
       ),

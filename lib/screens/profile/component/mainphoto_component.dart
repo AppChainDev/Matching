@@ -2,9 +2,12 @@ import 'dart:io';
 
 import 'package:drone/components/app_colors.dart';
 import 'package:drone/components/custom_text.dart';
+import 'package:drone/state/user_state.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 class MainPhoto extends StatefulWidget{
   const MainPhoto({
@@ -47,6 +50,9 @@ class _MainPhotoState extends State<MainPhoto> {
           image[index] = croppedFile;
         }
       });
+      if(croppedFile != null){
+        await Provider.of<UserState>(context, listen: false).saveAvatar(croppedFile, index);
+      }
     }
   }
   Future<File?> cropImage(File imageFile) async {
@@ -107,7 +113,7 @@ class _MainPhotoState extends State<MainPhoto> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           image: DecorationImage(
-            image: AssetImage("assets/images/${widget.avatarList[0]}"),
+            image: NetworkImage("${dotenv.get('BASE_URL')}/img/${widget.avatarList[0]}"),
             fit: BoxFit.cover
           )
         )
@@ -139,8 +145,8 @@ class _MainPhotoState extends State<MainPhoto> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             image: DecorationImage(
-              image: AssetImage("assets/images/${widget.avatarList[index+1]}"),
-              fit: BoxFit.cover
+              image: NetworkImage("${dotenv.get('BASE_URL')}/img/${widget.avatarList[index]}"),
+              fit: BoxFit.cover,
             )
           )
         );
@@ -218,8 +224,8 @@ class _MainPhotoState extends State<MainPhoto> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: List.generate(4, (index) => 
                 GestureDetector(
-                  onTap: () => getImageFromGallery(index+1),
-                  child: addImage(index+1)
+                  onTap: () => getImageFromGallery(index),
+                  child: addImage(index)
                 )
               )
             )

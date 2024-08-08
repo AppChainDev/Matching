@@ -4,8 +4,11 @@ import 'package:drone/components/base_screen.dart';
 import 'package:drone/components/custom_button.dart';
 import 'package:drone/components/custom_container.dart';
 import 'package:drone/components/custom_text.dart';
+import 'package:drone/models/user_model.dart';
 import 'package:drone/state/user_state.dart';
+import 'package:drone/utils/const_file.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 class MaleMyPage extends StatefulWidget {
 
@@ -18,6 +21,8 @@ class MaleMyPage extends StatefulWidget {
 class _MaleMyPageState extends State<MaleMyPage> {
   final TextEditingController questionController= TextEditingController();
   int point = 50;
+  late UserModel user;
+  bool isLoding = false;
 
   @override
   void initState() {
@@ -35,6 +40,10 @@ class _MaleMyPageState extends State<MaleMyPage> {
 
   Future getUserInformation() async{
     await Provider.of<UserState>(context, listen: false).getUserInformation();
+    setState(() {
+      user =  Provider.of<UserState>(context, listen: false).user!;
+      isLoding = true;
+    });
   }
 
   void notificationAlert() {
@@ -166,7 +175,7 @@ class _MaleMyPageState extends State<MaleMyPage> {
                             ),
                             Center(
                               child: CustomText(
-                                  text: "$point", 
+                                  text: "${user.pointCount}", 
                                   fontSize: 17, 
                                   fontWeight: FontWeight.bold, 
                                   lineHeight: 1, 
@@ -536,7 +545,11 @@ class _MaleMyPageState extends State<MaleMyPage> {
   @override
   Widget build(BuildContext context) {
     return BaseScreen(
-      child: Stack(
+      child: !isLoding?
+       const CustomContainer(
+        child: Center(child: CircularProgressIndicator())
+        ):
+       Stack(
         children: [
           Center(
              child: CustomContainer(
@@ -566,9 +579,12 @@ class _MaleMyPageState extends State<MaleMyPage> {
                                         padding: const EdgeInsets.only(right: 7),
                                         child: Container(
                                           decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(50)
-                                          ),
-                                          child: Image.asset("assets/images/avatar1.png", fit:BoxFit.cover),
+                                            borderRadius: BorderRadius.circular(50),
+                                            image: DecorationImage(
+                                              image: NetworkImage("${dotenv.get('BASE_URL')}/img/${user.avatars[0]}"),
+                                              fit: BoxFit.cover,
+                                            )
+                                          )
                                         ),
                                       ),
                                       Container(
@@ -604,7 +620,7 @@ class _MaleMyPageState extends State<MaleMyPage> {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         CustomText(
-                                          text: "ゆうた", 
+                                          text: user.name, 
                                           fontSize: 17, 
                                           fontWeight: FontWeight.bold, 
                                           lineHeight: 1.5, 
@@ -614,7 +630,7 @@ class _MaleMyPageState extends State<MaleMyPage> {
                                         Row(
                                           children: [
                                             CustomText(
-                                              text: "55歳", 
+                                              text: "${user.age}歳", 
                                               fontSize: 10, 
                                               fontWeight: FontWeight.normal, 
                                               lineHeight: 1, 
@@ -625,7 +641,7 @@ class _MaleMyPageState extends State<MaleMyPage> {
                                               width: 10,
                                             ),
                                             CustomText(
-                                              text: "東京都", 
+                                              text: ConstFile.prefectureItems[user.prefectureId], 
                                               fontSize: 10, 
                                               fontWeight: FontWeight.normal, 
                                               lineHeight: 1, 
@@ -700,7 +716,7 @@ class _MaleMyPageState extends State<MaleMyPage> {
                                             color: AppColors.primaryBlack
                                           ),
                                           CustomText(
-                                            text: "未確認", 
+                                            text: user.isVerify?"確認済":"未確認", 
                                             fontSize: 17, 
                                             fontWeight: FontWeight.normal, 
                                             lineHeight: 1, 
@@ -731,7 +747,7 @@ class _MaleMyPageState extends State<MaleMyPage> {
                                           color: AppColors.primaryBlack
                                         ),
                                         CustomText(
-                                          text: "無料", 
+                                          text: user.isPay?"会員":"無料", 
                                           fontSize: 17, 
                                           fontWeight: FontWeight.normal, 
                                           lineHeight: 1, 
@@ -789,23 +805,24 @@ class _MaleMyPageState extends State<MaleMyPage> {
                               ),
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 10, right: 10),
-                            child: GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(context, "/planscreen");
-                              },
-                              child: Container(
-                                height: 350,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  image: const DecorationImage(
-                                    image: AssetImage("assets/images/sale_card.png")
+                          if(!user.isPay)
+                            Padding(
+                              padding: const EdgeInsets.only(left: 10, right: 10),
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.pushNamed(context, "/planscreen");
+                                },
+                                child: Container(
+                                  height: 350,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    image: const DecorationImage(
+                                      image: AssetImage("assets/images/sale_card.png")
+                                    )
                                   )
-                                )
+                                ),
                               ),
                             ),
-                          ),
                         ],
                       ),
                     ),

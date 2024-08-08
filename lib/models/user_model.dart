@@ -3,6 +3,7 @@ class UserModel {
   final String name;
   final int age;
   final int gender;
+  final String introduce;
   final int prefectureId;
   final int height;
   final int bodyType;
@@ -27,6 +28,7 @@ class UserModel {
   final String? favoriteDescription;
   final List<int> groups;
   final bool isVerify;
+  final bool isPay;
   final int pointCount;
   final List<String>? questions;
   final List<String> phrases;
@@ -39,6 +41,7 @@ class UserModel {
     required this.name, 
     required this.age, 
     required this.gender, 
+    required this.introduce, 
     required this.prefectureId, 
     required this.height, 
     required this.bodyType, 
@@ -63,6 +66,7 @@ class UserModel {
     required this.favoriteDescription, 
     required this.groups, 
     required this.isVerify, 
+    required this.isPay, 
     required this.pointCount, 
     required this.questions, 
     required this.phrases, 

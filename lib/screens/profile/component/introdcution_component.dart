@@ -1,12 +1,24 @@
 import 'package:drone/components/app_colors.dart';
 import 'package:drone/components/custom_text.dart';
+import 'package:drone/state/user_state.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class IntroductionWidget extends StatelessWidget{
+class IntroductionWidget extends StatefulWidget{
   const IntroductionWidget({
     super.key
  });
 
+  @override
+  State<IntroductionWidget> createState() => _IntroductionWidgetState();
+}
+
+class _IntroductionWidgetState extends State<IntroductionWidget> {
+
+  @override
+  void initState() {
+    super.initState();
+  }
   @override
   Widget build(BuildContext context){
     return Container(
@@ -34,7 +46,7 @@ class IntroductionWidget extends StatelessWidget{
           Expanded(
             child: SingleChildScrollView(
               child: CustomText(
-                text: "私は、日本に住んでいる男性です。初めてアプリを利用しました。\n好きなことは登山と釣りをすることです。休日はよくキャンプに出かけます。いつもは一人ですが、いい人がいたら一緒に行きたいです。他には、仕事はIT系です。土日が休みなので同じ休みの日の人がいたら嬉しいです。\nとにかく素敵な人と出会いって結婚をスタートしたいです。", 
+                text: Provider.of<UserState>(context, listen: false).user!.introduce, 
                 fontSize: 14, 
                 fontWeight: FontWeight.normal, 
                 lineHeight: 1.5, 
@@ -54,8 +66,8 @@ class IntroductionWidget extends StatelessWidget{
                   borderRadius: BorderRadius.circular(50),
                 ),
                 child: MaterialButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, "/edit_introduce");
+                  onPressed: () async{
+                    await Navigator.pushNamed(context, "/edit_introduce");
                   },
                   child: Center(
                     child: CustomText(

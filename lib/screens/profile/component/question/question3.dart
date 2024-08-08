@@ -2,7 +2,9 @@ import 'package:drone/components/app_colors.dart';
 import 'package:drone/components/base_screen.dart';
 import 'package:drone/components/custom_container.dart';
 import 'package:drone/components/custom_text.dart';
+import 'package:drone/state/user_state.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class Question3Screen extends StatefulWidget {
   const Question3Screen({super.key});
@@ -12,26 +14,108 @@ class Question3Screen extends StatefulWidget {
 }
 
 class _Question3ScreenState extends State<Question3Screen> {
-  final TextEditingController questionController = TextEditingController();
+  final TextEditingController answerController = TextEditingController();
   int textCount = 0;
 
   @override
   void initState() {
     super.initState();
-    questionController.addListener(_updateButtonColor);
+    getAnswer();
+    answerController.addListener(_updateButtonColor);
   }
 
   @override
   void dispose() {
-    questionController.removeListener(_updateButtonColor);
-    questionController.dispose();
+    answerController.removeListener(_updateButtonColor);
+    answerController.dispose();
     super.dispose();
+  }
+
+  Future getAnswer() async{
+    setState(() {
+      String answer = Provider.of<UserState>(context, listen: false).user!.questions![2];
+      answerController.text = answer!="null" ? answer : "";
+      textCount = answerController.text.length;
+    });
   }
 
   void _updateButtonColor() {
     setState(() {
-      textCount = questionController.text.length;
+      textCount = answerController.text.length;
     });
+  }
+
+  Future saveAnswer () async{
+    bool isSaved = await Provider.of<UserState>(context, listen: false).saveQuestionAnswer(answerController.text, 3);
+    if(isSaved){
+      await Provider.of<UserState>(context, listen: false).getUserInformation();
+      Navigator.pushNamed(context, "/edit_profile");
+    } else {
+      showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (_) => Center( // Aligns the container to center
+          child: Container( // A simplified version of dialog. 
+            width: 300,
+            height: 150,
+            padding: const EdgeInsets.only(top:35),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: AppColors.primaryWhite
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  "質問への回答を保存するのに失敗しました。",
+                  textAlign:TextAlign.center,
+                  style: TextStyle(
+                    color: AppColors.primaryBlack,
+                    fontWeight: FontWeight.normal,
+                    fontSize:15,
+                    letterSpacing: -1,
+                    decoration: TextDecoration.none
+                  ),
+                ),
+                const SizedBox(
+                  height: 24,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Container(
+                    width: 343,
+                    height: 42,
+                    margin: const EdgeInsets.only(top: 5),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        top: BorderSide(
+                          color: AppColors.secondaryGray.withOpacity(0.5)
+                        )
+                      )
+                    ),
+                    child: MaterialButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Center(
+                        child: CustomText(
+                          text: "OK", 
+                          fontSize: 15, 
+                          fontWeight: FontWeight.normal, 
+                          lineHeight: 1, 
+                          letterSpacing: -1, 
+                          color: AppColors.alertBlue
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+            )
+          )
+      );
+    }
   }
 
   @override
@@ -60,7 +144,7 @@ class _Question3ScreenState extends State<Question3Screen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           TextField(
-                            controller: questionController,
+                            controller: answerController,
                             textAlign: TextAlign.left,
                             keyboardType: TextInputType.multiline,
                             maxLines: null,
@@ -167,61 +251,7 @@ class _Question3ScreenState extends State<Question3Screen> {
                                   ),
                                   child: MaterialButton(
                                     onPressed: () {
-                                      // if(textCount < 150){
-                                      //   showDialog(
-                                      //     context: context,
-                                      //     builder: (context) => AlertDialog(
-                                      //       content: Padding(
-                                      //         padding: const EdgeInsets.only(top: 40, left: 20, right: 20),
-                                      //         child:Text(
-                                      //           "150文字以上の\n自己紹介文を書いてください。", 
-                                      //           textAlign: TextAlign.center,
-                                      //           style: TextStyle(
-                                      //             fontSize: 18, 
-                                      //             fontWeight: FontWeight.normal,
-                                      //             color: AppColors.primaryBlack,
-                                      //             letterSpacing: -1
-                                      //           ),
-                                      //         )
-                                      //       ),
-                                      //       actions: [
-                                      //         Container(
-                                      //           decoration: BoxDecoration(
-                                      //             border: Border(
-                                      //               top: BorderSide(
-                                      //                 width: 2,
-                                      //                 color: AppColors.primaryGray
-                                      //               )
-                                      //             )
-                                      //           ),
-                                      //           child: Center(
-                                      //             child: TextButton(
-                                      //               onPressed: () => Navigator.pop(context),
-                                      //               child: TextButton(
-                                      //                 onPressed: (){
-                                      //                   Navigator.pop(context);
-                                      //                 }, 
-                                      //                 child: CustomText(
-                                      //                   text: "OK", 
-                                      //                   fontSize: 20, 
-                                      //                   fontWeight: FontWeight.bold, 
-                                      //                   lineHeight: 1, 
-                                      //                   letterSpacing: 1, 
-                                      //                   color: AppColors.primaryBlue
-                                      //                 )
-                                      //               ),
-                                      //             ),
-                                      //           ),
-                                      //         ),
-                                      //       ],
-                                      //     ),
-                                      //   );
-                                      // }else{
-                                      //   Navigator.pushNamed(context, "/malemypage");
-                                      // }
-                                        // Navigator.pop(context);
-                                        
-                                        Navigator.pop(context);
+                                      saveAnswer();
                                     },
                                     child: Center(
                                       child: Text(

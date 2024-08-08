@@ -40,82 +40,73 @@ class _IntroduceScreenState extends State<IntroduceScreen> {
   Future moveMyPage() async{
     const storage = FlutterSecureStorage();
     String? gender =  await storage.read(key: 'gender');
-    // if (textCount < 150) {
-    //   showDialog(
-    //     barrierDismissible: false,
-    //     context: context,
-    //     builder: (_) => Center( // Aligns the container to center
-    //       child: Container( // A simplified version of dialog. 
-    //         width: 300,
-    //         height: 150,
-    //         padding: const EdgeInsets.only(top:35),
-    //         decoration: BoxDecoration(
-    //           borderRadius: BorderRadius.circular(10),
-    //           color: AppColors.primaryWhite
-    //         ),
-    //         child: Column(
-    //           crossAxisAlignment: CrossAxisAlignment.center,
-    //           children: [
-    //             Text(
-    //               "150文字以上の\n自己紹介文を書いてください。",
-    //               textAlign:TextAlign.center,
-    //               style: TextStyle(
-    //                 color: AppColors.primaryBlack,
-    //                 fontWeight: FontWeight.normal,
-    //                 fontSize:15,
-    //                 letterSpacing: -1,
-    //                 decoration: TextDecoration.none
-    //               ),
-    //             ),
-    //             const SizedBox(
-    //               height: 24,
-    //             ),
-    //             Padding(
-    //               padding: const EdgeInsets.symmetric(horizontal: 10),
-    //               child: Container(
-    //                 width: 343,
-    //                 height: 42,
-    //                 margin: const EdgeInsets.only(top: 5),
-    //                 decoration: BoxDecoration(
-    //                   border: Border(
-    //                     top: BorderSide(
-    //                       color: AppColors.secondaryGray.withOpacity(0.5)
-    //                     )
-    //                   )
-    //                 ),
-    //                 child: MaterialButton(
-    //                   onPressed: () {
-    //                     Navigator.pop(context);
-    //                   },
-    //                   child: Center(
-    //                     child: CustomText(
-    //                       text: "OK", 
-    //                       fontSize: 15, 
-    //                       fontWeight: FontWeight.normal, 
-    //                       lineHeight: 1, 
-    //                       letterSpacing: -1, 
-    //                       color: AppColors.alertBlue
-    //                     ),
-    //                   ),
-    //                 ),
-    //               ),
-    //             )
-    //           ],
-    //         ),
-    //         )
-    //       )
-    //   );
-    // }else{
-    //   final isSaved = await Provider.of<UserState>(context, listen: false).saveIntroduce(introduceController.text);
-    //   if (gender != null && isSaved) {
-    //     if (int.parse(gender) == 1) {
-    //       Navigator.pushNamed(context, "/malemypage");
-    //     } else {
-    //       Navigator.pushNamed(context, "/femalemypage");
-    //     }
-    //   }
-    // }
-    final isSaved = await Provider.of<UserState>(context, listen: false).saveIntroduce(introduceController.text);
+    if (textCount < 150) {
+      showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (_) => Center( // Aligns the container to center
+          child: Container( // A simplified version of dialog. 
+            width: 300,
+            height: 150,
+            padding: const EdgeInsets.only(top:35),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: AppColors.primaryWhite
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  "150文字以上の\n自己紹介文を書いてください。",
+                  textAlign:TextAlign.center,
+                  style: TextStyle(
+                    color: AppColors.primaryBlack,
+                    fontWeight: FontWeight.normal,
+                    fontSize:15,
+                    letterSpacing: -1,
+                    decoration: TextDecoration.none
+                  ),
+                ),
+                const SizedBox(
+                  height: 24,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Container(
+                    width: 343,
+                    height: 42,
+                    margin: const EdgeInsets.only(top: 5),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        top: BorderSide(
+                          color: AppColors.secondaryGray.withOpacity(0.5)
+                        )
+                      )
+                    ),
+                    child: MaterialButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Center(
+                        child: CustomText(
+                          text: "OK", 
+                          fontSize: 15, 
+                          fontWeight: FontWeight.normal, 
+                          lineHeight: 1, 
+                          letterSpacing: -1, 
+                          color: AppColors.alertBlue
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+            )
+          )
+      );
+    }else{
+      final isSaved = await Provider.of<UserState>(context, listen: false).saveIntroduce(introduceController.text);
       if (gender != null && isSaved) {
         if (int.parse(gender) == 1) {
           Navigator.pushNamed(context, "/malemypage");
@@ -123,7 +114,7 @@ class _IntroduceScreenState extends State<IntroduceScreen> {
           Navigator.pushNamed(context, "/femalemypage");
         }
       }
-
+    }
   }
 
   @override

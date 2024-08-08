@@ -1,8 +1,10 @@
 import 'package:drone/components/app_colors.dart';
 import 'package:drone/components/custom_text.dart';
 import 'package:drone/components/picker/cupertinopicker.dart';
+import 'package:drone/state/user_state.dart';
 import 'package:drone/utils/const_file.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ProfileInformationWidget extends StatefulWidget{
   const ProfileInformationWidget({
@@ -14,7 +16,7 @@ class ProfileInformationWidget extends StatefulWidget{
 }
 
 class _ProfileInformationWidgetState extends State<ProfileInformationWidget> {
-  String name = "ゆうた";
+  late String name;
   late int blood;
   late int education;
   late int birth;
@@ -30,130 +32,163 @@ class _ProfileInformationWidgetState extends State<ProfileInformationWidget> {
   late int bodyType;
   late int attitude;
   int? holiday;
-  int? roommate;
+  int? roomate;
   int? alcohol;
   int? smoking;
   int? savings;
 
+  bool isLoding = false;
+
   @override
   void initState() {
     super.initState();
-    setState(() {
-      blood = 0;
-      prefectureId = 12;
-      height = 150;
-      bodyType = 2;
-      birth = 12;
-      education = 1;
-      jobType = 14;
-      income = 3;
-      maritalHistory = 1;
-      attitude = 2;
-      children = 1;
-      housework = 1;
-      hopeMeet = 0;
-      dateCost = 2;
-    });
+    getProfileInformation();
   }
 
   @override
   void dispose() {
     super.dispose();
   }
-  void changePrefecture(int index) {
+
+  Future getProfileInformation() async{
+    setState(() {
+      // user =  Provider.of<UserState>(context, listen: false).user!;
+      blood = Provider.of<UserState>(context, listen: false).user!.blood;
+      prefectureId = Provider.of<UserState>(context, listen: false).user!.prefectureId;
+      height = Provider.of<UserState>(context, listen: false).user!.height;
+      bodyType = Provider.of<UserState>(context, listen: false).user!.bodyType;
+      birth = Provider.of<UserState>(context, listen: false).user!.birth;
+      education = Provider.of<UserState>(context, listen: false).user!.education;
+      jobType = Provider.of<UserState>(context, listen: false).user!.jobType;
+      income = Provider.of<UserState>(context, listen: false).user!.income;
+      maritalHistory = Provider.of<UserState>(context, listen: false).user!.materialHistory;
+      attitude = Provider.of<UserState>(context, listen: false).user!.attitude;
+      children = Provider.of<UserState>(context, listen: false).user!.children;
+      housework = Provider.of<UserState>(context, listen: false).user!.housework;
+      hopeMeet = Provider.of<UserState>(context, listen: false).user!.hopeMeet;
+      dateCost = Provider.of<UserState>(context, listen: false).user!.dateCost;
+      holiday = Provider.of<UserState>(context, listen: false).user!.holiday;
+      roomate = Provider.of<UserState>(context, listen: false).user!.roomate;
+      alcohol = Provider.of<UserState>(context, listen: false).user!.alcohol;
+      smoking = Provider.of<UserState>(context, listen: false).user!.smoking;
+      savings = Provider.of<UserState>(context, listen: false).user!.saving;
+      isLoding = true;
+    });
+  }
+
+  Future<void> changePrefecture(int index) async{
     setState(() {
       prefectureId = index;
     });
+    await Provider.of<UserState>(context, listen: false).updatePrefecture(prefectureId);
   }
-  void changeHeight(int index) {
+  Future<void> changeHeight(int index) async{
     setState(() {
       height = 130 + index; 
     });
+    await Provider.of<UserState>(context, listen: false).updateHeight(height);
   }
-  void changebodyType(int index) {
+  Future<void> changebodyType(int index) async{
     setState(() {
       bodyType = index;
     });
+    await Provider.of<UserState>(context, listen: false).updateBodyType(bodyType);
   }
-  void changeBlood(int index) {
+  Future<void> changeBlood(int index) async{
     setState(() {
       blood = index;
     });
+    await Provider.of<UserState>(context, listen: false).updateBlood(blood);
   }
-  void changeBirth(int index) {
+  Future<void> changeBirth(int index) async{
     setState(() {
       birth = index;
     });
+    await Provider.of<UserState>(context, listen: false).updateBirth(birth);
   }
-  void changeEducation(int index) {
+  Future<void> changeEducation(int index) async{
     setState(() {
       education = index;
     });
+    await Provider.of<UserState>(context, listen: false).updateEducation(education);
   }
-  void changeJobType(int index) {
+  Future<void> changeJobType(int index) async{
     setState(() {
       jobType = index;
     });
+    await Provider.of<UserState>(context, listen: false).updateJobType(jobType);
   }
-  void changeIncome(int index) {
+  Future<void> changeIncome(int index) async{
     setState(() {
       income = index;
     });
+    await Provider.of<UserState>(context, listen: false).updateIncome(income);
   }
-  void changeHoliday(int index) {
+  Future<void> changeHoliday(int index) async{
     setState(() {
       holiday = index;
     });
+    await Provider.of<UserState>(context, listen: false).updateHoliday(holiday!);
   }
-  void changeRoomate(int index) {
+  Future<void> changeRoomate(int index) async{
     setState(() {
-      roommate = index;
+      roomate = index;
     });
+    await Provider.of<UserState>(context, listen: false).updateRoomate(roomate!);
   }
-  void changeAlcohol(int index) {
+  Future<void> changeAlcohol(int index) async{
     setState(() {
       alcohol = index;
     });
+    await Provider.of<UserState>(context, listen: false).updateAlcohol(alcohol!);
   }
-  void changeSmoking(int index) {
+  Future<void> changeSmoking(int index) async{
     setState(() {
       smoking = index;
     });
+    await Provider.of<UserState>(context, listen: false).updateSmoking(smoking!);
   }
-  void changeMaritalHistory(int index) {
+  Future<void> changeMaritalHistory(int index) async{
     setState(() {
       maritalHistory = index;
     });
+    await Provider.of<UserState>(context, listen: false).updateMaritalHistory(maritalHistory);
   }
-  void changeAttitude(int index) {
+  Future<void> changeAttitude(int index) async{
     setState(() {
       attitude = index;
     });
+    await Provider.of<UserState>(context, listen: false).updateAttitude(attitude);
   }
-  void changeChildren(int index) {
+  Future<void> changeChildren(int index) async{
     setState(() {
       children =  index;
     });
+    await Provider.of<UserState>(context, listen: false).updateChildren(children);
   }
-  void changeHousework(int index) {
+  Future<void> changeHousework(int index) async{
     setState(() {
       housework =  index;
     });
+    await Provider.of<UserState>(context, listen: false).updateHousework(housework);
   }
-  void changeHopeMeet(int index) {
+  Future<void> changeHopeMeet(int index) async{
     setState(() {
       hopeMeet =  index;
     });
+    await Provider.of<UserState>(context, listen: false).updateHopeMeet(hopeMeet);
   }
-  void changeDateCost(int index) {
+  Future<void> changeDateCost(int index) async{
     setState(() {
       dateCost =  index;
     });
+    await Provider.of<UserState>(context, listen: false).updateDateCost(dateCost);
   }
-  void changeSaving(int index) {
+  Future<void> changeSaving(int index) async{
     setState(() {
       savings =  index;
     });
+    await Provider.of<UserState>(context, listen: false).updateSaving(savings!);
   }
 
   @override
@@ -165,7 +200,7 @@ class _ProfileInformationWidgetState extends State<ProfileInformationWidget> {
         color: AppColors.primaryWhite,
         borderRadius: BorderRadius.circular(20)
       ),
-      child: Column(
+      child: isLoding? Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           CustomText(
@@ -422,7 +457,7 @@ class _ProfileInformationWidgetState extends State<ProfileInformationWidget> {
                 },
                 child: ProfileItem(label: "休日", text: holiday!=null?ConstFile.holidayItem[holiday!]:"")
               ),
-// ----------------roommate--------------
+// ----------------roomate--------------
               GestureDetector(
                 onTap: () {
                   FocusScope.of(context).requestFocus(FocusNode());
@@ -437,7 +472,7 @@ class _ProfileInformationWidgetState extends State<ProfileInformationWidget> {
                           height: MediaQuery.of(context).copyWith().size.height / 3,
                           child: CustomCupertinoPicker(
                             text: "同居人",
-                            items: ConstFile.roommateItem, 
+                            items: ConstFile.roomateItem, 
                             onSelectedItemChanged: (int index){
                               changeRoomate(index);
                             }
@@ -445,7 +480,7 @@ class _ProfileInformationWidgetState extends State<ProfileInformationWidget> {
                         );
                     });
                 },
-                child: ProfileItem(label: "同居人", text: roommate!=null?ConstFile.roommateItem[roommate!]:"")
+                child: ProfileItem(label: "同居人", text: roomate!=null?ConstFile.roomateItem[roomate!]:"")
               ),
 // ----------------alcohol--------------
               GestureDetector(
@@ -676,6 +711,8 @@ class _ProfileInformationWidgetState extends State<ProfileInformationWidget> {
           )
 
         ],
+      ): const Center(
+        child: CircularProgressIndicator(),
       ),
     );
   }

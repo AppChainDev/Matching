@@ -20,7 +20,7 @@ import 'package:drone/screens/post/create_post.dart';
 import 'package:drone/screens/post/postpage.dart';
 import 'package:drone/screens/profile/component/edit_introductoin.dart';
 import 'package:drone/screens/profile/component/group/group_edit.dart';
-import 'package:drone/screens/profile/component/memories/memories_description.dart';
+import 'package:drone/screens/profile/component/memories/favorite_description.dart';
 import 'package:drone/screens/profile/component/profileinformation/edit_name.dart';
 import 'package:drone/screens/profile/component/question/question1.dart';
 import 'package:drone/screens/profile/component/question/question2.dart';
@@ -85,7 +85,7 @@ class Routes {
     '/question1': (context) => const Question1Screen(),
     '/question2': (context) => const Question2Screen(),
     '/question3': (context) => const Question3Screen(),
-    '/memories_description': (context) => const MemoryDescriptionWidget(),
+    '/favorite_description': (context) => const FavoriteDescriptionWidget(),
     '/edit_name': (context) => const EditNameScreen(),
     '/edit_group': (context) => const GroupEditScreen(),
     '/postpage': (context) => const PostScreen(),

@@ -2,7 +2,9 @@ import 'package:drone/components/app_colors.dart';
 import 'package:drone/components/base_screen.dart';
 import 'package:drone/components/custom_container.dart';
 import 'package:drone/components/custom_text.dart';
+import 'package:drone/state/user_state.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class EditNameScreen extends StatefulWidget {
 
@@ -18,6 +20,7 @@ class _EditNameScreenState extends State<EditNameScreen> {
   @override
   void initState() {
     super.initState();
+    getName();
     nameController.addListener(_updateButtonColor);
   }
 
@@ -26,6 +29,85 @@ class _EditNameScreenState extends State<EditNameScreen> {
     nameController.removeListener(_updateButtonColor);
     nameController.dispose();
     super.dispose();
+  }
+
+  Future getName() async{
+    setState(() {
+      nameController.text = Provider.of<UserState>(context, listen: false).user!.name;
+    });
+  }
+
+  Future saveName() async{
+    final isSaved = await Provider.of<UserState>(context, listen: false).saveName(nameController.text);
+    if(isSaved){
+      await Provider.of<UserState>(context, listen: false).getUserInformation();
+      Navigator.pushNamed(context, "/edit_profile");
+    } else{
+      showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (_) => Center( // Aligns the container to center
+          child: Container( // A simplified version of dialog. 
+            width: 300,
+            height: 150,
+            padding: const EdgeInsets.only(top:35),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: AppColors.primaryWhite
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  "名前変更に失敗しました。",
+                  textAlign:TextAlign.center,
+                  style: TextStyle(
+                    color: AppColors.primaryBlack,
+                    fontWeight: FontWeight.normal,
+                    fontSize:15,
+                    letterSpacing: -1,
+                    decoration: TextDecoration.none
+                  ),
+                ),
+                const SizedBox(
+                  height: 24,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Container(
+                    width: 343,
+                    height: 42,
+                    margin: const EdgeInsets.only(top: 5),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        top: BorderSide(
+                          color: AppColors.secondaryGray.withOpacity(0.5)
+                        )
+                      )
+                    ),
+                    child: MaterialButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Center(
+                        child: CustomText(
+                          text: "OK", 
+                          fontSize: 15, 
+                          fontWeight: FontWeight.normal, 
+                          lineHeight: 1, 
+                          letterSpacing: -1, 
+                          color: AppColors.alertBlue
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+            )
+          )
+      );
+    }
   }
 
   void _updateButtonColor() {
@@ -175,6 +257,7 @@ class _EditNameScreenState extends State<EditNameScreen> {
                                 child: MaterialButton(
                                   onPressed: () {
                                     Navigator.pop(context);
+                                    saveName();
                                   },
                                   child: Center(
                                     child: Text(
