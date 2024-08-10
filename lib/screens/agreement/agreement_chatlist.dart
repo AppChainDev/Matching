@@ -3,6 +3,7 @@ import 'package:drone/components/app_colors.dart';
 import 'package:drone/components/base_screen.dart';
 import 'package:drone/components/custom_container.dart';
 import 'package:drone/components/custom_text.dart';
+import 'package:drone/models/post_model.dart';
 import 'package:flutter/material.dart';
 
 class AgreementChatListScreen extends StatefulWidget {
@@ -23,6 +24,20 @@ class _AgreementChatListScreenState extends State<AgreementChatListScreen> {
   @override
   void dispose() {
     super.dispose();
+  }
+
+  Future getPostChatList() async{
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      final args = ModalRoute.of(context)!.settings.arguments as PostModel;
+      // await Provider.of<UserState>(context, listen: false).getUserById(args.id);
+      // await Provider.of<UserState>(context, listen: false).getGroupList();
+      // setState(() {
+      //   userById = Provider.of<UserState>(context, listen: false).userById!;
+      //   groups = Provider.of<UserState>(context, listen: false).groups;
+      //   currentAvatar = userById.avatars[0];
+      //   isLoding = true;
+      // });
+    });
   }
 
   @override

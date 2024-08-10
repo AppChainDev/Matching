@@ -1,3 +1,9 @@
+import 'package:drone/services/postapi_service.dart';
+import 'package:drone/services/likeapi_service.dart';
+import 'package:drone/services/recordapi_service.dart';
+import 'package:drone/state/like_state.dart';
+import 'package:drone/state/post_state.dart';
+import 'package:drone/state/record_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
@@ -27,6 +33,15 @@ class MyApp extends StatelessWidget {
         }),
         ChangeNotifierProvider(
           create: (_) => UserState(userApiService: UserApiService(baseUrl: dotenv.get('BASE_URL'))),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => RecordState(recordApiService: RecordApiService(baseUrl: dotenv.get('BASE_URL'))),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => LikeState(likeApiService: LikeApiService(baseUrl: dotenv.get('BASE_URL'))),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => PostState(postApiService: PostApiService(baseUrl: dotenv.get('BASE_URL'))),
         ),
         ChangeNotifierProvider(create: (_) => SettingsState()),
       ],

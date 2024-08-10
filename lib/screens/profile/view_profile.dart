@@ -4,10 +4,16 @@ import 'package:drone/components/custom_button.dart';
 import 'package:drone/components/custom_container.dart';
 import 'package:drone/components/custom_text.dart';
 import 'package:drone/models/chattingtransfer_model.dart';
+import 'package:drone/models/community_model.dart';
+import 'package:drone/models/user_model.dart';
 import 'package:drone/models/usertransfer_model.dart';
-import 'package:drone/screens/register/registerprofile_group.dart';
+import 'package:drone/state/record_state.dart';
+import 'package:drone/state/user_state.dart';
 import 'package:drone/utils/const_file.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:provider/provider.dart';
+import 'package:drone/screens/register/registerprofile_group.dart';
 
 class ViewProfileScreen extends StatefulWidget {
 
@@ -19,35 +25,43 @@ class ViewProfileScreen extends StatefulWidget {
 
 class _ViewProfileScreenState extends State<ViewProfileScreen> {
 
+  late UserModel userById;
+  bool isLoding = false;
   final TextEditingController messageController = TextEditingController();
-  final int community1 = 1;
-  final int community2 = 1;
-  final int community3 = 1;
-  final int community4 = 1;
-  
-  final int id = 1;
-  final String name = "ゆうた";
-  late  String currentAvatar;
-  final List<String> avatars = ["gfd.png", "aaa.png", "post_backimage1.png"];
-  // final String currentAvatar = "gfd.png";
-  final int prefectureId = 12;
-  final int age = 50;
-
-  final String? memoryImage = "memory_image.png";
-  final String? memoryDescription = "ゲームが大好きなんです";
-
+  late String currentAvatar;
+  List<CommunityModel> groups = [];
 
   @override
   void initState() {
-    setState(() {
-      currentAvatar = avatars[0];
-    });
+    getUserById();
+    saveRecord();
     super.initState();
   }
 
   @override
   void dispose() {
     super.dispose();
+  }
+
+  Future getUserById() async{
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      final args = ModalRoute.of(context)!.settings.arguments as UserTransforIdModel;
+      await Provider.of<UserState>(context, listen: false).getUserById(args.id);
+      await Provider.of<UserState>(context, listen: false).getGroupList();
+      setState(() {
+        userById = Provider.of<UserState>(context, listen: false).userById!;
+        groups = Provider.of<UserState>(context, listen: false).groups;
+        currentAvatar = userById.avatars[0];
+        isLoding = true;
+      });
+    });
+  }
+
+  Future saveRecord() async{
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      final args = ModalRoute.of(context)!.settings.arguments as UserTransforIdModel;
+      await Provider.of<RecordState>(context, listen: false).saveRecord(args.id);
+    });
   }
 
   void saveMessage(){
@@ -229,7 +243,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as UserTransforIdModel;
     return BaseScreen(
-      child: Stack(
+      child: isLoding? Stack(
         children: [
           CustomContainer(
             decoration: BoxDecoration(
@@ -244,8 +258,8 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
                         height: 424,
                         decoration: BoxDecoration(
                           image: DecorationImage(
-                            image: AssetImage("assets/images/$currentAvatar"),
-                            fit: BoxFit.cover     
+                            image: NetworkImage("${dotenv.get('BASE_URL')}/img/$currentAvatar"),
+                            fit: BoxFit.cover
                           )
                         ),
                       ),
@@ -263,7 +277,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   CustomText(
-                                    text: name, 
+                                    text: userById.name, 
                                     fontSize: 17, 
                                     fontWeight: FontWeight.bold, 
                                     lineHeight: 1.5, 
@@ -273,7 +287,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
                                   Row(
                                     children: [
                                       Text(
-                                        ConstFile.prefectureItems[prefectureId],
+                                        ConstFile.prefectureItems[userById.prefectureId],
                                         style: TextStyle(  
                                           fontSize: 12, 
                                           fontWeight: FontWeight.bold, 
@@ -293,7 +307,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
                                         width: 5,
                                       ),
                                       Text(
-                                        "$age歳",
+                                        "${userById.age}歳",
                                         style: TextStyle(  
                                           fontSize: 12, 
                                           fontWeight: FontWeight.bold, 
@@ -315,25 +329,25 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
                               ),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
-                                children: avatars.map( (avatar){
+                                children: userById.avatars.map((avatar){
                                   return GestureDetector(
                                     onTap: () {
                                       setState(() {
                                         currentAvatar = avatar;            
                                       });
                                     },
-                                    child: Container(
+                                    child: avatar!=""? Container(
                                       width: 61,
                                       height: 61,
                                       margin: const EdgeInsets.only(top: 5, right: 5),
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(10),
                                         image: DecorationImage(
-                                          image: AssetImage("assets/images/$avatar"),
+                                          image: NetworkImage("${dotenv.get('BASE_URL')}/img/$avatar"),
                                           fit: BoxFit.cover
                                         )
                                       ),
-                                    ),
+                                    ):Container(),
                                   );
                                 }).toList(),
                               ),
@@ -372,7 +386,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
                                   Expanded(
                                     child: SingleChildScrollView(
                                       child: CustomText(
-                                        text: "私は、日本に住んでいる男性です。初めてアプリを利用しました。\n好きなことは登山と釣りをすることです。休日はよくキャンプに出かけます。いつもは一人ですが、いい人がいたら一緒に行きたいです。他には、仕事はIT系です。土日が休みなので同じ休みの日の人がいたら嬉しいです。\nとにかく素敵な人と出会いって結婚をスタートしたいです。", 
+                                        text: userById.introduce, 
                                         fontSize: 14, 
                                         fontWeight: FontWeight.normal, 
                                         lineHeight: 1.5, 
@@ -408,181 +422,185 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
                                   const SizedBox(
                                     height: 15,
                                   ),
-                                  const Column(
+                                  Column(
                                     children: [
                                       ProfileItem(
-                                        label: "居住地", text: "東京都"
+                                        label: "居住地", text: ConstFile.prefectureItems[userById.prefectureId]
                                       ),
                                       ProfileItem(
-                                        label: "身長", text: "150cm"
+                                        label: "身長", text: "${userById.height}cm"
                                       ),
                                       ProfileItem(
-                                        label: "体型", text: "普通"
+                                        label: "体型", text: ConstFile.bodyTypes[userById.bodyType]
                                       ),
                                       ProfileItem(
-                                        label: "血液型", text: "A型"
+                                        label: "血液型", text: ConstFile.bloodItems[userById.blood]
                                       ),
                                       ProfileItem(
-                                        label: "出身地", text: "東京都"
+                                        label: "出身地", text: ConstFile.prefectureItems[userById.birth]
                                       ),
                                       ProfileItem(
-                                        label: "学歴", text: "短大・専門卒"
+                                        label: "学歴", text: ConstFile.educationItems[userById.education]
                                       ),
                                       ProfileItem(
-                                        label: "職種", text: "教育関連"
+                                        label: "職種", text: ConstFile.jobTypes[userById.jobType]
                                       ),
                                       ProfileItem(
-                                        label: "年収", text: "400万円〜600万円"
+                                        label: "年収", text: ConstFile.incomes[userById.income]
+                                      ),
+                                      if(userById.holiday != null)
+                                        ProfileItem(
+                                          label: "休日", text: ConstFile.holidayItem[userById.holiday!]
+                                        ),
+                                      if(userById.roomate != null)
+                                        ProfileItem(
+                                          label: "同居人", text: ConstFile.roomateItem[userById.roomate!]
+                                        ),
+                                      if(userById.alcohol != null)
+                                        ProfileItem(
+                                          label: "お酒", text: ConstFile.alcoholItem[userById.alcohol!]
+                                        ),
+                                      if(userById.smoking != null)
+                                        ProfileItem(
+                                          label: "タバコ", text: ConstFile.smokingItem[userById.smoking!]
+                                        ),
+                                      ProfileItem(
+                                        label: "結婚歴", text: ConstFile.maritalHistories[userById.materialHistory]
                                       ),
                                       ProfileItem(
-                                        label: "結婚歴", text: "独身(離婚)"
+                                        label: "結婚に対する意思", text: ConstFile.attitudes[userById.attitude]
                                       ),
                                       ProfileItem(
-                                        label: "結婚に対する意思", text: "2〜3年以内にしたい"
+                                        label: "子供の有無", text: ConstFile.childrenItems[userById.children]
                                       ),
                                       ProfileItem(
-                                        label: "子供の有無", text: "同居中"
+                                        label: "家事や育児", text: ConstFile.houseworkItems[userById.housework]
                                       ),
                                       ProfileItem(
-                                        label: "家事や育児", text: "参加したい"
+                                        label: "出会うまでの希望", text: ConstFile.hopeMeetItems[userById.hopeMeet]
                                       ),
                                       ProfileItem(
-                                        label: "出会うまでの希望", text: "まずは会って話したい"
+                                        label: "初回デート費用", text: ConstFile.dateCostItems[userById.dateCost]
                                       ),
-                                      ProfileItem(
-                                        label: "初回デート費用", text: "割り勘"
-                                      ),
+                                      if(userById.saving != null)
+                                        ProfileItem(
+                                          label: "貯蓄", text: ConstFile.savingsItem[userById.saving!]
+                                        ),
                                     ],
                                   )
                                 ],
                               ),
                             ),
-                            Container(
-                              width: MediaQuery.of(context).size.width,
-                              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-                              margin: const EdgeInsets.only(top: 17),
-                              decoration: BoxDecoration(
-                                color: AppColors.primaryWhite,
-                                borderRadius: BorderRadius.circular(20)
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  CustomText(
-                                    text: "ともへこさん の思い出の1枚", 
-                                    fontSize: 15, 
-                                    fontWeight: FontWeight.normal, 
-                                    lineHeight: 1, 
-                                    letterSpacing: -1, 
-                                    color: AppColors.primaryBlack
-                                  ),
-                                  const SizedBox(
-                                    height: 20,
-                                  ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                        width: 176,
-                                        height: 162,
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(10),
-                                          image: DecorationImage(
-                                            image: AssetImage("assets/images/$memoryImage"),
-                                            fit: BoxFit.cover
-                                          )
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                  Container(
-                                    width: MediaQuery.of(context).size.width,
-                                    margin: const EdgeInsets.only(top: 20),
-                                    padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
-                                    decoration: BoxDecoration(
-                                      color: AppColors.primaryWhite,
-                                      borderRadius: BorderRadius.circular(5),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: AppColors.secondaryGray.withOpacity(0.5), // Shadow color
-                                          spreadRadius: 0.5, // Spread radius
-                                          blurRadius: 5, // Blur radius
-                                          offset: const Offset(0, 1), // Shadow position (x, y)
-                                        ),
-                                      ],
-                                    ),
-                                    child: CustomText(
-                                      text: "ゲームが大好きなんです", 
-                                      fontSize: 14, 
+                            if(userById.favoriteImage != null)
+                              Container(
+                                width: MediaQuery.of(context).size.width,
+                                padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                                margin: const EdgeInsets.only(top: 17),
+                                decoration: BoxDecoration(
+                                  color: AppColors.primaryWhite,
+                                  borderRadius: BorderRadius.circular(20)
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    CustomText(
+                                      text: "ともへこさん の思い出の1枚", 
+                                      fontSize: 15, 
                                       fontWeight: FontWeight.normal, 
                                       lineHeight: 1, 
                                       letterSpacing: -1, 
-                                      color: AppColors.secondaryGreen
+                                      color: AppColors.primaryBlack
                                     ),
-                                  )
-                                  
-                                ],
+                                    const SizedBox(
+                                      height: 20,
+                                    ),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Container(
+                                          width: 176,
+                                          height: 162,
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(10),
+                                            image: DecorationImage(
+                                              image: NetworkImage("${dotenv.get('BASE_URL')}/img/${userById.favoriteImage}"),
+                                              fit: BoxFit.cover
+                                            )
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                    if(userById.favoriteDescription != null)
+                                      Container(
+                                        width: MediaQuery.of(context).size.width,
+                                        margin: const EdgeInsets.only(top: 20),
+                                        padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                                        decoration: BoxDecoration(
+                                          color: AppColors.primaryWhite,
+                                          borderRadius: BorderRadius.circular(5),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: AppColors.secondaryGray.withOpacity(0.5), // Shadow color
+                                              spreadRadius: 0.5, // Spread radius
+                                              blurRadius: 5, // Blur radius
+                                              offset: const Offset(0, 1), // Shadow position (x, y)
+                                            ),
+                                          ],
+                                        ),
+                                        child: CustomText(
+                                          text: userById.favoriteDescription!, 
+                                          fontSize: 14, 
+                                          fontWeight: FontWeight.normal, 
+                                          lineHeight: 1, 
+                                          letterSpacing: -1, 
+                                          color: AppColors.secondaryGreen
+                                        ),
+                                      )
+                                    
+                                  ],
+                                ),
                               ),
-                            ),
                             const SizedBox(
                               height: 20,
                             ),
-                            Container(
-                              width: MediaQuery.of(context).size.width,
-                              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-                              margin: const EdgeInsets.only(bottom: 100),
-                              decoration: BoxDecoration(
-                                color: AppColors.primaryWhite,
-                                borderRadius: BorderRadius.circular(20)
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  CustomText(
-                                    text: "参加グループ", 
-                                    fontSize: 15, 
-                                    fontWeight: FontWeight.normal, 
-                                    lineHeight: 1, 
-                                    letterSpacing: 1, 
-                                    color: AppColors.primaryBlack
-                                  ),
-                                  const SizedBox(
-                                    height: 20,
-                                  ),
-                                  // Wrap(
-                                  //   crossAxisAlignment: WrapCrossAlignment.start,
-                                  //   spacing: 13,
-                                  //   children: [
-                                  //     GroupItem(
-                                  //       inChecked: false, 
-                                  //       id: community1, 
-                                  //       text: ConstFile.sportsGroupDatas[community1].name, 
-                                  //       image: ConstFile.sportsGroupDatas[community1].image
-                                  //     ),
-                                  //     GroupItem(
-                                  //       inChecked: false, 
-                                  //       id: community2, 
-                                  //       text: ConstFile.personalityGroupDatas[community2].name, 
-                                  //       image: ConstFile.personalityGroupDatas[community2].image
-                                  //     ),
-                                  //     GroupItem(
-                                  //       inChecked: false, 
-                                  //       id: community3, 
-                                  //       text: ConstFile.outingDetailDatas[community3].name, 
-                                  //       image: ConstFile.outingDetailDatas[community3].image
-                                  //     ),
-                                  //     GroupItem(
-                                  //       inChecked: false, 
-                                  //       id: community4, 
-                                  //       text: ConstFile.lifeStyleDatas[community4].name, 
-                                  //       image: ConstFile.lifeStyleDatas[community4].image
-                                  //     )
-                                  //   ],
-                                  // )
-                                  
-                                ],
-                              ),
-                            )
+                            if(userById.groups.isNotEmpty)
+                              Container(
+                                width: MediaQuery.of(context).size.width,
+                                padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                                margin: const EdgeInsets.only(bottom: 100),
+                                decoration: BoxDecoration(
+                                  color: AppColors.primaryWhite,
+                                  borderRadius: BorderRadius.circular(20)
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    CustomText(
+                                      text: "参加グループ", 
+                                      fontSize: 15, 
+                                      fontWeight: FontWeight.normal, 
+                                      lineHeight: 1, 
+                                      letterSpacing: 1, 
+                                      color: AppColors.primaryBlack
+                                    ),
+                                    const SizedBox(
+                                      height: 20,
+                                    ),
+                                    Wrap(
+                                      crossAxisAlignment: WrapCrossAlignment.start,
+                                      spacing: 13,
+                                      children: userById.groups.map((groupId) {
+                                        return GroupItem(
+                                          inChecked: false, 
+                                          id: groupId, 
+                                          text: (groups.where((e) => e.id == groupId).toList())[0].name, 
+                                          image: (groups.where((e) => e.id == groupId).toList())[0].image
+                                        );
+                                      }).toList() 
+                                    )
+                                  ],
+                                ),
+                              )
                           ],
                         ),
                       ),
@@ -637,7 +655,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
                           color: AppColors.primaryWhite, 
                           titleColor: AppColors.secondaryGreen, 
                           onTap: () async{ 
-                            sendMessage(id, name, currentAvatar, age, prefectureId);
+                            sendMessage(userById.id, userById.name, userById.avatars[0], userById.age, userById.prefectureId);
                           }
                         ),
                       ),
@@ -825,7 +843,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
                             child: Center(
                               child: IconButton(
                                 onPressed: (){
-                                  Navigator.pushNamed(context, "/messagescreen", arguments: ChattingTransferModel(id, name, avatars[0], prefectureId, age));
+                                  Navigator.pushNamed(context, "/messagescreen", arguments: ChattingTransferModel(userById.id, userById.name, userById.avatars[0], userById.prefectureId, userById.age));
                                 }, 
                                 icon: ImageIcon(
                                   const AssetImage("assets/images/like.png"),
@@ -864,6 +882,10 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
               ),
             )
         ],
+      ): const CustomContainer(
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
       )
     );
   }

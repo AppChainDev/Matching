@@ -4,7 +4,9 @@ import 'package:drone/components/base_screen.dart';
 import 'package:drone/components/custom_button.dart';
 import 'package:drone/components/custom_container.dart';
 import 'package:drone/components/custom_text.dart';
+import 'package:drone/models/record_model.dart';
 import 'package:drone/models/user_model.dart';
+import 'package:drone/state/record_state.dart';
 import 'package:drone/state/user_state.dart';
 import 'package:drone/utils/const_file.dart';
 import 'package:flutter/material.dart';
@@ -19,9 +21,8 @@ class MaleMyPage extends StatefulWidget {
 }
 
 class _MaleMyPageState extends State<MaleMyPage> {
-  final TextEditingController questionController= TextEditingController();
-  int point = 50;
   late UserModel user;
+  late List<RecordModel> records;
   bool isLoding = false;
 
   @override
@@ -40,8 +41,10 @@ class _MaleMyPageState extends State<MaleMyPage> {
 
   Future getUserInformation() async{
     await Provider.of<UserState>(context, listen: false).getUserInformation();
+    await Provider.of<RecordState>(context, listen: false).getRecord();
     setState(() {
       user =  Provider.of<UserState>(context, listen: false).user!;
+      records = Provider.of<RecordState>(context, listen: false).records;
       isLoding = true;
     });
   }
@@ -788,7 +791,7 @@ class _MaleMyPageState extends State<MaleMyPage> {
                                                 width: 5,
                                               ),
                                               CustomText(
-                                                text: "50", 
+                                                text: user.pointCount.toString(), 
                                                 fontSize: 17, 
                                                 fontWeight: FontWeight.normal, 
                                                 lineHeight: 1, 
@@ -836,7 +839,11 @@ class _MaleMyPageState extends State<MaleMyPage> {
                             width: MediaQuery.of(context).size.width/3,
                             child: MaterialButton(
                               onPressed: () {
-                                Navigator.pushNamed(context, '/record_list');
+                                if(records.isNotEmpty){
+                                  Navigator.pushNamed(context, '/record_list');
+                                }else{
+                                  Navigator.pushNamed(context, '/record_empty');
+                                }
                               },
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,

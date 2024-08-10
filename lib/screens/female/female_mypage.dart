@@ -4,7 +4,14 @@ import 'package:drone/components/base_screen.dart';
 import 'package:drone/components/custom_button.dart';
 import 'package:drone/components/custom_container.dart';
 import 'package:drone/components/custom_text.dart';
+import 'package:drone/models/record_model.dart';
+import 'package:drone/models/user_model.dart';
+import 'package:drone/state/record_state.dart';
+import 'package:drone/state/user_state.dart';
+import 'package:drone/utils/const_file.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:provider/provider.dart';
 class FemaleMyPage extends StatefulWidget {
 
   const FemaleMyPage({super.key});
@@ -14,13 +21,15 @@ class FemaleMyPage extends StatefulWidget {
 }
 
 class _FemaleMyPageState extends State<FemaleMyPage> {
-  final TextEditingController questionController= TextEditingController();
-  final bool verify = false;
+  late UserModel user;
+  late List<RecordModel> records;
+  bool isLoding = false;
   int point = 50;
 
   @override
   void initState() {
     super.initState();
+    getUserInformation();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       notificationAlert();
     });
@@ -29,6 +38,16 @@ class _FemaleMyPageState extends State<FemaleMyPage> {
   @override
   void dispose() {
     super.dispose();
+  }
+
+  Future getUserInformation() async{
+    await Provider.of<UserState>(context, listen: false).getUserInformation();
+    await Provider.of<RecordState>(context, listen: false).getRecord();
+    setState(() {
+      user =  Provider.of<UserState>(context, listen: false).user!;
+      records = Provider.of<RecordState>(context, listen: false).records;
+      isLoding = true;
+    });
   }
 
   void notificationAlert() {
@@ -160,7 +179,7 @@ class _FemaleMyPageState extends State<FemaleMyPage> {
                             ),
                             Center(
                               child: CustomText(
-                                  text: "$point", 
+                                  text: "${user.pointCount}", 
                                   fontSize: 17, 
                                   fontWeight: FontWeight.bold, 
                                   lineHeight: 1, 
@@ -529,7 +548,7 @@ class _FemaleMyPageState extends State<FemaleMyPage> {
 
   // ignore: non_constant_identifier_names
   Widget CenterCard(){
-    if(!verify){
+    if(!user.isVerify){
       return
         Container(
           width: MediaQuery.of(context).size.width,
@@ -699,7 +718,7 @@ class _FemaleMyPageState extends State<FemaleMyPage> {
   @override
   Widget build(BuildContext context) {
     return BaseScreen(
-      child: Stack(
+      child: isLoding? Stack(
         children: [
           Center(
              child: CustomContainer(
@@ -729,9 +748,12 @@ class _FemaleMyPageState extends State<FemaleMyPage> {
                                         padding: const EdgeInsets.only(right: 7),
                                         child: Container(
                                           decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(50)
-                                          ),
-                                          child: Image.asset("assets/images/avatar1.png", fit:BoxFit.cover),
+                                            borderRadius: BorderRadius.circular(50),
+                                            image: DecorationImage(
+                                              image: NetworkImage("${dotenv.get('BASE_URL')}/img/${user.avatars[0]}"),
+                                              fit: BoxFit.cover,
+                                            )
+                                          )
                                         ),
                                       ),
                                       Container(
@@ -767,7 +789,7 @@ class _FemaleMyPageState extends State<FemaleMyPage> {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         CustomText(
-                                          text: "かなえ", 
+                                          text: user.name, 
                                           fontSize: 17, 
                                           fontWeight: FontWeight.bold, 
                                           lineHeight: 1.5, 
@@ -777,7 +799,7 @@ class _FemaleMyPageState extends State<FemaleMyPage> {
                                         Row(
                                           children: [
                                             CustomText(
-                                              text: "39歳", 
+                                              text: "${user.age}歳", 
                                               fontSize: 10, 
                                               fontWeight: FontWeight.normal, 
                                               lineHeight: 1, 
@@ -788,7 +810,7 @@ class _FemaleMyPageState extends State<FemaleMyPage> {
                                               width: 10,
                                             ),
                                             CustomText(
-                                              text: "東京都", 
+                                              text: ConstFile.prefectureItems[user.prefectureId], 
                                               fontSize: 10, 
                                               fontWeight: FontWeight.normal, 
                                               lineHeight: 1, 
@@ -863,7 +885,7 @@ class _FemaleMyPageState extends State<FemaleMyPage> {
                                             color: AppColors.primaryBlack
                                           ),
                                           CustomText(
-                                            text: !verify?"未確認":"確認済", 
+                                            text: !user.isVerify?"未確認":"確認済", 
                                             fontSize: 17, 
                                             fontWeight: FontWeight.normal, 
                                             lineHeight: 1, 
@@ -908,7 +930,7 @@ class _FemaleMyPageState extends State<FemaleMyPage> {
                                                 width: 5,
                                               ),
                                               CustomText(
-                                                text: "50", 
+                                                text: user.pointCount.toString(), 
                                                 fontSize: 17, 
                                                 fontWeight: FontWeight.normal, 
                                                 lineHeight: 1, 
@@ -939,7 +961,11 @@ class _FemaleMyPageState extends State<FemaleMyPage> {
                             width: MediaQuery.of(context).size.width/3,
                             child: MaterialButton(
                               onPressed: () {
-                                Navigator.pushNamed(context, '/record_list');
+                                if(records.isNotEmpty){
+                                  Navigator.pushNamed(context, '/record_list');
+                                }else{
+                                  Navigator.pushNamed(context, '/record_empty');
+                                }
                               },
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -1167,6 +1193,10 @@ class _FemaleMyPageState extends State<FemaleMyPage> {
           ),
           bottomBar()
         ],
+      ): const CustomContainer(
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
       )
     );
   }

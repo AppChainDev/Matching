@@ -3,8 +3,10 @@ import 'package:drone/components/base_screen.dart';
 import 'package:drone/components/custom_button.dart';
 import 'package:drone/components/custom_container.dart';
 import 'package:drone/components/custom_text.dart';
-import 'package:drone/utils/const_file.dart';
+import 'package:drone/models/community_model.dart';
+import 'package:drone/state/user_state.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class GroupEditScreen extends StatefulWidget {
 
@@ -15,12 +17,15 @@ class GroupEditScreen extends StatefulWidget {
 }
 
 class _GroupEditScreenState extends State<GroupEditScreen> {
-  final List<int> community1 = [1];
-  final List<int> community2 = [1];
-  final List<int> community3 = [1];
-  final List<int> community4 = [1];
+  List<int> userGroups = [];
+  List<CommunityModel> groups = [];
+  bool isLoding = false;
+
+  List<int> removeGroups = [];
+
   @override
   void initState() {
+    getGroup();
     super.initState();
   }
 
@@ -28,48 +33,102 @@ class _GroupEditScreenState extends State<GroupEditScreen> {
   void dispose() {
     super.dispose();
   }
+
+  Future getGroup() async{
+    setState(() {
+      userGroups = Provider.of<UserState>(context, listen: false).user!.groups;
+      groups = Provider.of<UserState>(context, listen: false).groups;
+      isLoding = true;
+    });
+  }
   
-  void handleCommunityChanged1(int id) {
+  void handleCommunityChanged(int id) {
     setState(() {
-      if(community1.contains(id)){
-        community1.clear();
+      if(removeGroups.contains(id)){
+        removeGroups.remove(id);
       }else{
-         community1.add(id);
+        removeGroups.add(id);
       }
     });
   }
-  void handleCommunityChanged2(int id) {
-    setState(() {
-      if(community2.contains(id)){
-        community2.clear();
-      }else{
-         community2.add(id);
-      }
-    });
-  }
-  void handleCommunityChanged3(int id) {
-    setState(() {
-      if(community3.contains(id)){
-        community3.clear();
-      }else{
-         community3.add(id);
-      }
-    });
-  }
-  void handleCommunityChanged4(int id) {
-    setState(() {
-      if(community4.contains(id)){
-        community4.clear();
-      }else{
-         community4.add(id);
-      }
-    });
+
+  Future removeGroup() async{
+    final result = await Provider.of<UserState>(context, listen: false).removeGroups(removeGroups);
+    if(result){
+      await Provider.of<UserState>(context, listen: false).getUserInformation();
+      Navigator.pushNamed(context, "/edit_profile");
+    } else {
+      showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (_) => Center( // Aligns the container to center
+          child: Container( // A simplified version of dialog. 
+            width: 300,
+            height: 150,
+            padding: const EdgeInsets.only(top:35),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: AppColors.primaryWhite
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  "グループ情報の削除に失敗しました。",
+                  textAlign:TextAlign.center,
+                  style: TextStyle(
+                    color: AppColors.primaryBlack,
+                    fontWeight: FontWeight.normal,
+                    fontSize:15,
+                    letterSpacing: -1,
+                    decoration: TextDecoration.none
+                  ),
+                ),
+                const SizedBox(
+                  height: 24,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Container(
+                    width: 343,
+                    height: 42,
+                    margin: const EdgeInsets.only(top: 5),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        top: BorderSide(
+                          color: AppColors.secondaryGray.withOpacity(0.5)
+                        )
+                      )
+                    ),
+                    child: MaterialButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Center(
+                        child: CustomText(
+                          text: "OK", 
+                          fontSize: 15, 
+                          fontWeight: FontWeight.normal, 
+                          lineHeight: 1, 
+                          letterSpacing: -1, 
+                          color: AppColors.alertBlue
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+            )
+          )
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return BaseScreen(
-      child: Stack(
+      child: isLoding? Stack(
         children: [
            Center(
             child: CustomContainer(
@@ -127,7 +186,8 @@ class _GroupEditScreenState extends State<GroupEditScreen> {
                       color: AppColors.secondaryGreen, 
                       titleColor: AppColors.primaryWhite, 
                       onTap: () { 
-                          Navigator.pop(context);     
+                        removeGroup();
+                          // Navigator.pop(context);     
                       }
                     ),
                   ),
@@ -146,57 +206,24 @@ class _GroupEditScreenState extends State<GroupEditScreen> {
                         padding: const EdgeInsets.only(left: 20, right: 38),
                         child: Column(
                           children: [
-                            // Wrap(
-                            //   crossAxisAlignment: WrapCrossAlignment.start,
-                            //   spacing: 13,
-                            //   children: [
-                            //     GestureDetector(
-                            //       onTap: () {
-                            //         handleCommunityChanged1(1);
-                            //       },
-                            //       child: DeleteGroupItem(
-                            //         inChecked: community1.contains(1), 
-                            //         id: 1, 
-                            //         text: ConstFile.sportsGroupDatas[1].name, 
-                            //         image: ConstFile.sportsGroupDatas[1].image
-                            //       ),
-                            //     ),
-                            //     GestureDetector(
-                            //       onTap: () {
-                            //         handleCommunityChanged2(1);
-                            //       },
-                            //       child: DeleteGroupItem(
-                            //         inChecked: community2.contains(1), 
-                            //         id: 1, 
-                            //         text: ConstFile.personalityGroupDatas[1].name, 
-                            //         image: ConstFile.personalityGroupDatas[1].image
-                            //       ),
-                            //     ),
-                            //     GestureDetector(
-                            //       onTap: () {
-                            //         handleCommunityChanged3(1);
-                            //       },
-                            //       child: DeleteGroupItem(
-                            //         inChecked: community3.contains(1), 
-                            //         id: 1, 
-                            //         text: ConstFile.outingDetailDatas[1].name, 
-                            //         image: ConstFile.outingDetailDatas[1].image
-                            //       ),
-                            //     ),
-                            //     GestureDetector(
-                            //       onTap: () {
-                            //         handleCommunityChanged4(1);
-                            //       },
-                            //       child: DeleteGroupItem(
-                            //         inChecked: community4.contains(1), 
-                            //         id: 1, 
-                            //         text: ConstFile.lifeStyleDatas[1].name, 
-                            //         image: ConstFile.lifeStyleDatas[1].image
-                            //       ),
-                            //     ),
-                            //   ],
-                            // ),
-                          ],
+                            Wrap(
+                              crossAxisAlignment: WrapCrossAlignment.start,
+                              spacing: 13,
+                              children: userGroups.map((groupId){
+                                return  GestureDetector(
+                                  onTap: () {
+                                    handleCommunityChanged(groupId);
+                                  },
+                                  child: DeleteGroupItem(
+                                    inChecked: removeGroups.contains(groupId), 
+                                    id: 1, 
+                                    text: (groups.where((e) => e.id == groupId).toList())[0].name, 
+                                    image: (groups.where((e) => e.id == groupId).toList())[0].image
+                                  ),
+                                );
+                              }).toList()
+                            ),
+                          ]
                         ),
                       ),
                     
@@ -257,6 +284,10 @@ class _GroupEditScreenState extends State<GroupEditScreen> {
             ),
           ),
         ],
+      ):const CustomContainer(
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
       )
     );
   }
@@ -290,7 +321,7 @@ class DeleteGroupItem extends StatelessWidget {
                   "assets/images/$image",
                   fit: BoxFit.cover
                 ),
-                if(!inChecked)
+                if(inChecked)
                   Container(
                     width: 95,
                     height: 65,

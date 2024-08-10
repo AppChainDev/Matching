@@ -2,6 +2,7 @@ import 'package:drone/components/app_colors.dart';
 import 'package:drone/components/custom_text.dart';
 import 'package:drone/utils/const_file.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class PostItem extends StatelessWidget{
   const PostItem({
@@ -30,9 +31,9 @@ class PostItem extends StatelessWidget{
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
               image: DecorationImage(
-                image: AssetImage("assets/images/$bgImage"),
-                fit: BoxFit.cover     
-              ),
+                image: NetworkImage("${dotenv.get('BASE_URL')}/img/$bgImage"),
+                fit: BoxFit.cover
+              )
             ),
           ),
           Container(
@@ -73,15 +74,18 @@ class PostItem extends StatelessWidget{
                                       width: 43,
                                       height: 43,
                                       decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(50)
-                                      ),
-                                      child: Image.asset("assets/images/$avatarImage", fit:BoxFit.cover),
+                                        borderRadius: BorderRadius.circular(50),
+                                        image: DecorationImage(
+                                          image: NetworkImage("${dotenv.get('BASE_URL')}/img/$avatarImage"),
+                                          fit: BoxFit.cover
+                                        )
+                                      )
                                     ),
                                     Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         CustomText(
-                                          text: "ゆうた", 
+                                          text: name, 
                                           fontSize: 16, 
                                           fontWeight: FontWeight.bold, 
                                           lineHeight: 1.5, 

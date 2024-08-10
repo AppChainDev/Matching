@@ -52,7 +52,7 @@ class _ProfileInformationWidgetState extends State<ProfileInformationWidget> {
 
   Future getProfileInformation() async{
     setState(() {
-      // user =  Provider.of<UserState>(context, listen: false).user!;
+      name =  Provider.of<UserState>(context, listen: false).user!.name;
       blood = Provider.of<UserState>(context, listen: false).user!.blood;
       prefectureId = Provider.of<UserState>(context, listen: false).user!.prefectureId;
       height = Provider.of<UserState>(context, listen: false).user!.height;

@@ -10,11 +10,13 @@ import 'package:drone/components/post/post_card.dart';
 import 'package:drone/models/image_model.dart';
 import 'package:drone/models/usertransfer_model.dart';
 import 'package:drone/models/post_model.dart';
+import 'package:drone/state/post_state.dart';
 import 'package:drone/utils/const_file.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 class PostScreen extends StatefulWidget {
 
@@ -28,17 +30,20 @@ class _PostScreenState extends State<PostScreen> {
 
   final TextEditingController messageController = TextEditingController();
   int messageLength = 0;
-  final List<PostModel> posts = [
-    PostModel(1, "ゆうじ", "沖縄の海で去年サーフィンをした時の写真です。\n海がとても好きで共感できる方いますか？", 12, 45, "avatar1.png", "post_backimage1.png"),
-    PostModel(2, "こうき", "食べ歩き行きたいですね。\n新座とかで。", 14, 60, "avatar1.png", "post_backimage2.png"),
-    PostModel(3, "YUUTA", "お花見の時期ですね", 13, 56, "avatar1.png", "post_backimage3.png"),
-  ];
+  // List<PostModel> posts = [
+  //   PostModel(1, 1, "ゆうじ", "沖縄の海で去年サーフィンをした時の写真です。\n海がとても好きで共感できる方いますか？", 12, 45, "avatar1.png", "post_backimage1.png", 0),
+  //   PostModel(2, 1, "こうき", "食べ歩き行きたいですね。\n新座とかで。", 14, 60, "avatar1.png", "post_backimage2.png", 0),
+  //   PostModel(3, 1, "YUUTA", "お花見の時期ですね", 13, 56, "avatar1.png", "post_backimage3.png", 0),
+  // ];
+  late List<PostModel> posts;
+  bool isLoding = false;
   late File? image;
   final picker = ImagePicker();
 
   @override
   void initState() {
     super.initState();
+    getPosts();
     messageController.addListener(_updateButtonColor);
   }
 
@@ -49,6 +54,8 @@ class _PostScreenState extends State<PostScreen> {
     super.dispose();
   }
 
+
+
   void _updateButtonColor() {
     setState(() {
       messageLength = messageController.text.length;
@@ -58,6 +65,14 @@ class _PostScreenState extends State<PostScreen> {
   void saveMessage(int id){
     setState(() {
       posts.removeWhere((post)=>post.id==id);
+    });
+  }
+
+  Future getPosts() async{
+    await Provider.of<PostState>(context, listen: false).getPosts();
+    setState(() {
+      posts = Provider.of<PostState>(context, listen: false).posts;
+      isLoding = true;
     });
   }
 
@@ -448,48 +463,66 @@ class _PostScreenState extends State<PostScreen> {
   @override
   Widget build(BuildContext context) {
     return BaseScreen(
-      child: Stack(
+      child: isLoding? Stack(
         children: [
-          Center(
-             child: CustomContainer(
-              decoration: BoxDecoration(
-                color: AppColors.primaryBackground
-              ),
-               child: SingleChildScrollView(
-                 child: Padding(
-                   padding: const EdgeInsets.only(top: 144, bottom: 100),
-                   child: Column(
-                     children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 12, right: 12),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: posts.map((item){
-                            return PostItem(
-                              id: item.id,
-                              name: item.name, 
-                              prefectureId: item.id, 
-                              age: item.age, 
-                              description: item.description, 
-                              bgImage: item.backImage, 
-                              avatarImage: item.avatar, 
-                              pressProfile: (){
-                                Navigator.pushNamed(context, "/view_profile", arguments: UserTransforIdModel(id: item.id, beforePage: 'postpage'));
-                              }, 
-                              pressMessage: (){
-                                sendMessage(item.id, item.name, item.avatar, item.age, item.prefectureId);
-                              }
-                            );
-                          }).toList(),
+          if(posts.isNotEmpty)
+            Center(
+              child: CustomContainer(
+                decoration: BoxDecoration(
+                  color: AppColors.primaryBackground
+                ),
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 144, bottom: 100),
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 12, right: 12),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: posts.map((item){
+                              return PostItem(
+                                id: item.id,
+                                name: item.name, 
+                                prefectureId: item.id, 
+                                age: item.age, 
+                                description: item.description, 
+                                bgImage: item.backImage, 
+                                avatarImage: item.avatar, 
+                                pressProfile: (){
+                                  Navigator.pushNamed(context, "/view_profile", arguments: UserTransforIdModel(id: item.id, beforePage: 'postpage'));
+                                }, 
+                                pressMessage: (){
+                                  sendMessage(item.id, item.name, item.avatar, item.age, item.prefectureId);
+                                }
+                              );
+                            }).toList(),
+                          ),
                         ),
-                      ),
-                     ],
-                   ),
-                 ),
-               ),
-             ),
-           ),
-           
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          if(posts.isEmpty)
+            Center(
+              child: CustomContainer(
+                decoration: BoxDecoration(
+                  color: AppColors.primaryBackground
+                ),
+                child: Center(
+                  child: CustomText(
+                    text: "投稿した共感はありません", 
+                    fontSize: 17, 
+                    fontWeight: FontWeight.normal, 
+                    lineHeight: 1, 
+                    letterSpacing: 1, 
+                    color: AppColors.secondaryGreen
+                  ),
+                )
+              ),
+            ),
            Center(
             child: CustomContainer(
               height: 127,
@@ -521,6 +554,10 @@ class _PostScreenState extends State<PostScreen> {
           bottomBar()
           
         ],
+      ): const CustomContainer(
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
       )
     );
   }

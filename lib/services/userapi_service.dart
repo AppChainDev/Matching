@@ -44,9 +44,13 @@ class UserApiService {
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       int userId = data['id'];
+      int? gender = data['gender'];
       String accessToken = data['accessToken'];
       String refreshToken = data['refreshToken'];
       await storage.write(key: 'userId', value: jsonEncode(userId));
+      if (gender != null) {
+        await storage.write(key: 'gender', value: gender.toString()); 
+      }
       await storage.write(key: 'accessToken', value: accessToken);
       await storage.write(key: 'refreshToken', value: refreshToken);
       return true;
@@ -362,6 +366,102 @@ class UserApiService {
       );
     }
   }
+
+  Future<UserModel> getUserById(int userId) async{
+    String? accessToken = await storage.read(key: 'accessToken');
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/auth/getuserById?userId=$userId'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+    if(response.statusCode == 200){
+      var responseData = jsonDecode(response.body);
+      List<String> avatars = (responseData["avatars"] as List).map((avatar) => avatar.toString()).toList();
+      List<int> groups = (responseData["groups"] as List).map((group) => int.parse(group.toString())).toList();
+      List<String> questions = (responseData["questions"] as List).map((question) => question.toString()).toList();
+      List<String> phrases = (responseData["phrases"] as List).map((phrase) => phrase.toString()).toList();
+      return UserModel(
+        id: responseData["id"], 
+        name: responseData["name"], 
+        age: responseData["age"], 
+        gender: responseData["gender"], 
+        introduce: responseData["introduce"], 
+        prefectureId: responseData["prefectureId"], 
+        height: responseData["height"], 
+        bodyType: responseData["bodyType"], 
+        attitude: responseData["attitude"], 
+        avatars: avatars, 
+        blood: responseData["blood"], 
+        birth: responseData["birth"], 
+        education: responseData["birth"], 
+        jobType: responseData["education"], 
+        income: responseData["income"], 
+        materialHistory: responseData["materialHistory"], 
+        children: responseData["children"], 
+        housework: responseData["housework"], 
+        hopeMeet: responseData["hopeMeet"], 
+        dateCost: responseData["dateCost"], 
+        holiday: responseData["holiday"],
+        roomate: responseData["roomate"], 
+        alcohol: responseData["alcohol"], 
+        smoking: responseData["smoking"], 
+        saving: responseData["saving"], 
+        favoriteImage: responseData["favoriteImage"], 
+        favoriteDescription: responseData["favoriteDescription"], 
+        groups: groups,
+        isVerify: responseData["isVerify"],
+        isPay: responseData["isPay"],
+        pointCount: responseData["pointCount"], 
+        questions: questions, 
+        phrases: phrases, 
+        deadline: responseData["deadline"], 
+        createdAt: responseData["createdAt"], 
+        updateAt: responseData["updatedAt"]
+      );
+    }else{
+      return UserModel(
+        id: 0, 
+        name: '', 
+        age: 0, 
+        gender: 0, 
+        introduce: '', 
+        prefectureId: 0, 
+        height: 0, 
+        bodyType: 0, 
+        attitude: 0, 
+        avatars: [], 
+        blood: 0, 
+        birth: 0, 
+        education: 0, 
+        jobType: 0, 
+        income: 0, 
+        materialHistory: 0, 
+        children: 0, 
+        housework: 0, 
+        hopeMeet: 0, 
+        dateCost: 0, 
+        holiday: null,
+        roomate: null, 
+        alcohol: null, 
+        smoking: null, 
+        saving: null, 
+        favoriteImage: '', 
+        favoriteDescription: '', 
+        groups: [],
+        isVerify: false, 
+        isPay: false,
+        pointCount: 0, 
+        questions: null, 
+        phrases: [], 
+        deadline: '', 
+        createdAt: '', 
+        updateAt: ''
+      );
+    }
+  }
+
   Future<bool> saveQuestionAnswer(String answer, int index) async{
     String? userId = await storage.read(key: 'userId');
     String? accessToken = await storage.read(key: 'accessToken');
@@ -789,6 +889,27 @@ class UserApiService {
       body: jsonEncode(<String, String>{
         'id': userId!,
         'saving': saving.toString()
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<bool> removeGroups(List<int> removeGroups) async{
+    String? userId = await storage.read(key: 'userId');
+    String? accessToken = await storage.read(key: 'accessToken');
+    final response = await http.delete(
+      Uri.parse('$baseUrl/api/auth/remove_groups'),
+      body: jsonEncode(<String, String>{
+        'id': userId!,
+        'removeGroups': jsonEncode(removeGroups)
       }),
       headers: {
         'Content-Type': 'application/json',

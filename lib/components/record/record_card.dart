@@ -2,6 +2,7 @@ import 'package:drone/components/app_colors.dart';
 import 'package:drone/components/custom_text.dart';
 import 'package:drone/utils/const_file.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class RecordItem extends StatelessWidget{
   const RecordItem({
@@ -41,9 +42,12 @@ class RecordItem extends StatelessWidget{
                     width: 58,
                     height: 58,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(50)
-                    ),
-                    child: Image.asset("assets/images/$avatarImage", fit:BoxFit.cover),
+                      borderRadius: BorderRadius.circular(50),
+                      image: DecorationImage(
+                        image: NetworkImage("${dotenv.get('BASE_URL')}/img/$avatarImage"),
+                        fit: BoxFit.cover
+                      )
+                    )
                   ),
                   const SizedBox(
                     width: 7,

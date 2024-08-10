@@ -5,7 +5,10 @@ import 'package:drone/components/custom_text.dart';
 import 'package:drone/components/record/record_card.dart';
 import 'package:drone/models/usertransfer_model.dart';
 import 'package:drone/models/record_model.dart';
+import 'package:drone/state/like_state.dart';
+import 'package:drone/state/record_state.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class RecordListScreen extends StatefulWidget {
 
@@ -16,15 +19,13 @@ class RecordListScreen extends StatefulWidget {
 }
 
 class _RecordListScreenState extends State<RecordListScreen> {
-  final List<RecordModel> records = [
-    RecordModel(id: 1, avatar: "avatar1.png", name: 'Test1', age: 50, prefectureId: 12),
-    RecordModel(id: 2, avatar: "avatar1.png", name: 'Test2', age: 48, prefectureId: 13),
-    RecordModel(id: 3, avatar: "avatar1.png", name: 'Test3', age: 53, prefectureId: 14),
-  ];
+  late List<RecordModel> records;
+  bool isLoding = false;
 
   @override
   void initState() {
     super.initState();
+    getRecord();
   }
 
   @override
@@ -32,16 +33,26 @@ class _RecordListScreenState extends State<RecordListScreen> {
     super.dispose();
   }
 
-  void processLike(int id){
+  Future getRecord() async{
+    await Provider.of<RecordState>(context, listen: false).getRecord();
     setState(() {
-      records.removeWhere((record)=>record.id==id);
+      records = Provider.of<RecordState>(context, listen: false).records;
+      isLoding = true;
+    });
+  }
+
+  Future processLike(int id) async{
+    await Provider.of<LikeState>(context, listen: false).sendLike(id);
+    await Provider.of<RecordState>(context, listen: false).getRecord();
+    setState(() {
+      records = Provider.of<RecordState>(context, listen: false).records;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return BaseScreen(
-      child: Stack(
+      child: isLoding? Stack(
         children: [
           Center(
             child: CustomContainer(
@@ -128,8 +139,11 @@ class _RecordListScreenState extends State<RecordListScreen> {
               ),
             ),
           ),
-          
         ],
+      ): const CustomContainer(
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
       )
     );
   }

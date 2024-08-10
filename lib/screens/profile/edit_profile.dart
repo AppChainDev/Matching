@@ -97,11 +97,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       const SizedBox(
                         height: 24,
                       ),
-                      ProfileInformationWidget(),
-                      SizedBox(
+                      const ProfileInformationWidget(),
+                      const SizedBox(
                         height: 17,
                       ),
-                      GroupEditWidget()
+                      const GroupEditWidget()
                       
                     ],
                   ),
@@ -158,7 +158,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           ),
                           TextButton(
                             onPressed: (){
-                              Navigator.pushNamed(context, "/view_profile", arguments: UserTransforIdModel(id: 1, beforePage: 'edit_profile'));
+                              Navigator.pushNamed(context, "/view_profile", arguments: UserTransforIdModel(id: user.id, beforePage: 'edit_profile'));
                             }, 
                             child: CustomText(
                               text: "相手からの見え方", 

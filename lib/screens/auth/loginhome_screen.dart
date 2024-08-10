@@ -4,6 +4,7 @@ import 'package:drone/components/custom_button.dart';
 import 'package:drone/components/custom_container.dart';
 import 'package:drone/components/custom_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class LoginHomeScreen extends StatefulWidget {
 
@@ -16,6 +17,17 @@ class LoginHomeScreen extends StatefulWidget {
 class _LoginHomeScreenState extends State<LoginHomeScreen> {
   final List<int> _agreeCard = [];
 
+  @override
+  void initState() {
+    moveMypage();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   void _handleCartChanged(int id, bool inChecked) {
     setState(() {
       if (!inChecked) {
@@ -24,6 +36,20 @@ class _LoginHomeScreenState extends State<LoginHomeScreen> {
         _agreeCard.remove(id);
       }
     });
+  }
+
+  Future moveMypage() async{
+    const storage = FlutterSecureStorage();
+    String? gender = await storage.read(key: 'gender');
+    String? accessToken = await storage.read(key: 'accessToken');
+    if (accessToken != null && gender != null) {
+      if (int.parse(gender)==1) {
+        Navigator.pushNamed(context, "/malemypage");
+      }
+      if (int.parse(gender)==2) {
+        Navigator.pushNamed(context, "/femalemypage");
+      }
+    }
   }
 
   @override

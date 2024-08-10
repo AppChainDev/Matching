@@ -8,6 +8,7 @@ import '../services/userapi_service.dart';
 
 class UserState with ChangeNotifier {
   UserModel? _user;
+  UserModel? _userById;
   final UserApiService userApiService;
   bool _isAuthenticated = false;
   List<CommunityModel> _groups = [];
@@ -16,6 +17,7 @@ class UserState with ChangeNotifier {
   UserState({required this.userApiService});
 
   UserModel? get user => _user;
+  UserModel? get userById => _userById;
   bool get isAuthenticated => _isAuthenticated;
   List<CommunityModel> get groups => _groups;
   List<Category> get categories => _categories;
@@ -64,6 +66,10 @@ class UserState with ChangeNotifier {
   }
   Future<void> getUserInformation() async {
     _user = await userApiService.getUserInformation();
+    notifyListeners();
+  }
+  Future<void> getUserById(int userId) async {
+    _userById = await userApiService.getUserById(userId);
     notifyListeners();
   }
   Future<bool> saveQuestionAnswer(String answer, int index) async{
@@ -210,6 +216,15 @@ class UserState with ChangeNotifier {
     if (result) {
       getUserInformation();
       notifyListeners();
+    }
+  }
+
+  Future<bool> removeGroups(List<int> removeGroups) async{
+    final result = await userApiService.removeGroups(removeGroups);
+    if (result) {
+      return true;
+    } else {
+      return false;
     }
   }
 

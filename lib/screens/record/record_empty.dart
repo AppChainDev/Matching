@@ -78,7 +78,7 @@ class _RecordEmptyScreenState extends State<RecordEmptyScreen> {
                       color: AppColors.secondaryGreen, 
                       titleColor: AppColors.primaryWhite, 
                       onTap: () async{ 
-                        
+                        Navigator.pushNamed(context, "/swipe");
                       }
                     ),
                   ),
