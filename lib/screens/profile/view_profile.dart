@@ -7,6 +7,7 @@ import 'package:drone/models/chattingtransfer_model.dart';
 import 'package:drone/models/community_model.dart';
 import 'package:drone/models/user_model.dart';
 import 'package:drone/models/usertransfer_model.dart';
+import 'package:drone/state/post_state.dart';
 import 'package:drone/state/record_state.dart';
 import 'package:drone/state/user_state.dart';
 import 'package:drone/utils/const_file.dart';
@@ -64,16 +65,76 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
     });
   }
 
-  void saveMessage(){
-    Navigator.pop(context);
-  }
-
-  void _sendMessage() {
-    if (messageController.text.isNotEmpty) {
-      setState(() {
-        messageController.clear();
-      });
+  Future sendPostMessage(int id) async{
+    try {
+      await Provider.of<PostState>(context, listen: false).sendPostMessage(id, messageController.text);
       Navigator.pop(context);
+      Navigator.pushNamed(context, "/postpage");
+    } catch (e) {
+      showDialog(
+          barrierDismissible: false,
+          context: context,
+          builder: (_) => Center( // Aligns the container to center
+            child: Container( // A simplified version of dialog. 
+              width: 300,
+              height: 150,
+              padding: const EdgeInsets.only(top:35),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: AppColors.primaryWhite
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    "メッセージの送信に失敗しました。",
+                    textAlign:TextAlign.center,
+                    style: TextStyle(
+                      color: AppColors.primaryBlack,
+                      fontWeight: FontWeight.normal,
+                      fontSize:15,
+                      letterSpacing: -1,
+                      decoration: TextDecoration.none
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 24,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Container(
+                      width: 343,
+                      height: 42,
+                      margin: const EdgeInsets.only(top: 5),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          top: BorderSide(
+                            color: AppColors.secondaryGray.withOpacity(0.5)
+                          )
+                        )
+                      ),
+                      child: MaterialButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Center(
+                          child: CustomText(
+                            text: "OK", 
+                            fontSize: 15, 
+                            fontWeight: FontWeight.normal, 
+                            lineHeight: 1, 
+                            letterSpacing: -1, 
+                            color: AppColors.alertBlue
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+              )
+            )
+        );
     }
   }
 
@@ -117,9 +178,12 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
                             width: 46,
                             height: 46,
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(50)
-                            ),
-                            child: Image.asset("assets/images/$avatar", fit:BoxFit.cover),
+                              borderRadius: BorderRadius.circular(50),
+                              image: DecorationImage(
+                                image: NetworkImage("${dotenv.get('BASE_URL')}/img/$avatar"),
+                                fit: BoxFit.cover
+                              )
+                            )
                           ),
                           const SizedBox(
                             width: 8,
@@ -205,8 +269,76 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
                         color: AppColors.secondaryGreen, 
                         titleColor: AppColors.primaryWhite, 
                         onTap: () async{
-                          Navigator.pop(context);
-                          saveMessage(); 
+                          // Navigator.pop(context);
+                          // saveMessage(); 
+                          if(messageController.text != null && messageController.text != ""){
+                            sendPostMessage(id);
+                          }else{
+                            showDialog(
+                              barrierDismissible: false,
+                              context: context,
+                              builder: (_) => Center( // Aligns the container to center
+                                child: Container( // A simplified version of dialog. 
+                                  width: 300,
+                                  height: 150,
+                                  padding: const EdgeInsets.only(top:35),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    color: AppColors.primaryWhite
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        "内容を入力してください。",
+                                        textAlign:TextAlign.center,
+                                        style: TextStyle(
+                                          color: AppColors.primaryBlack,
+                                          fontWeight: FontWeight.normal,
+                                          fontSize:15,
+                                          letterSpacing: -1,
+                                          decoration: TextDecoration.none
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        height: 24,
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                                        child: Container(
+                                          width: 343,
+                                          height: 42,
+                                          margin: const EdgeInsets.only(top: 5),
+                                          decoration: BoxDecoration(
+                                            border: Border(
+                                              top: BorderSide(
+                                                color: AppColors.secondaryGray.withOpacity(0.5)
+                                              )
+                                            )
+                                          ),
+                                          child: MaterialButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: Center(
+                                              child: CustomText(
+                                                text: "OK", 
+                                                fontSize: 15, 
+                                                fontWeight: FontWeight.normal, 
+                                                lineHeight: 1, 
+                                                letterSpacing: -1, 
+                                                color: AppColors.alertBlue
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  )
+                                )
+                            );
+                          }
                         }
                       ),
                       const SizedBox(
@@ -655,7 +787,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
                           color: AppColors.primaryWhite, 
                           titleColor: AppColors.secondaryGreen, 
                           onTap: () async{ 
-                            sendMessage(userById.id, userById.name, userById.avatars[0], userById.age, userById.prefectureId);
+                            sendMessage(args.postId!, userById.name, userById.avatars[0], userById.age, userById.prefectureId);
                           }
                         ),
                       ),
@@ -786,7 +918,9 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
                           ),
                           const SizedBox(width: 14),
                           IconButton(
-                            onPressed: _sendMessage,
+                            onPressed: (){
+
+                            },
                             icon: Icon(
                               Icons.send,
                               color: AppColors.secondaryGreen,

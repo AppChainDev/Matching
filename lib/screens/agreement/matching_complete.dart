@@ -6,6 +6,7 @@ import 'package:drone/components/custom_container.dart';
 import 'package:drone/components/custom_text.dart';
 import 'package:drone/models/matching_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class MatchingCompleteScreen extends StatefulWidget {
 
@@ -48,9 +49,12 @@ class _MatchingCompleteScreenState extends State<MatchingCompleteScreen> {
                       width: 132,
                       height: 132,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(50),
-                      ),
-                      child: Image.asset("assets/images/${args.avatar}", fit:BoxFit.cover),
+                        borderRadius: BorderRadius.circular(65),
+                        image: DecorationImage(
+                          image: NetworkImage("${dotenv.get('BASE_URL')}/img/${args.avatar}"),
+                          fit: BoxFit.cover
+                        )
+                      )
                     ),
                     const SizedBox(
                       height: 36,

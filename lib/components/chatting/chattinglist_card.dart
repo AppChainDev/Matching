@@ -37,7 +37,7 @@ class ChattingListItem extends StatelessWidget{
         children: [
           GestureDetector(
             onTap: () {
-              Navigator.pushNamed(context, "/view_profile", arguments: UserTransforIdModel(id: id, beforePage: 'chattingpage'));
+              Navigator.pushNamed(context, "/view_profile", arguments: UserTransforIdModel(null, id: id, beforePage: 'chattingpage'));
             },
             child: Container(
               width: 70,

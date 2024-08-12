@@ -36,7 +36,7 @@ class MemberItem extends StatelessWidget{
             ),
             child: MaterialButton(
               onPressed: () {
-                Navigator.pushNamed(context, "/view_profile", arguments: UserTransforIdModel(id: id, beforePage: 'swipepage'));
+                Navigator.pushNamed(context, "/view_profile", arguments: UserTransforIdModel(null, id: id, beforePage: 'swipepage'));
               },
               child: Center(
                 child: Column(

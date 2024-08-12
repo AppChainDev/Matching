@@ -13,6 +13,7 @@ import 'package:drone/models/post_model.dart';
 import 'package:drone/state/post_state.dart';
 import 'package:drone/utils/const_file.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
@@ -30,11 +31,6 @@ class _PostScreenState extends State<PostScreen> {
 
   final TextEditingController messageController = TextEditingController();
   int messageLength = 0;
-  // List<PostModel> posts = [
-  //   PostModel(1, 1, "ゆうじ", "沖縄の海で去年サーフィンをした時の写真です。\n海がとても好きで共感できる方いますか？", 12, 45, "avatar1.png", "post_backimage1.png", 0),
-  //   PostModel(2, 1, "こうき", "食べ歩き行きたいですね。\n新座とかで。", 14, 60, "avatar1.png", "post_backimage2.png", 0),
-  //   PostModel(3, 1, "YUUTA", "お花見の時期ですね", 13, 56, "avatar1.png", "post_backimage3.png", 0),
-  // ];
   late List<PostModel> posts;
   bool isLoding = false;
   late File? image;
@@ -62,10 +58,79 @@ class _PostScreenState extends State<PostScreen> {
     });
   }
 
-  void saveMessage(int id){
-    setState(() {
-      posts.removeWhere((post)=>post.id==id);
-    });
+  Future sendPostMessage(int id) async{
+    try {
+      setState(() {
+        posts.removeWhere((post)=>post.id==id);
+      });
+      Navigator.pop(context);
+      await Provider.of<PostState>(context, listen: false).sendPostMessage(id, messageController.text);
+    } catch (e) {
+      showDialog(
+          barrierDismissible: false,
+          context: context,
+          builder: (_) => Center( // Aligns the container to center
+            child: Container( // A simplified version of dialog. 
+              width: 300,
+              height: 150,
+              padding: const EdgeInsets.only(top:35),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: AppColors.primaryWhite
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    "メッセージの送信に失敗しました。",
+                    textAlign:TextAlign.center,
+                    style: TextStyle(
+                      color: AppColors.primaryBlack,
+                      fontWeight: FontWeight.normal,
+                      fontSize:15,
+                      letterSpacing: -1,
+                      decoration: TextDecoration.none
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 24,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Container(
+                      width: 343,
+                      height: 42,
+                      margin: const EdgeInsets.only(top: 5),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          top: BorderSide(
+                            color: AppColors.secondaryGray.withOpacity(0.5)
+                          )
+                        )
+                      ),
+                      child: MaterialButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Center(
+                          child: CustomText(
+                            text: "OK", 
+                            fontSize: 15, 
+                            fontWeight: FontWeight.normal, 
+                            lineHeight: 1, 
+                            letterSpacing: -1, 
+                            color: AppColors.alertBlue
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+              )
+            )
+        );
+    }
   }
 
   Future getPosts() async{
@@ -175,9 +240,12 @@ class _PostScreenState extends State<PostScreen> {
                             width: 46,
                             height: 46,
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(50)
-                            ),
-                            child: Image.asset("assets/images/$avatar", fit:BoxFit.cover),
+                              borderRadius: BorderRadius.circular(50),
+                              image: DecorationImage(
+                                image: NetworkImage("${dotenv.get('BASE_URL')}/img/$avatar"),
+                                fit: BoxFit.cover
+                              )
+                            )
                           ),
                           const SizedBox(
                             width: 8,
@@ -262,9 +330,75 @@ class _PostScreenState extends State<PostScreen> {
                         fontWeight: FontWeight.normal, 
                         color: AppColors.secondaryGreen, 
                         titleColor: AppColors.primaryWhite, 
-                        onTap: () async{ 
-                          Navigator.pop(context);
-                          saveMessage(id);
+                        onTap: (){
+                          if(messageController.text != null && messageController.text != ""){
+                            sendPostMessage(id);
+                          }else{
+                            showDialog(
+                              barrierDismissible: false,
+                              context: context,
+                              builder: (_) => Center( // Aligns the container to center
+                                child: Container( // A simplified version of dialog. 
+                                  width: 300,
+                                  height: 150,
+                                  padding: const EdgeInsets.only(top:35),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    color: AppColors.primaryWhite
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        "内容を入力してください。",
+                                        textAlign:TextAlign.center,
+                                        style: TextStyle(
+                                          color: AppColors.primaryBlack,
+                                          fontWeight: FontWeight.normal,
+                                          fontSize:15,
+                                          letterSpacing: -1,
+                                          decoration: TextDecoration.none
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        height: 24,
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                                        child: Container(
+                                          width: 343,
+                                          height: 42,
+                                          margin: const EdgeInsets.only(top: 5),
+                                          decoration: BoxDecoration(
+                                            border: Border(
+                                              top: BorderSide(
+                                                color: AppColors.secondaryGray.withOpacity(0.5)
+                                              )
+                                            )
+                                          ),
+                                          child: MaterialButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: Center(
+                                              child: CustomText(
+                                                text: "OK", 
+                                                fontSize: 15, 
+                                                fontWeight: FontWeight.normal, 
+                                                lineHeight: 1, 
+                                                letterSpacing: -1, 
+                                                color: AppColors.alertBlue
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  )
+                                )
+                            );
+                          }
                         }
                       ),
                       const SizedBox(
@@ -462,103 +596,118 @@ class _PostScreenState extends State<PostScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BaseScreen(
-      child: isLoding? Stack(
-        children: [
-          if(posts.isNotEmpty)
-            Center(
-              child: CustomContainer(
-                decoration: BoxDecoration(
-                  color: AppColors.primaryBackground
-                ),
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 144, bottom: 100),
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(left: 12, right: 12),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: posts.map((item){
-                              return PostItem(
-                                id: item.id,
-                                name: item.name, 
-                                prefectureId: item.id, 
-                                age: item.age, 
-                                description: item.description, 
-                                bgImage: item.backImage, 
-                                avatarImage: item.avatar, 
-                                pressProfile: (){
-                                  Navigator.pushNamed(context, "/view_profile", arguments: UserTransforIdModel(id: item.id, beforePage: 'postpage'));
-                                }, 
-                                pressMessage: (){
-                                  sendMessage(item.id, item.name, item.avatar, item.age, item.prefectureId);
-                                }
-                              );
-                            }).toList(),
+    // ignore: deprecated_member_use
+    return WillPopScope(
+      onWillPop: () async{
+        const storage = FlutterSecureStorage();
+        String? gender =  await storage.read(key: 'gender');
+        if (gender != null) {
+          if (int.parse(gender) == 1) {
+            Navigator.pushNamed(context, "/malemypage");
+          } else {
+            Navigator.pushNamed(context, "/femalemypage");
+          }
+        }
+        return true;
+      },
+      child: BaseScreen(
+        child: isLoding? Stack(
+          children: [
+            if(posts.isNotEmpty)
+              Center(
+                child: CustomContainer(
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryBackground
+                  ),
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 144, bottom: 100),
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 12, right: 12),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: posts.map((item){
+                                return PostItem(
+                                  id: item.id,
+                                  name: item.name, 
+                                  prefectureId: item.id, 
+                                  age: item.age, 
+                                  description: item.description, 
+                                  bgImage: item.backImage, 
+                                  avatarImage: item.avatar, 
+                                  pressProfile: (){
+                                    Navigator.pushNamed(context, "/view_profile", arguments: UserTransforIdModel(item.id, id: item.userId, beforePage: 'postpage'));
+                                  }, 
+                                  pressMessage: (){
+                                    sendMessage(item.id, item.name, item.avatar, item.age, item.prefectureId);
+                                  }
+                                );
+                              }).toList(),
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          if(posts.isEmpty)
-            Center(
-              child: CustomContainer(
-                decoration: BoxDecoration(
-                  color: AppColors.primaryBackground
-                ),
-                child: Center(
-                  child: CustomText(
-                    text: "投稿した共感はありません", 
-                    fontSize: 17, 
-                    fontWeight: FontWeight.normal, 
-                    lineHeight: 1, 
-                    letterSpacing: 1, 
-                    color: AppColors.secondaryGreen
+            if(posts.isEmpty)
+              Center(
+                child: CustomContainer(
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryBackground
                   ),
-                )
-              ),
-            ),
-           Center(
-            child: CustomContainer(
-              height: 127,
-              decoration: BoxDecoration(
-                color: AppColors.primaryWhite
-              ),
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 20),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    CustomButton(
-                      title: "投稿を作成", 
-                      width: 343, 
-                      fontSize: 14, 
+                  child: Center(
+                    child: CustomText(
+                      text: "投稿した共感はありません", 
+                      fontSize: 17, 
                       fontWeight: FontWeight.normal, 
-                      color: AppColors.secondaryGreen, 
-                      titleColor: AppColors.primaryWhite, 
-                      onTap: (){
-                        // Navigator.pushNamed(context, "/create_post");
-                        getImageFromCamera();
-                      }
-                    )
-                  ],
+                      lineHeight: 1, 
+                      letterSpacing: 1, 
+                      color: AppColors.secondaryGreen
+                    ),
+                  )
+                ),
+              ),
+             Center(
+              child: CustomContainer(
+                height: 127,
+                decoration: BoxDecoration(
+                  color: AppColors.primaryWhite
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 20),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      CustomButton(
+                        title: "投稿を作成", 
+                        width: 343, 
+                        fontSize: 14, 
+                        fontWeight: FontWeight.normal, 
+                        color: AppColors.secondaryGreen, 
+                        titleColor: AppColors.primaryWhite, 
+                        onTap: (){
+                          // Navigator.pushNamed(context, "/create_post");
+                          getImageFromCamera();
+                        }
+                      )
+                    ],
+                  ),
                 ),
               ),
             ),
+            bottomBar()
+            
+          ],
+        ): const CustomContainer(
+          child: Center(
+            child: CircularProgressIndicator(),
           ),
-          bottomBar()
-          
-        ],
-      ): const CustomContainer(
-        child: Center(
-          child: CircularProgressIndicator(),
-        ),
-      )
+        )
+      ),
     );
   }
 }

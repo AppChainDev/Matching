@@ -271,7 +271,7 @@ class _LikeListScreenState extends State<LikeListScreen> {
                               pressSkip: ()=> skipClick(likes[likes.length-1].id), 
                               pressThanks: ()=> thanksClick(likes[likes.length-1].id),
                               pressProfile: () {
-                                Navigator.pushNamed(context, "/view_profile", arguments: UserTransforIdModel(id: likes[likes.length-1].id, beforePage: 'likepage'));
+                                Navigator.pushNamed(context, "/view_profile", arguments: UserTransforIdModel(null ,id: likes[likes.length-1].id, beforePage: 'likepage'));
                               }, 
                               verify: likes[likes.length-1].verify, 
                               favourite: likes[likes.length-1].favourite,
@@ -295,7 +295,7 @@ class _LikeListScreenState extends State<LikeListScreen> {
                             pressSkip: ()=> skipClick(likes[currenIndex].id), 
                             pressThanks: ()=> thanksClick(likes[currenIndex].id),
                             pressProfile: () {
-                              Navigator.pushNamed(context, "/view_profile", arguments: UserTransforIdModel(id: item.id, beforePage: 'likepage'));
+                              Navigator.pushNamed(context, "/view_profile", arguments: UserTransforIdModel(null, id: item.id, beforePage: 'likepage'));
                             }, 
                             verify: item.verify, 
                             favourite: item.favourite,

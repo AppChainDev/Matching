@@ -4,7 +4,10 @@ import 'package:drone/components/base_screen.dart';
 import 'package:drone/components/custom_container.dart';
 import 'package:drone/components/custom_text.dart';
 import 'package:drone/models/post_model.dart';
+import 'package:drone/models/postmessage_model.dart';
+import 'package:drone/state/post_state.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class AgreementChatListScreen extends StatefulWidget {
 
@@ -16,8 +19,11 @@ class AgreementChatListScreen extends StatefulWidget {
 
 class _AgreementChatListScreenState extends State<AgreementChatListScreen> {
 
+  late List<PostMessageModel> messageList;
+  bool isLoding = false;
   @override
   void initState() {
+    getPostChatList();
     super.initState();
   }
 
@@ -29,70 +35,44 @@ class _AgreementChatListScreenState extends State<AgreementChatListScreen> {
   Future getPostChatList() async{
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       final args = ModalRoute.of(context)!.settings.arguments as PostModel;
-      // await Provider.of<UserState>(context, listen: false).getUserById(args.id);
+      await Provider.of<PostState>(context, listen: false).getPostMessageList(args.id);
       // await Provider.of<UserState>(context, listen: false).getGroupList();
-      // setState(() {
-      //   userById = Provider.of<UserState>(context, listen: false).userById!;
-      //   groups = Provider.of<UserState>(context, listen: false).groups;
-      //   currentAvatar = userById.avatars[0];
-      //   isLoding = true;
-      // });
+      setState(() {
+        messageList = Provider.of<PostState>(context, listen: false).postMessageList;
+        isLoding = true;
+      });
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return BaseScreen(
-      child: Stack(
+      child: isLoding? Stack(
         children: [
           Center(
              child: CustomContainer(
               decoration: BoxDecoration(
                 color: AppColors.primaryBackground
               ),
-               child: const SingleChildScrollView(
+               child: SingleChildScrollView(
                  child: Padding(
-                   padding: EdgeInsets.only(top: 10, bottom: 50),
+                   padding: const EdgeInsets.only(top: 10, bottom: 50),
                    child: Column(
                      children: [
                       Padding(
-                        padding: EdgeInsets.only(top: 94),
+                        padding: const EdgeInsets.only(top: 94),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            AgreementChatItem(
-                              id:1,
-                              name: "Woman30", 
-                              prefectureId: 13, 
-                              age: 49, 
-                              description: "こんにちは！ \nよかったら私もその予定に参加したいです。", 
-                              avatarImage: "avatar1.png"
-                            ),
-                            AgreementChatItem(
-                              id:2,
-                              name: "Woman31", 
-                              prefectureId: 12, 
-                              age: 54, 
-                              description: "あなたの投稿しているメッセージをみて私も一緒に参加したくなったのでメッセージしました。 よかったら私の愛を受け取ってください。 予定日以外でも調整することができます。 よろしくおねがいします。", 
-                              avatarImage: "avatar1.png"
-                            ),
-                            AgreementChatItem(
-                              id:3,
-                              name: "Woman32", 
-                              prefectureId: 12, 
-                              age: 43, 
-                              description: "こんにちは！ 一緒にあなたの予定をこなしたい！",
-                              avatarImage: "avatar1.png"
-                            ),
-                            AgreementChatItem(
-                              id:4,
-                              name: "Woman33", 
-                              prefectureId: 12, 
-                              age: 41, 
-                              description: "こんにちは！ 一緒にあなたの予定をこなしたい！", 
-                              avatarImage: "avatar1.png"
-                            )
-                          ],
+                          children: messageList.map((message){
+                            return AgreementChatItem(
+                              id:message.senderId,
+                              name: message.name, 
+                              prefectureId: message.prefectureId, 
+                              age: message.age, 
+                              content: message.content, 
+                              avatarImage: message.avatarImage
+                            );
+                          }).toList()
                         ),
                       ),
                      ],
@@ -151,6 +131,10 @@ class _AgreementChatListScreenState extends State<AgreementChatListScreen> {
           ),
           
         ],
+      ): const CustomContainer(
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
       )
     );
   }

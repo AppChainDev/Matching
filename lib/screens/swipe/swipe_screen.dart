@@ -1028,7 +1028,7 @@ void buyBottomSheet() {
                               }
                             }, 
                             pressProfile: () {
-                              Navigator.pushNamed(context, "/view_profile", arguments: UserTransforIdModel(id: item.id, beforePage: 'swipepage'));
+                              Navigator.pushNamed(context, "/view_profile", arguments: UserTransforIdModel(null, id: item.id, beforePage: 'swipepage'));
                             }, 
                             verify: item.verify, 
                             favourite: item.favourite,

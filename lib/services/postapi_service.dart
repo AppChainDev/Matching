@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:drone/models/post_model.dart';
+import 'package:drone/models/postmessage_model.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
@@ -71,6 +72,51 @@ class PostApiService {
         PostModel item = PostModel(singleItem["id"], singleItem["userId"], singleItem["name"], singleItem["description"], singleItem["prefectureId"], singleItem["age"], singleItem["avatar"], singleItem["backImage"], singleItem["messageCount"]);
         array.add(item);
       }
+      return array;
+    } else {
+      return [];
+    }
+  }
+
+  Future<bool> sendPostMessage(int id, String message) async{
+    String? userId = await storage.read(key: 'userId');
+    String? accessToken = await storage.read(key: 'accessToken');
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/posts/send_postmessage'),
+      body: jsonEncode(<String, String>{
+        'postId': id.toString(),
+        'message': message,
+        'senderId': userId!
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<List<PostMessageModel>> getPostMessageList(int postId) async{
+    String? accessToken = await storage.read(key: 'accessToken');
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/posts/get_postmessagelist?postId=$postId'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+    if (response.statusCode == 200) {
+      List<PostMessageModel> array = [];
+      var reasonData = jsonDecode(response.body);
+      for(var singleItem in reasonData){
+        PostMessageModel item = PostMessageModel(singleItem["id"], singleItem["senderId"], singleItem["name"], singleItem["prefectureId"], singleItem["age"], singleItem["content"], singleItem["avatarImage"]);
+        array.add(item);
+      }
+      var str = array;
       return array;
     } else {
       return [];

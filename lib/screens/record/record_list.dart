@@ -71,7 +71,7 @@ class _RecordListScreenState extends State<RecordListScreen> {
                           children: records.map((item){
                             return GestureDetector(
                               onTap: () {
-                                Navigator.pushNamed(context, "/view_profile", arguments: UserTransforIdModel(id: item.id, beforePage: 'record_list'));
+                                Navigator.pushNamed(context, "/view_profile", arguments: UserTransforIdModel(null, id: item.id, beforePage: 'record_list'));
                               },
                               child: RecordItem(
                                 name: item.name, 

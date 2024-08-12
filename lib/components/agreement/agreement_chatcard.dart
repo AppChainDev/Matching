@@ -4,17 +4,18 @@ import 'package:drone/components/custom_text.dart';
 import 'package:drone/models/matching_model.dart';
 import 'package:drone/utils/const_file.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class AgreementChatItem extends StatelessWidget{
   const AgreementChatItem({
-    super.key, required this.name, required this.prefectureId, required this.age, required this.description, required this.avatarImage, required this.id
+    super.key, required this.name, required this.prefectureId, required this.age, required this.content, required this.avatarImage, required this.id
  });
 
  final int id;
  final String name;
  final int prefectureId;
  final int age;
- final String description;
+ final String content;
  final String avatarImage;
 
   @override
@@ -60,9 +61,12 @@ class AgreementChatItem extends StatelessWidget{
                           width: 39,
                           height: 39,
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(50)
-                          ),
-                          child: Image.asset("assets/images/$avatarImage", fit:BoxFit.cover),
+                            borderRadius: BorderRadius.circular(50),
+                            image: DecorationImage(
+                              image: NetworkImage("${dotenv.get('BASE_URL')}/img/$avatarImage"),
+                              fit: BoxFit.cover
+                            )
+                          )
                         ),
                         const SizedBox(
                           width: 10,
@@ -110,7 +114,7 @@ class AgreementChatItem extends StatelessWidget{
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   CustomText(
-                    text: description, 
+                    text: content, 
                     fontSize: 13, 
                     fontWeight: FontWeight.normal, 
                     lineHeight: 1.5, 
