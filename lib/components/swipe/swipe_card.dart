@@ -2,10 +2,11 @@ import 'package:drone/components/app_colors.dart';
 import 'package:drone/components/custom_text.dart';
 import 'package:drone/utils/const_file.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:swipe_to/swipe_to.dart';
 
 class SwipeItem extends StatefulWidget{
- const SwipeItem({super.key, required this.id, required this.name, required this.prefectureId, required this.age, required this.avatars, required this.pressSkip, required this.pressLike, required this.verify, this.pressProfile, required this.favourite, this.favouriteText, this.favouriteImage});
+ const SwipeItem({super.key, required this.id, required this.name, required this.prefectureId, required this.age, required this.avatars, required this.pressSkip, required this.pressLike, required this.verify, this.pressProfile, this.favouriteText, this.favouriteImage});
  final int id;
  final String name;
  final int prefectureId;
@@ -15,7 +16,6 @@ class SwipeItem extends StatefulWidget{
  final VoidCallback pressLike;
  final VoidCallback? pressProfile;
  final bool verify;
- final bool favourite;
  final String? favouriteText;
  final String? favouriteImage;
 
@@ -76,8 +76,8 @@ class _SwipeItemState extends State<SwipeItem> {
                     height: 560,
                     decoration: BoxDecoration(
                       image: DecorationImage(
-                        image: AssetImage("assets/images/${widget.avatars[index]}"),
-                        fit: BoxFit.cover     
+                        image: NetworkImage("${dotenv.get('BASE_URL')}/img/${widget.avatars[index]}"),
+                        fit: BoxFit.cover
                       ),
                       color: AppColors.darkGray,
                       borderRadius: BorderRadius.circular(10),
@@ -222,7 +222,7 @@ class _SwipeItemState extends State<SwipeItem> {
                                     letterSpacing: -1, 
                                     color: AppColors.primaryWhite
                                   ),
-                                  if(widget.favourite == true)
+                                  if(widget.favouriteImage != null)
                                     Container(
                                       height: 74,
                                       width: MediaQuery.of(context).size.width*0.8,
@@ -240,10 +240,10 @@ class _SwipeItemState extends State<SwipeItem> {
                                             height: 67,
                                             decoration: BoxDecoration(
                                               borderRadius: BorderRadius.circular(10),
-                                                image: DecorationImage(
-                                                  image: AssetImage("assets/images/${widget.favouriteImage!}"),
-                                                  fit: BoxFit.cover     
-                                                ), 
+                                              image: DecorationImage(
+                                                image: NetworkImage("${dotenv.get('BASE_URL')}/img/${widget.favouriteImage!}"),
+                                                fit: BoxFit.cover
+                                              )
                                             ),
                                           ),
                                           const SizedBox(

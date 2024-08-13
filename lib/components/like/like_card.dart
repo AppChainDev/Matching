@@ -2,10 +2,11 @@ import 'package:drone/components/app_colors.dart';
 import 'package:drone/components/custom_text.dart';
 import 'package:drone/utils/const_file.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:swipe_to/swipe_to.dart';
 
 class LikeItem extends StatefulWidget{
- const LikeItem({super.key, required this.id, required this.name, required this.prefectureId, required this.age, required this.avatars, required this.pressSkip, required this.pressThanks, required this.verify, this.description, this.pressProfile, required this.favourite, this.favouriteText, this.favouriteImage});
+ const LikeItem({super.key, required this.id, required this.name, required this.prefectureId, required this.age, required this.avatars, required this.pressSkip, required this.pressThanks, required this.verify, this.description, this.pressProfile, this.favouriteText, this.favouriteImage});
  final int id;
  final String name;
  final int prefectureId;
@@ -16,7 +17,6 @@ class LikeItem extends StatefulWidget{
  final VoidCallback pressThanks;
  final VoidCallback? pressProfile;
  final bool verify;
- final bool favourite;
  final String? favouriteText;
  final String? favouriteImage;
 
@@ -58,10 +58,7 @@ class _LikeItemState extends State<LikeItem> {
       index = 0;
     }
     if (widget.description != null) {   
-      return Container(
-        // decoration: BoxDecoration(
-        //   color: AppColors.primaryBackground
-        // ),
+      return SizedBox(
         width: MediaQuery.of(context).size.width,
         child: Stack(
           children: [
@@ -85,13 +82,16 @@ class _LikeItemState extends State<LikeItem> {
                         child: Image.asset("assets/images/like_line.png", fit: BoxFit.contain),
                       ),
                       Expanded(
-                        child: CustomText(
-                          text: widget.description!, 
-                          fontSize: 14, 
-                          fontWeight: FontWeight.normal, 
-                          lineHeight: 1.5, 
-                          letterSpacing: -1, 
-                          color: AppColors.secondaryGreen
+                        child: Text(
+                          widget.description!,
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.normal,
+                            height: 1.5,
+                            letterSpacing: -1,
+                            color: AppColors.secondaryGreen
+                          ),
                         ),
                       )
                     ],
@@ -110,8 +110,8 @@ class _LikeItemState extends State<LikeItem> {
                       height: 100,
                       decoration: BoxDecoration(
                         image: DecorationImage(
-                          image: AssetImage("assets/images/${widget.avatars[0]}"),
-                          fit: BoxFit.cover     
+                          image: NetworkImage("${dotenv.get('BASE_URL')}/img/${widget.avatars[0]}"),
+                          fit: BoxFit.cover
                         ),
                         borderRadius: BorderRadius.circular(50),
                         border: Border.all(
@@ -144,7 +144,7 @@ class _LikeItemState extends State<LikeItem> {
         ),
       );
     } else{
-      return Container(
+      return SizedBox(
         // decoration: BoxDecoration(
         //   color: AppColors.primaryBackground
         // ),
@@ -162,8 +162,8 @@ class _LikeItemState extends State<LikeItem> {
                     height: 560,
                     decoration: BoxDecoration(
                       image: DecorationImage(
-                        image: AssetImage("assets/images/${widget.avatars[index]}"),
-                        fit: BoxFit.cover     
+                        image: NetworkImage("${dotenv.get('BASE_URL')}/img/${widget.avatars[index]}"),
+                        fit: BoxFit.cover
                       ),
                       color: AppColors.darkGray,
                       borderRadius: BorderRadius.circular(10),
@@ -308,7 +308,7 @@ class _LikeItemState extends State<LikeItem> {
                                       letterSpacing: -1, 
                                       color: AppColors.primaryWhite
                                     ),
-                                    if(widget.favourite == true)
+                                    if(widget.favouriteImage != null)
                                       Container(
                                         height: 74,
                                         width: MediaQuery.of(context).size.width*0.8,
@@ -326,10 +326,10 @@ class _LikeItemState extends State<LikeItem> {
                                               height: 67,
                                               decoration: BoxDecoration(
                                                 borderRadius: BorderRadius.circular(10),
-                                                 image: DecorationImage(
-                                                    image: AssetImage("assets/images/${widget.favouriteImage!}"),
-                                                    fit: BoxFit.cover     
-                                                  ), 
+                                                image: DecorationImage(
+                                                  image: NetworkImage("${dotenv.get('BASE_URL')}/img/${widget.favouriteImage!}"),
+                                                  fit: BoxFit.cover
+                                                )
                                               ),
                                             ),
                                             const SizedBox(

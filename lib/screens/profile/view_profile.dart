@@ -7,6 +7,7 @@ import 'package:drone/models/chattingtransfer_model.dart';
 import 'package:drone/models/community_model.dart';
 import 'package:drone/models/user_model.dart';
 import 'package:drone/models/usertransfer_model.dart';
+import 'package:drone/state/like_state.dart';
 import 'package:drone/state/post_state.dart';
 import 'package:drone/state/record_state.dart';
 import 'package:drone/state/user_state.dart';
@@ -27,6 +28,7 @@ class ViewProfileScreen extends StatefulWidget {
 class _ViewProfileScreenState extends State<ViewProfileScreen> {
 
   late UserModel userById;
+  late int point;
   bool isLoding = false;
   final TextEditingController messageController = TextEditingController();
   late String currentAvatar;
@@ -53,6 +55,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
         userById = Provider.of<UserState>(context, listen: false).userById!;
         groups = Provider.of<UserState>(context, listen: false).groups;
         currentAvatar = userById.avatars[0];
+        point = Provider.of<UserState>(context, listen: false).user!.pointCount;
         isLoding = true;
       });
     });
@@ -369,6 +372,91 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
             )
         );
       });
+  }
+
+  Future likeClick(int id) async{
+    final result = await Provider.of<LikeState>(context, listen: false).sendLike(id);
+    if (result) {
+      Navigator.pushNamed(context, "/swipe");
+    } else {
+      showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (_) => Center( // Aligns the container to center
+          child: Container( // A simplified version of dialog. 
+            width: 300,
+            height: 150,
+            padding: const EdgeInsets.only(top:35),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: AppColors.primaryWhite
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  "いいねを送信できませんでした。",
+                  textAlign:TextAlign.center,
+                  style: TextStyle(
+                    color: AppColors.primaryBlack,
+                    fontWeight: FontWeight.normal,
+                    fontSize:15,
+                    letterSpacing: -1,
+                    decoration: TextDecoration.none
+                  ),
+                ),
+                const SizedBox(
+                  height: 24,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Container(
+                    width: 343,
+                    height: 42,
+                    margin: const EdgeInsets.only(top: 5),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        top: BorderSide(
+                          color: AppColors.secondaryGray.withOpacity(0.5)
+                        )
+                      )
+                    ),
+                    child: MaterialButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Center(
+                        child: CustomText(
+                          text: "OK", 
+                          fontSize: 15, 
+                          fontWeight: FontWeight.normal, 
+                          lineHeight: 1, 
+                          letterSpacing: -1, 
+                          color: AppColors.alertBlue
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+            )
+          )
+      );
+    }
+  }
+
+  Future skipLikeClick(int id) async{
+    final result = await Provider.of<LikeState>(context, listen: false).skipLike(id);
+    if (result) {
+      Navigator.pushNamed(context, "/likelist"); 
+    }
+  }
+  Future thanksClick(int id) async{
+    final result = await Provider.of<LikeState>(context, listen: false).createMatching(id);
+    if (result) {
+      Navigator.pushNamed(context, "/likelist"); 
+    }
   }
 
   @override
@@ -816,7 +904,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
                             ),
                             child: MaterialButton(
                               onPressed: (){
-                      
+                                skipLikeClick(userById.id);
                               },
                               child: Center(
                                 child: CustomText(
@@ -839,7 +927,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
                             ),
                             child: MaterialButton(
                               onPressed: (){
-                      
+                                thanksClick(userById.id);
                               },
                               child: Center(
                                 child: CustomText(
@@ -955,7 +1043,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
                             child: Center(
                               child: IconButton(
                                 onPressed: (){
-                      
+                                  Navigator.pop(context);
                                 }, 
                                 icon: ImageIcon(
                                   const AssetImage("assets/images/close_button.png"),
@@ -999,7 +1087,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
                             child: Center(
                               child: IconButton(
                                 onPressed: (){
-                                  
+                                  likeClick(userById.id);
                                 }, 
                                 icon: ImageIcon(
                                   const AssetImage("assets/images/heart.png"),

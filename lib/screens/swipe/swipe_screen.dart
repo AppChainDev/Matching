@@ -13,10 +13,13 @@ import 'package:drone/models/chattingtransfer_model.dart';
 import 'package:drone/models/like_model.dart';
 import 'package:drone/models/swipegroup_model.dart';
 import 'package:drone/models/usertransfer_model.dart';
+import 'package:drone/state/like_state.dart';
+import 'package:drone/state/user_state.dart';
 import 'package:drone/utils/const_file.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:provider/provider.dart';
 
 class SwipeScreen extends StatefulWidget {
 
@@ -28,12 +31,14 @@ class SwipeScreen extends StatefulWidget {
 String pageKey = "swipe";
 class _SwipeScreenState extends State<SwipeScreen> {
 
-  final List<LikeModel> users = [
-    LikeModel(1, "TONBOさんから", null, 12, 50, ["post_backimage1.png"], false, false, null, null),
-    LikeModel(2, "ゆうじ", null, 14, 60, ["gfd.png", "aaa.png",], true, false, null, null),
-    LikeModel(3, "ゆうじssss", null, 13, 60, ["post_backimage1.png", "gfd.png", "aaa.png"], true, false, null, null),
-    LikeModel(4, "ゆうじ111", null, 16, 56, ["post_backimage1.png", "gfd.png", "aaa.png"], false, true, "3年前から飼育しているペットのジョンです。\nかわいいでしょ", "pet.png")
-  ];
+  // final List<LikeModel> users = [
+  //   LikeModel(1, "TONBOさんから", null, 12, 50, ["post_backimage1.png"], false, null, null),
+  //   LikeModel(2, "ゆうじ", null, 14, 60, ["gfd.png", "aaa.png",], true, null, null),
+  //   LikeModel(3, "ゆうじssss", null, 13, 60, ["post_backimage1.png", "gfd.png", "aaa.png"], true, null, null),
+  //   LikeModel(4, "ゆうじ111", null, 16, 56, ["post_backimage1.png", "gfd.png", "aaa.png"], false, "3年前から飼育しているペットのジョンです。\nかわいいでしょ", "pet.png")
+  // ];
+  late List<LikeModel> users;
+  bool isLoding = false;
   final List<SwipeGroupModel> topGroup = [
     SwipeGroupModel(id: 1, name: "Group1", members: 1000, thumbnail: "football.png"),
     SwipeGroupModel(id: 2, name: "Group2", members: 3000, thumbnail: "fishing.png"),
@@ -54,7 +59,7 @@ class _SwipeScreenState extends State<SwipeScreen> {
     SwipeGroupModel(id: 11, name: "釣り好き", members: 11000, thumbnail: "fishing.png"),
   ];
   int currenIndex = 0;
-  int point = 1;
+  late int point;
   bool clickedSearch = false;
   List<int> prefectureIds = [];
   List<int> bodyTypes= [];
@@ -65,6 +70,10 @@ class _SwipeScreenState extends State<SwipeScreen> {
 
   @override
   void initState() {
+    getUsers();
+    setState(() {
+      
+    });
     super.initState();
   }
 
@@ -73,27 +82,110 @@ class _SwipeScreenState extends State<SwipeScreen> {
     super.dispose();
   }
 
-  void skipClick(int id){  
-      setState(() {
+  Future getUsers() async{
+    await Provider.of<UserState>(context, listen: false).getUsers();
+    setState(() {
+      users = Provider.of<UserState>(context, listen: false).users;
+      point = Provider.of<UserState>(context, listen: false).user!.pointCount;
+      isLoding = true;
+    });
+  }
+
+  Future likeClick(int id) async{
+    final result = await Provider.of<LikeState>(context, listen: false).sendLike(id);
+    if (result) {
+      await Provider.of<UserState>(context, listen: false).getUserInformation(); 
+      setState(() {  
+        point = Provider.of<UserState>(context, listen: false).user!.pointCount;
         users.removeWhere((item)=>item.id==id);
         if (users.isEmpty) {
           currenIndex = 0;
         } else {
           currenIndex = (currenIndex >= users.length) ? users.length - 1 : currenIndex;
         }
-        point--;
       });
+    } else {
+      showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (_) => Center( // Aligns the container to center
+          child: Container( // A simplified version of dialog. 
+            width: 300,
+            height: 150,
+            padding: const EdgeInsets.only(top:35),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: AppColors.primaryWhite
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  "いいねを送信できませんでした。",
+                  textAlign:TextAlign.center,
+                  style: TextStyle(
+                    color: AppColors.primaryBlack,
+                    fontWeight: FontWeight.normal,
+                    fontSize:15,
+                    letterSpacing: -1,
+                    decoration: TextDecoration.none
+                  ),
+                ),
+                const SizedBox(
+                  height: 24,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Container(
+                    width: 343,
+                    height: 42,
+                    margin: const EdgeInsets.only(top: 5),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        top: BorderSide(
+                          color: AppColors.secondaryGray.withOpacity(0.5)
+                        )
+                      )
+                    ),
+                    child: MaterialButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Center(
+                        child: CustomText(
+                          text: "OK", 
+                          fontSize: 15, 
+                          fontWeight: FontWeight.normal, 
+                          lineHeight: 1, 
+                          letterSpacing: -1, 
+                          color: AppColors.alertBlue
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+            )
+          )
+      );
+    }
   }
-  void likeClick(int id){
-    setState(() {
-      users.removeWhere((item)=>item.id==id);
-      if (users.isEmpty) {
-        currenIndex = 0;
-      } else {
-        currenIndex = (currenIndex >= users.length) ? users.length - 1 : currenIndex;
-      }
-      point--;
-    });
+
+  Future skipClick(int id) async{
+    final result = await Provider.of<LikeState>(context, listen: false).skipSwipe();
+    if (result) {
+      await Provider.of<UserState>(context, listen: false).getUserInformation(); 
+      setState(() {
+        point = Provider.of<UserState>(context, listen: false).user!.pointCount;
+        users.removeWhere((item)=>item.id==id);
+        if (users.isEmpty) {
+          currenIndex = 0;
+        } else {
+          currenIndex = (currenIndex >= users.length) ? users.length - 1 : currenIndex;
+        }
+      }); 
+    }
   }
   void handleChange(String text) {
     setState(() {
@@ -960,627 +1052,657 @@ void buyBottomSheet() {
 
   @override
   Widget build(BuildContext context) {
-    return BaseScreen(
-      child: pageKey=="swipe"? Stack(
-        children: [
-          if(users.isNotEmpty)
-            Stack(
-              children: [
-                Center(
-                  child: CustomContainer(
-                    decoration: BoxDecoration(
-                      color: AppColors.primaryWhite
-                    ),
-                    child: Container(
-                      padding: const EdgeInsets.only(top: 100),
-                      child: users.length>=2? CardSwiper(
-                        cardsCount: users.length,
-                        scale: 0.8,
-                        isLoop: true,
-                        maxAngle: 90,
-                        allowedSwipeDirection: const AllowedSwipeDirection.only(left: true, right: true),
-                        cardBuilder: (context, index, percentThresholdX, percentThresholdY) {
-                          if (index >= users.length) {
+    // ignore: deprecated_member_use
+    return WillPopScope(
+      onWillPop: () async{
+        const storage = FlutterSecureStorage();
+        String? gender =  await storage.read(key: 'gender');
+        if (gender != null) {
+          if (int.parse(gender) == 1) {
+            Navigator.pushNamed(context, "/malemypage");
+          } else {
+            Navigator.pushNamed(context, "/femalemypage");
+          }
+        }
+        return true;
+      },
+      child: isLoding? BaseScreen(
+        child: pageKey=="swipe"? Stack(
+          children: [
+            if(users.isNotEmpty)
+              Stack(
+                children: [
+                  Center(
+                    child: CustomContainer(
+                      decoration: BoxDecoration(
+                        color: AppColors.primaryWhite
+                      ),
+                      child: Container(
+                        padding: const EdgeInsets.only(top: 100),
+                        child: users.length>=2? CardSwiper(
+                          cardsCount: users.length,
+                          scale: 0.8,
+                          isLoop: true,
+                          maxAngle: 90,
+                          allowedSwipeDirection: const AllowedSwipeDirection.only(left: true, right: true),
+                          cardBuilder: (context, index, percentThresholdX, percentThresholdY) {
+                            if (index >= users.length) {
+                              return SwipeItem(
+                                id: users[users.length-1].id, 
+                                name: users[users.length-1].name, 
+                                prefectureId: users[users.length-1].prefectureId, 
+                                age: users[users.length-1].age, 
+                                avatars: users[users.length-1].avatars, 
+                                pressSkip: (){
+                                  if (point>0) {
+                                    skipClick(users[users.length-1].id);
+                                  }else{
+                                    buyPointAlert(context);
+                                  }
+                                }, 
+                                pressLike: (){
+                                  if (point>0) {
+                                    likeClick(users[users.length-1].id);
+                                  }else{
+                                    buyPointAlert(context);
+                                  }
+                                },
+                                pressProfile: () {
+                                    Navigator.pushNamed(context, "/view_profile", arguments: UserTransforIdModel(null, id: users[users.length-1].id, beforePage: 'swipepage'));
+                                  }, 
+                                verify: users[users.length-1].verify, 
+                                favouriteText: users[users.length-1].favouriteText,
+                                favouriteImage: users[users.length-1].favouriteImage,
+                              );
+                            }
+                            var item = users[index];
+                            if (index != 0) {
+                              currenIndex = index - 1;
+                            } else {
+                              currenIndex = (users.length > 1) ? users.length - 1 : 0;
+                            }
                             return SwipeItem(
-                              id: users[users.length-1].id, 
-                              name: users[users.length-1].name, 
-                              prefectureId: users[users.length-1].prefectureId, 
-                              age: users[users.length-1].age, 
-                              avatars: users[users.length-1].avatars, 
-                              pressSkip: (){
-                                if (point>0) {
-                                  skipClick(users[users.length-1].id);
+                              id: item.id, 
+                              name: item.name,
+                              prefectureId: item.prefectureId, 
+                              age: item.age, 
+                              avatars: item.avatars, 
+                              pressSkip: ()=>(){
+                                if(point>0){
+                                  skipClick(users[currenIndex].id);
                                 }else{
                                   buyPointAlert(context);
                                 }
                               }, 
-                              pressLike: ()=>likeClick(users[users.length-1].id), 
-                              verify: users[users.length-1].verify, 
-                              favourite: users[users.length-1].favourite,
-                              favouriteText: users[users.length-1].favouriteText,
-                              favouriteImage: users[users.length-1].favouriteImage,
+                              pressLike: (){
+                                if(point>0){
+                                  likeClick(users[currenIndex].id);
+                                }else{
+                                  buyPointAlert(context);
+                                }
+                              }, 
+                              pressProfile: () {
+                                Navigator.pushNamed(context, "/view_profile", arguments: UserTransforIdModel(null, id: item.id, beforePage: 'swipepage'));
+                              }, 
+                              verify: item.verify, 
+                              favouriteText: item.favouriteText,
+                              favouriteImage: item.favouriteImage,
+                            );               
+                          }, 
+                        ):Column(
+                          children: users.map((item){
+                            return Padding(
+                              padding: const EdgeInsets.all(20),
+                              child: SwipeItem(
+                                  id: item.id, 
+                                  name: item.name, 
+                                  prefectureId: item.prefectureId, 
+                                  age: item.age, 
+                                  avatars: item.avatars, 
+                                  pressSkip: (){
+                                    if (point>0) {
+                                      skipClick(item.id);
+                                    }else{
+                                      buyPointAlert(context);
+                                    }
+                                  },
+                                  pressLike: (){
+                                    if (point>0) {
+                                      likeClick(item.id);  
+                                    }else{
+                                      buyPointAlert(context);
+                                    }
+                                  },
+                                  pressProfile: () {
+                                    Navigator.pushNamed(context, "/view_profile", arguments: UserTransforIdModel(null, id: item.id, beforePage: 'swipepage'));
+                                  }, 
+                                  verify: item.verify, 
+                                  favouriteText: item.favouriteText,
+                                  favouriteImage: item.favouriteImage,
+                                ),
                             );
-                          }
-                          var item = users[index];
-                          if (index != 0) {
-                            currenIndex = index - 1;
-                          } else {
-                            currenIndex = (users.length > 1) ? users.length - 1 : 0;
-                          }
-                          return SwipeItem(
-                            id: item.id, 
-                            name: item.name,
-                            prefectureId: item.prefectureId, 
-                            age: item.age, 
-                            avatars: item.avatars, 
-                            pressSkip: ()=>(){
-                              if(point>0){
-                                skipClick(users[currenIndex].id);
-                              }else{
-                                buyPointAlert(context);
-                              }
-                            }, 
-                            pressLike: (){
-                              if(point>0){
-                                likeClick(users[currenIndex].id);
-                              }else{
-                                buyPointAlert(context);
-                              }
-                            }, 
-                            pressProfile: () {
-                              Navigator.pushNamed(context, "/view_profile", arguments: UserTransforIdModel(null, id: item.id, beforePage: 'swipepage'));
-                            }, 
-                            verify: item.verify, 
-                            favourite: item.favourite,
-                            favouriteText: item.favouriteText,
-                            favouriteImage: item.favouriteImage,
-                          );               
-                        }, 
-                      ):Column(
-                        children: users.map((item){
-                          return Padding(
-                            padding: const EdgeInsets.all(20),
-                            child: SwipeItem(
-                                id: item.id, 
-                                name: item.name, 
-                                prefectureId: item.prefectureId, 
-                                age: item.age, 
-                                avatars: item.avatars, 
-                                pressSkip: (){
-                                  if (point>0) {
-                                    skipClick(item.id);
-                                  }else{
-                                    buyPointAlert(context);
-                                  }
-                                },
-                                pressLike: (){
-                                  if (point>0) {
-                                    likeClick(item.id);  
-                                  }else{
-                                    buyPointAlert(context);
-                                  }
-                                },
-                                verify: item.verify, 
-                                favourite: item.favourite,
-                                favouriteText: item.favouriteText,
-                                favouriteImage: item.favouriteImage,
-                              ),
-                          );
-                        }).toList()
-                        
-                      ),
-                    ),
-                  ),
-                ),
-                Center(
-                  child: CustomContainer(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 90),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                width: 55,
-                                height: 55,
-                                decoration: BoxDecoration(
-                                  color: AppColors.secondaryGray.withOpacity(0.5),
-                                  borderRadius: BorderRadius.circular(50)
-                                ),
-                                child: Center(
-                                  child: IconButton(
-                                    onPressed: (){
-                                      if (point>0) {
-                                        skipClick(users[currenIndex].id);
-                                      } else {
-                                        buyPointAlert(context);
-                                      }
-                                    }, 
-                                    icon: ImageIcon(
-                                      const AssetImage("assets/images/close_button.png"),
-                                      color: AppColors.primaryWhite
-                                    )
-                                  )
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 28.6,
-                              ),
-                              Container(
-                                width: 55,
-                                height: 55,
-                                decoration: BoxDecoration(
-                                  color: AppColors.secondaryRed,
-                                  borderRadius: BorderRadius.circular(50)
-                                ),
-                                child: Center(
-                                  child: IconButton(
-                                    onPressed: (){
-                                      Navigator.pushNamed(context, "/messagescreen", arguments: ChattingTransferModel(users[currenIndex].id, users[currenIndex].name, users[currenIndex].avatars[0], users[currenIndex].prefectureId, users[currenIndex].age));
-                                    }, 
-                                    icon: ImageIcon(
-                                      const AssetImage("assets/images/like.png"),
-                                      color: AppColors.primaryWhite
-                                    )
-                                  )
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 28.6,
-                              ),
-                              Container(
-                                width: 55,
-                                height: 55,
-                                decoration: BoxDecoration(
-                                  color: AppColors.secondaryGreen,
-                                  borderRadius: BorderRadius.circular(50)
-                                ),
-                                child: Center(
-                                  child: IconButton(
-                                    onPressed: (){
-                                      if (point>0) {
-                                        likeClick(users[currenIndex].id);
-                                      }else{
-                                        buyPointAlert(context);
-                                      }
-                                    }, 
-                                    icon: ImageIcon(
-                                      const AssetImage("assets/images/heart.png"),
-                                      color: AppColors.primaryWhite
-                                    )
-                                  )
-                                ),
-                              ),
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                )
-              ],
-            ),
-          if(users.isEmpty)
-            Center(
-              child: CustomContainer(
-                decoration: BoxDecoration(
-                  color: AppColors.primaryBackground
-                ),
-                child: Center(
-                  child: Container(
-                    width: 345,
-                    height: 215,
-                    padding: const EdgeInsets.only(top: 46, bottom: 26),
-                    decoration: BoxDecoration(
-                      color: AppColors.primaryWhite,
-                      borderRadius: BorderRadius.circular(10)
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          "まずは\nアプローチを開始しよう",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: AppColors.primaryBlack,
-                            fontSize: 18,
-                            fontWeight: FontWeight.normal,
-                            letterSpacing: -1
-                          ),
-                        ),
-                        Container(
-                          width: 280,
-                          height: 46,
-                          decoration: BoxDecoration(
-                            color: AppColors.secondaryGreen,
-                            borderRadius: BorderRadius.circular(50)
-                          ),
-                          child: MaterialButton(
-                            onPressed: () {
-                              
-                            },
-                            child: Center(
-                              child: CustomText(
-                                text: "おすすめ会員を表示", 
-                                fontSize: 16, 
-                                fontWeight: FontWeight.normal, 
-                                lineHeight: 1, 
-                                letterSpacing: -1, 
-                                color: AppColors.primaryWhite
-                              ),
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                )
-              ),
-            ),
-           
-           Center(
-            child: CustomContainer(
-              height: 100,
-              decoration: BoxDecoration(
-                color: AppColors.primaryWhite
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8, right: 15),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Row(
-                          children: [
-                            SelectItem(
-                              text: "おすすめ", 
-                              keyText: "swipe", 
-                              inChecked: pageKey == "swipe", 
-                              onCartChanged: handleChange
-                            ),
-                            const SizedBox(
-                              width: 10,
-                            ),
-                            SelectItem(
-                              text: "さがす", 
-                              keyText: "search", 
-                              inChecked: pageKey == "search", 
-                              onCartChanged: handleChange
-                            )
-                          ],
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              clickedSearch = true;
-                            });
-                          },
-                          child: ImageIcon(
-                            const AssetImage("assets/images/search.png"),
-                            color: AppColors.secondaryGreen,
-                            size: 30,
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                ],
-              ),
-            ),
-          ),
-          bottomBar(),
-          if(clickedSearch)
-           searchWidget()  
-        ]
-      ):Stack(
-        children: [
-          Center(
-            child: CustomContainer(
-              decoration: BoxDecoration(
-                color: AppColors.primaryWhite
-              ),
-              child: Padding(
-                padding: const EdgeInsets.only(top: 120),
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: MediaQuery.of(context).size.width,
-                        height: 260,
-                        padding: const EdgeInsets.only(top: 18.5, left: 20),
-                        decoration: BoxDecoration(
-                          color: AppColors.primaryBackground
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            CustomText(
-                              text: "みんなに人気のグループはコレ！", 
-                              fontSize: 8, 
-                              fontWeight: FontWeight.normal, 
-                              lineHeight: 2.5, 
-                              letterSpacing: 1, 
-                              color: AppColors.secondaryGreen
-                            ),
-                            CustomText(
-                              text: "unique text", 
-                              fontSize: 22, 
-                              fontWeight: FontWeight.normal, 
-                              lineHeight: 1, 
-                              letterSpacing: 1, 
-                              color: AppColors.primaryBlack
-                            ),
-                            Container(
-                              height: 160,
-                              margin: const EdgeInsets.only(top: 15),
-                              child: ListView(
-                                scrollDirection: Axis.horizontal,
-                                children: topGroup.map((item){
-                                  return Container(
-                                    width: 98,
-                                    margin: const EdgeInsets.only(right: 13),
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Container(
-                                          width: 98,
-                                          height: 98,
-                                          decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(10),
-                                            image: DecorationImage(
-                                              image: AssetImage("assets/images/${item.thumbnail}"),
-                                              fit: BoxFit.cover     
-                                            )
-                                          ),
-                                          child: MaterialButton(
-                                            onPressed: () {
-                                              Navigator.pushNamed(context, "/group_member", arguments: SwipeGroupModel(id: item.id, name: item.name, members: item.members, thumbnail: item.thumbnail));
-                                            },
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          height: 10,
-                                        ),
-                                        Column(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            CustomText(
-                                              text: item.name, 
-                                              fontSize: 12, 
-                                              fontWeight: FontWeight.normal, 
-                                              lineHeight: 1.5, 
-                                              letterSpacing: -1, 
-                                              color: AppColors.primaryBlack
-                                            ),
-                                            CustomText(
-                                              text: "${item.members}人", 
-                                              fontSize: 12, 
-                                              fontWeight: FontWeight.normal, 
-                                              lineHeight: 1.5, 
-                                              letterSpacing: -1, 
-                                              color: AppColors.secondaryGray
-                                            )
-                                          ],
-                                        )
-                                      ],
-                                    ),
-                                  );
-                                }).toList()
-                                
-                              ),
-                            ),
-
-                          ],
+                          }).toList()
+                          
                         ),
                       ),
-                      Column(
+                    ),
+                  ),
+                  Center(
+                    child: CustomContainer(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          Container(
-                            padding: const EdgeInsets.only(top: 18, left: 22, bottom: 25),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 90),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                CustomText(
-                                  text: "参加者が多い話題", 
-                                  fontSize: 17, 
-                                  fontWeight: FontWeight.normal, 
-                                  lineHeight: 1, 
-                                  letterSpacing: -1, 
-                                  color: AppColors.secondaryGreen
+                                Container(
+                                  width: 55,
+                                  height: 55,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.secondaryGray.withOpacity(0.5),
+                                    borderRadius: BorderRadius.circular(50)
+                                  ),
+                                  child: Center(
+                                    child: IconButton(
+                                      onPressed: (){
+                                        if (point>0) {
+                                          skipClick(users[currenIndex].id);
+                                        } else {
+                                          buyPointAlert(context);
+                                        }
+                                      }, 
+                                      icon: ImageIcon(
+                                        const AssetImage("assets/images/close_button.png"),
+                                        color: AppColors.primaryWhite
+                                      )
+                                    )
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 28.6,
                                 ),
                                 Container(
-                                  height: 120,
-                                  margin: const EdgeInsets.only(top: 15),
-                                  child: ListView(
-                                    scrollDirection: Axis.horizontal,
-                                    children: group1.sublist(0, (group1.length/2).ceil()).map((item){
-                                      return GroupItem(
-                                        id: item.id, 
-                                        name: item.name, 
-                                        members: item.members, 
-                                        thumbnail: item.thumbnail
-                                      );
-                                    }).toList(),
-                                  )
+                                  width: 55,
+                                  height: 55,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.secondaryRed,
+                                    borderRadius: BorderRadius.circular(50)
+                                  ),
+                                  child: Center(
+                                    child: IconButton(
+                                      onPressed: (){
+                                        Navigator.pushNamed(context, "/messagescreen", arguments: ChattingTransferModel(users[currenIndex].id, users[currenIndex].name, users[currenIndex].avatars[0], users[currenIndex].prefectureId, users[currenIndex].age));
+                                      }, 
+                                      icon: ImageIcon(
+                                        const AssetImage("assets/images/like.png"),
+                                        color: AppColors.primaryWhite
+                                      )
+                                    )
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 28.6,
                                 ),
                                 Container(
-                                  height: 120,
-                                  margin: const EdgeInsets.only(top: 15),
-                                  child: ListView(
-                                    scrollDirection: Axis.horizontal,
-                                    children: group1.sublist((group1.length/2).ceil(), group1.length).map((item){
-                                      return GroupItem(
-                                        id: item.id, 
-                                        name: item.name, 
-                                        members: item.members, 
-                                        thumbnail: item.thumbnail
-                                      );
-                                    }).toList(),
-                                  )
-                                )
-                              ],
-                            ),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.only(top: 18, left: 22, bottom: 25),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                CustomText(
-                                  text: "人気の話題", 
-                                  fontSize: 17, 
-                                  fontWeight: FontWeight.normal, 
-                                  lineHeight: 1, 
-                                  letterSpacing: -1, 
-                                  color: AppColors.secondaryGreen
+                                  width: 55,
+                                  height: 55,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.secondaryGreen,
+                                    borderRadius: BorderRadius.circular(50)
+                                  ),
+                                  child: Center(
+                                    child: IconButton(
+                                      onPressed: (){
+                                        if (point>0) {
+                                          likeClick(users[currenIndex].id);
+                                        }else{
+                                          buyPointAlert(context);
+                                        }
+                                      }, 
+                                      icon: ImageIcon(
+                                        const AssetImage("assets/images/heart.png"),
+                                        color: AppColors.primaryWhite
+                                      )
+                                    )
+                                  ),
                                 ),
-                                Container(
-                                  height: 120,
-                                  margin: const EdgeInsets.only(top: 15),
-                                  child: ListView(
-                                    scrollDirection: Axis.horizontal,
-                                    children: group1.sublist(0, (group1.length/2).ceil()).map((item){
-                                      return GroupItem(
-                                        id: item.id, 
-                                        name: item.name, 
-                                        members: item.members, 
-                                        thumbnail: item.thumbnail
-                                      );
-                                    }).toList(),
-                                  )
-                                ),
-                                Container(
-                                  height: 120,
-                                  margin: const EdgeInsets.only(top: 15),
-                                  child: ListView(
-                                    scrollDirection: Axis.horizontal,
-                                    children: group1.sublist((group1.length/2).ceil(), group1.length).map((item){
-                                      return GroupItem(
-                                        id: item.id, 
-                                        name: item.name, 
-                                        members: item.members, 
-                                        thumbnail: item.thumbnail
-                                      );
-                                    }).toList(),
-                                  )
-                                )
-                              ],
-                            ),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.only(top: 18, left: 22, bottom: 25),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                CustomText(
-                                  text: "趣味で話す", 
-                                  fontSize: 17, 
-                                  fontWeight: FontWeight.normal, 
-                                  lineHeight: 1, 
-                                  letterSpacing: -1, 
-                                  color: AppColors.secondaryGreen
-                                ),
-                                Container(
-                                  height: 120,
-                                  margin: const EdgeInsets.only(top: 15),
-                                  child: ListView(
-                                    scrollDirection: Axis.horizontal,
-                                    children: group1.sublist(0, (group1.length/2).ceil()).map((item){
-                                      return GroupItem(
-                                        id: item.id, 
-                                        name: item.name, 
-                                        members: item.members, 
-                                        thumbnail: item.thumbnail
-                                      );
-                                    }).toList(),
-                                  )
-                                ),
-                                Container(
-                                  height: 120,
-                                  margin: const EdgeInsets.only(top: 15),
-                                  child: ListView(
-                                    scrollDirection: Axis.horizontal,
-                                    children: group1.sublist((group1.length/2).ceil(), group1.length).map((item){
-                                      return GroupItem(
-                                        id: item.id, 
-                                        name: item.name, 
-                                        members: item.members, 
-                                        thumbnail: item.thumbnail
-                                      );
-                                    }).toList(),
-                                  )
-                                )
                               ],
                             ),
                           )
                         ],
                       ),
-                      const SizedBox(
-                        height: 100,
-                      )
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Center(
-            child: CustomContainer(
-              height: 120,
-              decoration: BoxDecoration(
-                color: AppColors.primaryWhite
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8, right: 15, bottom: 20),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Row(
-                          children: [
-                            SelectItem(
-                              text: "おすすめ", 
-                              keyText: "swipe", 
-                              inChecked: pageKey == "swipe", 
-                              onCartChanged: handleChange
-                            ),
-                            const SizedBox(
-                              width: 10,
-                            ),
-                            SelectItem(
-                              text: "さがす", 
-                              keyText: "search", 
-                              inChecked: pageKey == "search", 
-                              onCartChanged: handleChange
-                            )
-                          ],
-                        ),
-                      ],
                     ),
                   )
                 ],
               ),
+            if(users.isEmpty)
+              Center(
+                child: CustomContainer(
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryBackground
+                  ),
+                  child: Center(
+                    child: Container(
+                      width: 345,
+                      height: 215,
+                      padding: const EdgeInsets.only(top: 46, bottom: 26),
+                      decoration: BoxDecoration(
+                        color: AppColors.primaryWhite,
+                        borderRadius: BorderRadius.circular(10)
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            "まずは\nアプローチを開始しよう",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: AppColors.primaryBlack,
+                              fontSize: 18,
+                              fontWeight: FontWeight.normal,
+                              letterSpacing: -1
+                            ),
+                          ),
+                          Container(
+                            width: 280,
+                            height: 46,
+                            decoration: BoxDecoration(
+                              color: AppColors.secondaryGreen,
+                              borderRadius: BorderRadius.circular(50)
+                            ),
+                            child: MaterialButton(
+                              onPressed: () {
+                                
+                              },
+                              child: Center(
+                                child: CustomText(
+                                  text: "おすすめ会員を表示", 
+                                  fontSize: 16, 
+                                  fontWeight: FontWeight.normal, 
+                                  lineHeight: 1, 
+                                  letterSpacing: -1, 
+                                  color: AppColors.primaryWhite
+                                ),
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  )
+                ),
+              ),
+             
+             Center(
+              child: CustomContainer(
+                height: 100,
+                decoration: BoxDecoration(
+                  color: AppColors.primaryWhite
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8, right: 15),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Row(
+                            children: [
+                              SelectItem(
+                                text: "おすすめ", 
+                                keyText: "swipe", 
+                                inChecked: pageKey == "swipe", 
+                                onCartChanged: handleChange
+                              ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              SelectItem(
+                                text: "さがす", 
+                                keyText: "search", 
+                                inChecked: pageKey == "search", 
+                                onCartChanged: handleChange
+                              )
+                            ],
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                clickedSearch = true;
+                              });
+                            },
+                            child: ImageIcon(
+                              const AssetImage("assets/images/search.png"),
+                              color: AppColors.secondaryGreen,
+                              size: 30,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
             ),
+            bottomBar(),
+            if(clickedSearch)
+             searchWidget()  
+          ]
+        ):Stack(
+          children: [
+            Center(
+              child: CustomContainer(
+                decoration: BoxDecoration(
+                  color: AppColors.primaryWhite
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 120),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: MediaQuery.of(context).size.width,
+                          height: 260,
+                          padding: const EdgeInsets.only(top: 18.5, left: 20),
+                          decoration: BoxDecoration(
+                            color: AppColors.primaryBackground
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              CustomText(
+                                text: "みんなに人気のグループはコレ！", 
+                                fontSize: 8, 
+                                fontWeight: FontWeight.normal, 
+                                lineHeight: 2.5, 
+                                letterSpacing: 1, 
+                                color: AppColors.secondaryGreen
+                              ),
+                              CustomText(
+                                text: "unique text", 
+                                fontSize: 22, 
+                                fontWeight: FontWeight.normal, 
+                                lineHeight: 1, 
+                                letterSpacing: 1, 
+                                color: AppColors.primaryBlack
+                              ),
+                              Container(
+                                height: 160,
+                                margin: const EdgeInsets.only(top: 15),
+                                child: ListView(
+                                  scrollDirection: Axis.horizontal,
+                                  children: topGroup.map((item){
+                                    return Container(
+                                      width: 98,
+                                      margin: const EdgeInsets.only(right: 13),
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            width: 98,
+                                            height: 98,
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(10),
+                                              image: DecorationImage(
+                                                image: AssetImage("assets/images/${item.thumbnail}"),
+                                                fit: BoxFit.cover     
+                                              )
+                                            ),
+                                            child: MaterialButton(
+                                              onPressed: () {
+                                                Navigator.pushNamed(context, "/group_member", arguments: SwipeGroupModel(id: item.id, name: item.name, members: item.members, thumbnail: item.thumbnail));
+                                              },
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          Column(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              CustomText(
+                                                text: item.name, 
+                                                fontSize: 12, 
+                                                fontWeight: FontWeight.normal, 
+                                                lineHeight: 1.5, 
+                                                letterSpacing: -1, 
+                                                color: AppColors.primaryBlack
+                                              ),
+                                              CustomText(
+                                                text: "${item.members}人", 
+                                                fontSize: 12, 
+                                                fontWeight: FontWeight.normal, 
+                                                lineHeight: 1.5, 
+                                                letterSpacing: -1, 
+                                                color: AppColors.secondaryGray
+                                              )
+                                            ],
+                                          )
+                                        ],
+                                      ),
+                                    );
+                                  }).toList()
+                                  
+                                ),
+                              ),
+      
+                            ],
+                          ),
+                        ),
+                        Column(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.only(top: 18, left: 22, bottom: 25),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  CustomText(
+                                    text: "参加者が多い話題", 
+                                    fontSize: 17, 
+                                    fontWeight: FontWeight.normal, 
+                                    lineHeight: 1, 
+                                    letterSpacing: -1, 
+                                    color: AppColors.secondaryGreen
+                                  ),
+                                  Container(
+                                    height: 120,
+                                    margin: const EdgeInsets.only(top: 15),
+                                    child: ListView(
+                                      scrollDirection: Axis.horizontal,
+                                      children: group1.sublist(0, (group1.length/2).ceil()).map((item){
+                                        return GroupItem(
+                                          id: item.id, 
+                                          name: item.name, 
+                                          members: item.members, 
+                                          thumbnail: item.thumbnail
+                                        );
+                                      }).toList(),
+                                    )
+                                  ),
+                                  Container(
+                                    height: 120,
+                                    margin: const EdgeInsets.only(top: 15),
+                                    child: ListView(
+                                      scrollDirection: Axis.horizontal,
+                                      children: group1.sublist((group1.length/2).ceil(), group1.length).map((item){
+                                        return GroupItem(
+                                          id: item.id, 
+                                          name: item.name, 
+                                          members: item.members, 
+                                          thumbnail: item.thumbnail
+                                        );
+                                      }).toList(),
+                                    )
+                                  )
+                                ],
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.only(top: 18, left: 22, bottom: 25),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  CustomText(
+                                    text: "人気の話題", 
+                                    fontSize: 17, 
+                                    fontWeight: FontWeight.normal, 
+                                    lineHeight: 1, 
+                                    letterSpacing: -1, 
+                                    color: AppColors.secondaryGreen
+                                  ),
+                                  Container(
+                                    height: 120,
+                                    margin: const EdgeInsets.only(top: 15),
+                                    child: ListView(
+                                      scrollDirection: Axis.horizontal,
+                                      children: group1.sublist(0, (group1.length/2).ceil()).map((item){
+                                        return GroupItem(
+                                          id: item.id, 
+                                          name: item.name, 
+                                          members: item.members, 
+                                          thumbnail: item.thumbnail
+                                        );
+                                      }).toList(),
+                                    )
+                                  ),
+                                  Container(
+                                    height: 120,
+                                    margin: const EdgeInsets.only(top: 15),
+                                    child: ListView(
+                                      scrollDirection: Axis.horizontal,
+                                      children: group1.sublist((group1.length/2).ceil(), group1.length).map((item){
+                                        return GroupItem(
+                                          id: item.id, 
+                                          name: item.name, 
+                                          members: item.members, 
+                                          thumbnail: item.thumbnail
+                                        );
+                                      }).toList(),
+                                    )
+                                  )
+                                ],
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.only(top: 18, left: 22, bottom: 25),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  CustomText(
+                                    text: "趣味で話す", 
+                                    fontSize: 17, 
+                                    fontWeight: FontWeight.normal, 
+                                    lineHeight: 1, 
+                                    letterSpacing: -1, 
+                                    color: AppColors.secondaryGreen
+                                  ),
+                                  Container(
+                                    height: 120,
+                                    margin: const EdgeInsets.only(top: 15),
+                                    child: ListView(
+                                      scrollDirection: Axis.horizontal,
+                                      children: group1.sublist(0, (group1.length/2).ceil()).map((item){
+                                        return GroupItem(
+                                          id: item.id, 
+                                          name: item.name, 
+                                          members: item.members, 
+                                          thumbnail: item.thumbnail
+                                        );
+                                      }).toList(),
+                                    )
+                                  ),
+                                  Container(
+                                    height: 120,
+                                    margin: const EdgeInsets.only(top: 15),
+                                    child: ListView(
+                                      scrollDirection: Axis.horizontal,
+                                      children: group1.sublist((group1.length/2).ceil(), group1.length).map((item){
+                                        return GroupItem(
+                                          id: item.id, 
+                                          name: item.name, 
+                                          members: item.members, 
+                                          thumbnail: item.thumbnail
+                                        );
+                                      }).toList(),
+                                    )
+                                  )
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 100,
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Center(
+              child: CustomContainer(
+                height: 120,
+                decoration: BoxDecoration(
+                  color: AppColors.primaryWhite
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8, right: 15, bottom: 20),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Row(
+                            children: [
+                              SelectItem(
+                                text: "おすすめ", 
+                                keyText: "swipe", 
+                                inChecked: pageKey == "swipe", 
+                                onCartChanged: handleChange
+                              ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              SelectItem(
+                                text: "さがす", 
+                                keyText: "search", 
+                                inChecked: pageKey == "search", 
+                                onCartChanged: handleChange
+                              )
+                            ],
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
+            bottomBar(),
+          ],
+        )
+      ): const BaseScreen(
+        child: CustomContainer(
+          child: Center(
+            child: CircularProgressIndicator(),
           ),
-          bottomBar(),
-        ],
-      )
+        )
+      ),
     );
   }
 }

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:drone/models/category_model.dart';
 import 'package:drone/models/community_model.dart';
+import 'package:drone/models/like_model.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:jwt_decoder/jwt_decoder.dart';
@@ -459,6 +460,30 @@ class UserApiService {
         createdAt: '', 
         updateAt: ''
       );
+    }
+  }
+
+  Future<List<LikeModel>> getUsers() async{
+    String? userId = await storage.read(key: 'userId');
+    String? accessToken = await storage.read(key: 'accessToken');
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/auth/get_allusers?userId=$userId'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+    if (response.statusCode == 200) {
+      List<LikeModel> array = [];
+      var reasonData = jsonDecode(response.body);
+      for(var singleItem in reasonData){
+        List<String> avatars = (singleItem["avatars"] as List).map((avatar) => avatar.toString()).toList();
+        LikeModel item = LikeModel(singleItem["id"], singleItem["name"], singleItem["description"], singleItem["prefectureId"], singleItem["age"], avatars, singleItem["verify"], singleItem["favouriteText"], singleItem["favouriteImage"]);
+        array.add(item);
+      }
+      return array;
+    } else {
+      return [];
     }
   }
 

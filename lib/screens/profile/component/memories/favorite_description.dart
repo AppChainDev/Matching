@@ -40,7 +40,11 @@ class _FavoriteDescriptionWidgetState extends State<FavoriteDescriptionWidget> {
   Future getFavoriteDescription() async{
     setState(() {
       String? description = Provider.of<UserState>(context, listen: false).user!.favoriteDescription;
-      descriptionController.text = description!;
+      if (description != null) {
+        descriptionController.text = description;
+      } else {
+        descriptionController.text = '';
+      }
       textCount = descriptionController.text.length;
     });
   }

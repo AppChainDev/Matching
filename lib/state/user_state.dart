@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:drone/models/category_model.dart';
 import 'package:drone/models/community_model.dart';
+import 'package:drone/models/like_model.dart';
 import 'package:flutter/material.dart';
 import '../models/user_model.dart';
 import '../services/userapi_service.dart';
@@ -9,6 +10,7 @@ import '../services/userapi_service.dart';
 class UserState with ChangeNotifier {
   UserModel? _user;
   UserModel? _userById;
+  List<LikeModel> _users = [];
   final UserApiService userApiService;
   bool _isAuthenticated = false;
   List<CommunityModel> _groups = [];
@@ -18,6 +20,7 @@ class UserState with ChangeNotifier {
 
   UserModel? get user => _user;
   UserModel? get userById => _userById;
+  List<LikeModel> get users => _users;
   bool get isAuthenticated => _isAuthenticated;
   List<CommunityModel> get groups => _groups;
   List<Category> get categories => _categories;
@@ -72,6 +75,11 @@ class UserState with ChangeNotifier {
     _userById = await userApiService.getUserById(userId);
     notifyListeners();
   }
+  Future<void> getUsers() async {
+    _users = await userApiService.getUsers();
+    notifyListeners();
+  }
+
   Future<bool> saveQuestionAnswer(String answer, int index) async{
     return await userApiService.saveQuestionAnswer(answer, index);
   }
@@ -259,4 +267,6 @@ class UserState with ChangeNotifier {
   Future<void> scheduleTokenRefresh() async {
     userApiService.scheduleTokenRefresh();
   }
+
+  skipSwipe() {}
 }

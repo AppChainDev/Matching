@@ -116,7 +116,6 @@ class PostApiService {
         PostMessageModel item = PostMessageModel(singleItem["id"], singleItem["senderId"], singleItem["name"], singleItem["prefectureId"], singleItem["age"], singleItem["content"], singleItem["avatarImage"]);
         array.add(item);
       }
-      var str = array;
       return array;
     } else {
       return [];
