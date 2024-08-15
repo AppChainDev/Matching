@@ -4,7 +4,7 @@ class MemberModel {
   final String introduction;
   final int prefectureId;
   final int age;
-  final List<String> avatars;
+  final String avatar;
 
-  MemberModel(this.id, this.name, this.introduction, this.prefectureId, this.age, this.avatars);
+  MemberModel(this.id, this.name, this.introduction, this.prefectureId, this.age, this.avatar);
 }

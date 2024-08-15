@@ -31,7 +31,7 @@ class GroupItem extends StatelessWidget{
                 ),
                 child: MaterialButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, "/group_member", arguments: SwipeGroupModel(id: id, name: name, members: members, thumbnail: thumbnail));
+                    Navigator.pushNamed(context, "/group_member", arguments: SwipeGroupModel(id: id, name: name, members: members, thumbnail: thumbnail, categoryId: 1));
                   }
                 ),
               ),

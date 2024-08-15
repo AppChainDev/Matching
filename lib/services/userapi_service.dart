@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:drone/models/category_model.dart';
 import 'package:drone/models/community_model.dart';
 import 'package:drone/models/like_model.dart';
+import 'package:drone/models/member_model.dart';
+import 'package:drone/models/swipegroup_model.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:jwt_decoder/jwt_decoder.dart';
@@ -232,6 +234,51 @@ class UserApiService {
       return [];
     }
   }
+
+  Future<List<SwipeGroupModel>> getTopGroups() async{
+    String? accessToken = await storage.read(key: 'accessToken');
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/groups/get_topgroups'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+    if(response.statusCode == 200){
+      List<SwipeGroupModel> array = [];
+      var reasonData = jsonDecode(response.body);
+      for(var singleItem in reasonData){
+        SwipeGroupModel item = SwipeGroupModel(id: singleItem["id"], name: singleItem["name"], members: singleItem["members"], thumbnail: singleItem["thumbnail"], categoryId: singleItem["categoryId"]);
+        array.add(item);
+      }
+      return array;
+    }else{
+      return [];
+    }
+  }
+
+  Future<List<SwipeGroupModel>> getSwipeAllGroups() async{
+    String? accessToken = await storage.read(key: 'accessToken');
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/groups/get_allswipegroups'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+    if(response.statusCode == 200){
+      List<SwipeGroupModel> array = [];
+      var reasonData = jsonDecode(response.body);
+      for(var singleItem in reasonData){
+        SwipeGroupModel item = SwipeGroupModel(id: singleItem["id"], name: singleItem["name"], members: singleItem["members"], thumbnail: singleItem["thumbnail"], categoryId: singleItem["categoryId"]);
+        array.add(item);
+      }
+      return array;
+    }else{
+      return [];
+    }
+  }
+
   Future<bool> saveGroups(List<int> groups) async{
     String? userId = await storage.read(key: 'userId');
     String? accessToken = await storage.read(key: 'accessToken');
@@ -931,7 +978,7 @@ class UserApiService {
     String? userId = await storage.read(key: 'userId');
     String? accessToken = await storage.read(key: 'accessToken');
     final response = await http.delete(
-      Uri.parse('$baseUrl/api/auth/remove_groups'),
+      Uri.parse('$baseUrl/api/groups/remove_groups'),
       body: jsonEncode(<String, String>{
         'id': userId!,
         'removeGroups': jsonEncode(removeGroups)
@@ -945,6 +992,137 @@ class UserApiService {
       return true;
     } else {
       return false;
+    }
+  }
+
+  Future<List<MemberModel>> getGroupUsers(int groupId) async{
+    String? userId = await storage.read(key: 'userId');
+    String? accessToken = await storage.read(key: 'accessToken');
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/groups/get_groupusers?userId=$userId&groupId=$groupId'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+    if (response.statusCode == 200) {
+      List<MemberModel> array = [];
+      var reasonData = jsonDecode(response.body);
+      for(var singleItem in reasonData){
+        MemberModel item = MemberModel(singleItem["id"], singleItem["name"], singleItem["introduction"], singleItem["prefectureId"], singleItem["age"], singleItem["avatar"]);
+        array.add(item);
+      }
+      return array;
+    } else {
+      return [];
+    }
+  }
+
+  Future<bool> checkMember(int groupId) async{
+    String? userId = await storage.read(key: 'userId');
+    String? accessToken = await storage.read(key: 'accessToken');
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/groups/checkmember?userId=$userId&groupId=$groupId'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<bool> enterGroup(int groupId) async{
+    String? userId = await storage.read(key: 'userId');
+    String? accessToken = await storage.read(key: 'accessToken');
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/groups/entergroup'),
+      body: jsonEncode(<String, String>{
+        'userId': userId!,
+        'groupId': groupId.toString()
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<List<LikeModel>> searchSwipeUser(int minAge, int maxAge, int minHeigth, int maxHeight, List<int> prefectureIds, List<int> bodyTypes, List<int> maritalHistories, List<int> attitudes) async{
+    String? userId = await storage.read(key: 'userId');
+    String? accessToken = await storage.read(key: 'accessToken');
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/auth/search_swipeusers'),
+      body: jsonEncode(<String, String>{
+        'userId': userId!,
+        'minAge': minAge.toString(),
+        'maxAge': maxAge.toString(),
+        'minHeight': minHeigth.toString(),
+        'maxHeight': maxHeight.toString(),
+        'prefectureIds': jsonEncode(prefectureIds),
+        'bodyTypes': jsonEncode(bodyTypes),
+        'maritalHistories': jsonEncode(maritalHistories),
+        'attitues': jsonEncode(attitudes)
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+    if(response.statusCode == 200){
+      List<LikeModel> array = [];
+      var reasonData = jsonDecode(response.body);
+      for(var singleItem in reasonData){
+        List<String> avatars = (singleItem["avatars"] as List).map((avatar) => avatar.toString()).toList();
+        LikeModel item = LikeModel(singleItem["id"], singleItem["name"], singleItem["description"], singleItem["prefectureId"], singleItem["age"], avatars, singleItem["verify"], singleItem["favouriteText"], singleItem["favouriteImage"]);
+        array.add(item);
+      }
+      return array;
+    }else{
+      return [];
+    }
+  }
+
+  Future<List<MemberModel>> searchGroupUser(int groupId, int minAge, int maxAge, int minHeigth, int maxHeight, List<int> prefectureIds, List<int> bodyTypes, List<int> maritalHistories, List<int> attitudes) async{
+    String? userId = await storage.read(key: 'userId');
+    String? accessToken = await storage.read(key: 'accessToken');
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/groups/search_groupusers'),
+      body: jsonEncode(<String, String>{
+        'userId': userId!,
+        'groupId': groupId.toString(),
+        'minAge': minAge.toString(),
+        'maxAge': maxAge.toString(),
+        'minHeight': minHeigth.toString(),
+        'maxHeight': maxHeight.toString(),
+        'prefectureIds': jsonEncode(prefectureIds),
+        'bodyTypes': jsonEncode(bodyTypes),
+        'maritalHistories': jsonEncode(maritalHistories),
+        'attitues': jsonEncode(attitudes)
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+    if(response.statusCode == 200){
+      List<MemberModel> array = [];
+      var reasonData = jsonDecode(response.body);
+      for(var singleItem in reasonData){
+        MemberModel item = MemberModel(singleItem["id"], singleItem["name"], singleItem["introduction"], singleItem["prefectureId"], singleItem["age"], singleItem["avatar"]);
+        array.add(item);
+      }
+      return array;
+    }else{
+      return [];
     }
   }
   // Future<UserModel> login(String email, String password) async {

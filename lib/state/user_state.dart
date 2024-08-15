@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:drone/models/category_model.dart';
 import 'package:drone/models/community_model.dart';
 import 'package:drone/models/like_model.dart';
+import 'package:drone/models/member_model.dart';
+import 'package:drone/models/swipegroup_model.dart';
 import 'package:flutter/material.dart';
 import '../models/user_model.dart';
 import '../services/userapi_service.dart';
@@ -14,7 +16,12 @@ class UserState with ChangeNotifier {
   final UserApiService userApiService;
   bool _isAuthenticated = false;
   List<CommunityModel> _groups = [];
+  List<SwipeGroupModel> _topGroups = [];
+  List<SwipeGroupModel> _allSwipeGroups = [];
   List<Category> _categories = [];
+  List<MemberModel> _groupUsers = [];
+  List<LikeModel> _swipeSearchUsers = [];
+  List<MemberModel> _groupSearchUsers = [];
 
   UserState({required this.userApiService});
 
@@ -23,7 +30,12 @@ class UserState with ChangeNotifier {
   List<LikeModel> get users => _users;
   bool get isAuthenticated => _isAuthenticated;
   List<CommunityModel> get groups => _groups;
+  List<SwipeGroupModel> get topGroups => _topGroups;
+  List<SwipeGroupModel> get allSwipeGroups => _allSwipeGroups;
   List<Category> get categories => _categories;
+  List<MemberModel> get groupUsers => _groupUsers;
+  List<LikeModel> get swipeSearchUsers => _swipeSearchUsers;
+  List<MemberModel> get groupSearchUsers => _groupSearchUsers;
 
   Future<bool> phoneNumberSend(String phoneNumber) async {
     return await userApiService.phoneNumberSend(phoneNumber);
@@ -57,6 +69,15 @@ class UserState with ChangeNotifier {
     _groups = await userApiService.getGroupList();
     notifyListeners();
   }
+  Future<void> getTopGroups() async {
+    _topGroups = await userApiService.getTopGroups();
+    notifyListeners();
+  }
+  Future<void> getSwipeAllGroups() async {
+    _allSwipeGroups = await userApiService.getSwipeAllGroups();
+    notifyListeners();
+  }
+
   Future<void> getCategoryList() async {
     _categories = await userApiService.getCategoryList();
     notifyListeners();
@@ -234,6 +255,48 @@ class UserState with ChangeNotifier {
     } else {
       return false;
     }
+  }
+
+  Future getGroupUsers(int groupId) async{
+    _groupUsers = await userApiService.getGroupUsers(groupId);
+    notifyListeners();
+  }
+
+  Future<bool> checkMember(int groupId) async{
+    return await userApiService.checkMember(groupId);
+  }
+
+  Future<bool> enterGroup(int groupId) async{
+    return await userApiService.enterGroup(groupId);
+  }
+
+  Future<void> searchSwipeUser(int minAge, int maxAge, int minHeigth, int maxHeight, List<int> prefectureIds, List<int> bodyTypes, List<int> maritalHistories, List<int> attitudes ) async {
+    _swipeSearchUsers = await userApiService.searchSwipeUser(
+      minAge,
+      maxAge,
+      minHeigth,
+      maxHeight,
+      prefectureIds,
+      bodyTypes,
+      maritalHistories,
+      attitudes
+    );
+    notifyListeners();
+  }
+
+  Future<void> searchGroupUser(int groupId, int minAge, int maxAge, int minHeigth, int maxHeight, List<int> prefectureIds, List<int> bodyTypes, List<int> maritalHistories, List<int> attitudes ) async {
+    _groupSearchUsers = await userApiService.searchGroupUser(
+      groupId,
+      minAge,
+      maxAge,
+      minHeigth,
+      maxHeight,
+      prefectureIds,
+      bodyTypes,
+      maritalHistories,
+      attitudes
+    );
+    notifyListeners();
   }
 
   // Future<void> login(String email, String password) async {

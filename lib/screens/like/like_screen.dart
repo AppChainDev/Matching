@@ -453,7 +453,15 @@ class _LikeListScreenState extends State<LikeListScreen> {
                       padding: const EdgeInsets.only(top: 46, bottom: 26),
                       decoration: BoxDecoration(
                         color: AppColors.primaryWhite,
-                        borderRadius: BorderRadius.circular(10)
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.secondaryGray.withOpacity(0.5), // Shadow color
+                            spreadRadius: 0.5, // Spread radius
+                            blurRadius: 5, // Blur radius
+                            offset: const Offset(0, 1), // Shadow position (x, y)
+                          ),
+                        ],
                       ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,

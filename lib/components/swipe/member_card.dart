@@ -3,15 +3,16 @@ import 'package:drone/components/custom_text.dart';
 import 'package:drone/models/usertransfer_model.dart';
 import 'package:drone/utils/const_file.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class MemberItem extends StatelessWidget{
- const MemberItem({super.key, required this.id, required this.name, required this.prefectureId, required this.age, required this.introduction, required this.avatars});
+ const MemberItem({super.key, required this.id, required this.name, required this.prefectureId, required this.age, required this.introduction, required this.avatar});
  final int id;
  final String name;
  final int prefectureId;
  final int age;
  final String introduction;
- final List<String> avatars;
+ final String avatar;
  
   @override
   Widget build(BuildContext context){
@@ -29,8 +30,8 @@ class MemberItem extends StatelessWidget{
             height: 193,
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage("assets/images/${avatars[0]}"),
-                fit: BoxFit.cover     
+                image: NetworkImage("${dotenv.get('BASE_URL')}/img/$avatar"),
+                fit: BoxFit.cover
               ),
               borderRadius: BorderRadius.circular(10)
             ),

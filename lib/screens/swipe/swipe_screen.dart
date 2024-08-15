@@ -1,4 +1,6 @@
 
+import 'dart:async';
+
 import 'package:drone/components/app_colors.dart';
 import 'package:drone/components/base_screen.dart';
 import 'package:drone/components/custom_button.dart';
@@ -9,6 +11,7 @@ import 'package:drone/components/swipe/group_card.dart';
 import 'package:drone/components/swipe/group_other_card.dart';
 import 'package:drone/components/swipe/group_prefecture_card.dart';
 import 'package:drone/components/swipe/swipe_card.dart';
+import 'package:drone/models/category_model.dart';
 import 'package:drone/models/chattingtransfer_model.dart';
 import 'package:drone/models/like_model.dart';
 import 'package:drone/models/swipegroup_model.dart';
@@ -18,6 +21,7 @@ import 'package:drone/state/user_state.dart';
 import 'package:drone/utils/const_file.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
 
@@ -31,33 +35,11 @@ class SwipeScreen extends StatefulWidget {
 String pageKey = "swipe";
 class _SwipeScreenState extends State<SwipeScreen> {
 
-  // final List<LikeModel> users = [
-  //   LikeModel(1, "TONBOさんから", null, 12, 50, ["post_backimage1.png"], false, null, null),
-  //   LikeModel(2, "ゆうじ", null, 14, 60, ["gfd.png", "aaa.png",], true, null, null),
-  //   LikeModel(3, "ゆうじssss", null, 13, 60, ["post_backimage1.png", "gfd.png", "aaa.png"], true, null, null),
-  //   LikeModel(4, "ゆうじ111", null, 16, 56, ["post_backimage1.png", "gfd.png", "aaa.png"], false, "3年前から飼育しているペットのジョンです。\nかわいいでしょ", "pet.png")
-  // ];
   late List<LikeModel> users;
   bool isLoding = false;
-  final List<SwipeGroupModel> topGroup = [
-    SwipeGroupModel(id: 1, name: "Group1", members: 1000, thumbnail: "football.png"),
-    SwipeGroupModel(id: 2, name: "Group2", members: 3000, thumbnail: "fishing.png"),
-    SwipeGroupModel(id: 3, name: "Group3", members: 1500, thumbnail: "basketball.png"),
-    SwipeGroupModel(id: 4, name: "Group4", members: 2000, thumbnail: "games.png"),
-  ];
-  final List<SwipeGroupModel> group1 = [
-    SwipeGroupModel(id: 1, name: "釣り好き", members: 1000, thumbnail: "fishing.png"),
-    SwipeGroupModel(id: 2, name: "釣り好き", members: 2000, thumbnail: "fishing.png"),
-    SwipeGroupModel(id: 3, name: "釣り好き", members: 3000, thumbnail: "fishing.png"),
-    SwipeGroupModel(id: 4, name: "釣り好き", members: 4000, thumbnail: "fishing.png"),
-    SwipeGroupModel(id: 5, name: "釣り好き", members: 5000, thumbnail: "fishing.png"),
-    SwipeGroupModel(id: 6, name: "釣り好き", members: 6000, thumbnail: "fishing.png"),
-    SwipeGroupModel(id: 7, name: "釣り好き", members: 7000, thumbnail: "fishing.png"),
-    SwipeGroupModel(id: 8, name: "釣り好き", members: 8000, thumbnail: "fishing.png"),
-    SwipeGroupModel(id: 9, name: "釣り好き", members: 9000, thumbnail: "fishing.png"),
-    SwipeGroupModel(id: 10, name: "釣り好き", members: 10000, thumbnail: "fishing.png"),
-    SwipeGroupModel(id: 11, name: "釣り好き", members: 11000, thumbnail: "fishing.png"),
-  ];
+  late List<SwipeGroupModel> topGroups;
+  late List<SwipeGroupModel> allSwipeGroups;
+  List<Category> categoryList = [];
   int currenIndex = 0;
   late int point;
   bool clickedSearch = false;
@@ -70,10 +52,7 @@ class _SwipeScreenState extends State<SwipeScreen> {
 
   @override
   void initState() {
-    getUsers();
-    setState(() {
-      
-    });
+    getInitial();
     super.initState();
   }
 
@@ -82,12 +61,41 @@ class _SwipeScreenState extends State<SwipeScreen> {
     super.dispose();
   }
 
-  Future getUsers() async{
+  Future getInitial() async{
     await Provider.of<UserState>(context, listen: false).getUsers();
+    await Provider.of<UserState>(context, listen: false).getTopGroups();
+    await Provider.of<UserState>(context, listen: false).getSwipeAllGroups();
+    await Provider.of<UserState>(context, listen: false).getCategoryList();
     setState(() {
       users = Provider.of<UserState>(context, listen: false).users;
+      topGroups = Provider.of<UserState>(context, listen: false).topGroups;
+      allSwipeGroups = Provider.of<UserState>(context, listen: false).allSwipeGroups;
       point = Provider.of<UserState>(context, listen: false).user!.pointCount;
+      categoryList = Provider.of<UserState>(context, listen: false).categories;
       isLoding = true;
+    });
+  }
+
+  Future searchSwipeUser() async{
+    await Provider.of<UserState>(context, listen: false).searchSwipeUser(
+      ageRangeValues.start.ceil(), 
+      ageRangeValues.end.ceil(),
+      heightRangeValues.start.ceil(),
+      heightRangeValues.end.ceil(),
+      prefectureIds,
+      bodyTypes,
+      maritalHistories,
+      attitudes 
+    );
+    setState(() {
+      users = Provider.of<UserState>(context, listen: false).swipeSearchUsers;
+      clickedSearch = false;
+      ageRangeValues = const RangeValues(40, 40);
+      heightRangeValues = const RangeValues(130, 130);
+      prefectureIds = [];
+      bodyTypes = [];
+      maritalHistories = [];
+      attitudes = [];
     });
   }
 
@@ -776,7 +784,7 @@ class _SwipeScreenState extends State<SwipeScreen> {
                                   color: AppColors.secondaryGreen, 
                                   titleColor: AppColors.primaryWhite, 
                                   onTap: (){
-                                    
+                                    searchSwipeUser();
                                   }
                                 ),
                               ],
@@ -1315,7 +1323,9 @@ void buyBottomSheet() {
                             ),
                             child: MaterialButton(
                               onPressed: () {
-                                
+                                setState(() {
+                                  users = Provider.of<UserState>(context, listen: false).users;
+                                });
                               },
                               child: Center(
                                 child: CustomText(
@@ -1438,7 +1448,7 @@ void buyBottomSheet() {
                                 margin: const EdgeInsets.only(top: 15),
                                 child: ListView(
                                   scrollDirection: Axis.horizontal,
-                                  children: topGroup.map((item){
+                                  children: topGroups.map((item){
                                     return Container(
                                       width: 98,
                                       margin: const EdgeInsets.only(right: 13),
@@ -1452,13 +1462,13 @@ void buyBottomSheet() {
                                             decoration: BoxDecoration(
                                               borderRadius: BorderRadius.circular(10),
                                               image: DecorationImage(
-                                                image: AssetImage("assets/images/${item.thumbnail}"),
-                                                fit: BoxFit.cover     
+                                                image: NetworkImage("${dotenv.get('BASE_URL')}/img/${item.thumbnail}"),
+                                                fit: BoxFit.cover
                                               )
                                             ),
                                             child: MaterialButton(
                                               onPressed: () {
-                                                Navigator.pushNamed(context, "/group_member", arguments: SwipeGroupModel(id: item.id, name: item.name, members: item.members, thumbnail: item.thumbnail));
+                                                Navigator.pushNamed(context, "/group_member", arguments: SwipeGroupModel(id: item.id, name: item.name, members: item.members, thumbnail: item.thumbnail, categoryId: 1));
                                               },
                                             ),
                                           ),
@@ -1499,15 +1509,15 @@ void buyBottomSheet() {
                           ),
                         ),
                         Column(
-                          children: [
-                            Container(
+                          children: categoryList.map((category){
+                            return Container(
                               padding: const EdgeInsets.only(top: 18, left: 22, bottom: 25),
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   CustomText(
-                                    text: "参加者が多い話題", 
+                                    text: category.label, 
                                     fontSize: 17, 
                                     fontWeight: FontWeight.normal, 
                                     lineHeight: 1, 
@@ -1515,133 +1525,55 @@ void buyBottomSheet() {
                                     color: AppColors.secondaryGreen
                                   ),
                                   Container(
-                                    height: 120,
+                                    height: 250,
                                     margin: const EdgeInsets.only(top: 15),
                                     child: ListView(
                                       scrollDirection: Axis.horizontal,
-                                      children: group1.sublist(0, (group1.length/2).ceil()).map((item){
-                                        return GroupItem(
-                                          id: item.id, 
-                                          name: item.name, 
-                                          members: item.members, 
-                                          thumbnail: item.thumbnail
-                                        );
-                                      }).toList(),
-                                    )
+                                      children: [
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Row(
+                                              children: allSwipeGroups.where((groupItem){
+                                                return groupItem.categoryId == category.id;
+                                              }).toList()
+                                              .sublist(0, (allSwipeGroups.where((groupItem){
+                                                return groupItem.categoryId == category.id;
+                                              }).toList().length/2).ceil()).map((item){
+                                                return GroupItem(
+                                                  id: item.id, 
+                                                  name: item.name, 
+                                                  members: item.members, 
+                                                  thumbnail: item.thumbnail
+                                                );
+                                              }).toList(),
+                                            ),
+                                            Row(
+                                              children:  allSwipeGroups.where((groupItem){
+                                                return groupItem.categoryId == category.id;
+                                              }).toList()
+                                              .sublist((allSwipeGroups.where((groupItem){
+                                                return groupItem.categoryId == category.id;
+                                              }).toList().length/2).ceil(), allSwipeGroups.where((groupItem){
+                                                return groupItem.categoryId == category.id;
+                                              }).toList().length).map((item){
+                                                return GroupItem(
+                                                  id: item.id, 
+                                                  name: item.name, 
+                                                  members: item.members, 
+                                                  thumbnail: item.thumbnail
+                                                );
+                                              }).toList(),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                  Container(
-                                    height: 120,
-                                    margin: const EdgeInsets.only(top: 15),
-                                    child: ListView(
-                                      scrollDirection: Axis.horizontal,
-                                      children: group1.sublist((group1.length/2).ceil(), group1.length).map((item){
-                                        return GroupItem(
-                                          id: item.id, 
-                                          name: item.name, 
-                                          members: item.members, 
-                                          thumbnail: item.thumbnail
-                                        );
-                                      }).toList(),
-                                    )
-                                  )
                                 ],
                               ),
-                            ),
-                            Container(
-                              padding: const EdgeInsets.only(top: 18, left: 22, bottom: 25),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  CustomText(
-                                    text: "人気の話題", 
-                                    fontSize: 17, 
-                                    fontWeight: FontWeight.normal, 
-                                    lineHeight: 1, 
-                                    letterSpacing: -1, 
-                                    color: AppColors.secondaryGreen
-                                  ),
-                                  Container(
-                                    height: 120,
-                                    margin: const EdgeInsets.only(top: 15),
-                                    child: ListView(
-                                      scrollDirection: Axis.horizontal,
-                                      children: group1.sublist(0, (group1.length/2).ceil()).map((item){
-                                        return GroupItem(
-                                          id: item.id, 
-                                          name: item.name, 
-                                          members: item.members, 
-                                          thumbnail: item.thumbnail
-                                        );
-                                      }).toList(),
-                                    )
-                                  ),
-                                  Container(
-                                    height: 120,
-                                    margin: const EdgeInsets.only(top: 15),
-                                    child: ListView(
-                                      scrollDirection: Axis.horizontal,
-                                      children: group1.sublist((group1.length/2).ceil(), group1.length).map((item){
-                                        return GroupItem(
-                                          id: item.id, 
-                                          name: item.name, 
-                                          members: item.members, 
-                                          thumbnail: item.thumbnail
-                                        );
-                                      }).toList(),
-                                    )
-                                  )
-                                ],
-                              ),
-                            ),
-                            Container(
-                              padding: const EdgeInsets.only(top: 18, left: 22, bottom: 25),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  CustomText(
-                                    text: "趣味で話す", 
-                                    fontSize: 17, 
-                                    fontWeight: FontWeight.normal, 
-                                    lineHeight: 1, 
-                                    letterSpacing: -1, 
-                                    color: AppColors.secondaryGreen
-                                  ),
-                                  Container(
-                                    height: 120,
-                                    margin: const EdgeInsets.only(top: 15),
-                                    child: ListView(
-                                      scrollDirection: Axis.horizontal,
-                                      children: group1.sublist(0, (group1.length/2).ceil()).map((item){
-                                        return GroupItem(
-                                          id: item.id, 
-                                          name: item.name, 
-                                          members: item.members, 
-                                          thumbnail: item.thumbnail
-                                        );
-                                      }).toList(),
-                                    )
-                                  ),
-                                  Container(
-                                    height: 120,
-                                    margin: const EdgeInsets.only(top: 15),
-                                    child: ListView(
-                                      scrollDirection: Axis.horizontal,
-                                      children: group1.sublist((group1.length/2).ceil(), group1.length).map((item){
-                                        return GroupItem(
-                                          id: item.id, 
-                                          name: item.name, 
-                                          members: item.members, 
-                                          thumbnail: item.thumbnail
-                                        );
-                                      }).toList(),
-                                    )
-                                  )
-                                ],
-                              ),
-                            )
-                          ],
+                            );
+                          }).toList()
                         ),
                         const SizedBox(
                           height: 100,

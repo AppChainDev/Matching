@@ -9,8 +9,10 @@ import 'package:drone/components/swipe/group_prefecture_card.dart';
 import 'package:drone/components/swipe/member_card.dart';
 import 'package:drone/models/member_model.dart';
 import 'package:drone/models/swipegroup_model.dart';
+import 'package:drone/state/user_state.dart';
 import 'package:drone/utils/const_file.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 class GroupMemberScreen extends StatefulWidget {
   const GroupMemberScreen({super.key});
 
@@ -20,14 +22,16 @@ class GroupMemberScreen extends StatefulWidget {
 
 class _GroupMemberScreenState extends State<GroupMemberScreen> {
   final List<MemberModel> users = [
-    MemberModel(1, "TONBOさんから", "初めまして、都内で事務職をしております。高橋と申します。得意なことはたくさんあります。", 12, 34, ["gfd.png"]),
-    MemberModel(2, "ゆうじ1", "サンプル文章サンプル文章サンプル文章サンプル文章サンプル文章サンプル文章サンプル文章サンプル文章", 13, 40, ["gfd.png"]),
-    MemberModel(3, "ゆうじ2", "サンプル文章サンプル文章サンプル文章サンプル文章サンプル文章サンプル文章サンプル文章サンプル文章", 13, 40, ["gfd.png"]),
-    MemberModel(4, "ゆうじ3", "サンプル文章サンプル文章サンプル文章サンプル文章サンプル文章サンプル文章サンプル文章サンプル文章", 13, 40, ["gfd.png"]),
-    MemberModel(5, "ゆうじ4", "サンプル文章サンプル文章サンプル文章サンプル文章サンプル文章サンプル文章サンプル文章サンプル文章", 13, 40, ["gfd.png"]),
+    MemberModel(1, "TONBOさんから", "初めまして、都内で事務職をしております。高橋と申します。得意なことはたくさんあります。", 12, 34, "gfd.png"),
+    MemberModel(2, "ゆうじ1", "サンプル文章サンプル文章サンプル文章サンプル文章サンプル文章サンプル文章サンプル文章サンプル文章", 13, 40, "gfd.png"),
+    MemberModel(3, "ゆうじ2", "サンプル文章サンプル文章サンプル文章サンプル文章サンプル文章サンプル文章サンプル文章サンプル文章", 13, 40, "gfd.png"),
+    MemberModel(4, "ゆうじ3", "サンプル文章サンプル文章サンプル文章サンプル文章サンプル文章サンプル文章サンプル文章サンプル文章", 13, 40, "gfd.png"),
+    MemberModel(5, "ゆうじ4", "サンプル文章サンプル文章サンプル文章サンプル文章サンプル文章サンプル文章サンプル文章サンプル文章", 13, 40, "gfd.png"),
   ];
-
+  late List<MemberModel> groupUsers;
+  bool isLoding = false;
   bool clickedSearch = false;
+  bool isMember = false;
   List<int> prefectureIds = [];
   List<int> bodyTypes= [];
   List<int> maritalHistories = [];
@@ -37,12 +41,124 @@ class _GroupMemberScreenState extends State<GroupMemberScreen> {
 
   @override
   void initState() {
+    getGroupUsers();
     super.initState();
   }
 
   @override
   void dispose() {
     super.dispose();
+  }
+  Future getGroupUsers() async{
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      final args = ModalRoute.of(context)!.settings.arguments as SwipeGroupModel;
+      await Provider.of<UserState>(context, listen: false).getGroupUsers(args.id);
+      final result = await Provider.of<UserState>(context, listen: false).checkMember(args.id);
+      setState(() {
+        groupUsers = Provider.of<UserState>(context, listen: false).groupUsers;
+        isMember = result;
+        isLoding = true;
+      });
+    });
+  }
+
+  Future enterGroup(int groupId) async{
+    final result = await Provider.of<UserState>(context, listen: false).enterGroup(groupId);
+    if (result) {
+      final newIsMember = await Provider.of<UserState>(context, listen: false).checkMember(groupId);
+      setState(() {
+        isMember = newIsMember;
+      });
+    } else {
+      showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (_) => Center( // Aligns the container to center
+          child: Container( // A simplified version of dialog. 
+            width: 300,
+            height: 150,
+            padding: const EdgeInsets.only(top:35),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: AppColors.primaryWhite
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  "グループへの参加に失敗しました。",
+                  textAlign:TextAlign.center,
+                  style: TextStyle(
+                    color: AppColors.primaryBlack,
+                    fontWeight: FontWeight.normal,
+                    fontSize:15,
+                    letterSpacing: -1,
+                    decoration: TextDecoration.none
+                  ),
+                ),
+                const SizedBox(
+                  height: 24,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Container(
+                    width: 343,
+                    height: 42,
+                    margin: const EdgeInsets.only(top: 5),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        top: BorderSide(
+                          color: AppColors.secondaryGray.withOpacity(0.5)
+                        )
+                      )
+                    ),
+                    child: MaterialButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Center(
+                        child: CustomText(
+                          text: "OK", 
+                          fontSize: 15, 
+                          fontWeight: FontWeight.normal, 
+                          lineHeight: 1, 
+                          letterSpacing: -1, 
+                          color: AppColors.alertBlue
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+            )
+          )
+      );
+    }
+  }
+
+  Future searchSwipeUser(int groupId) async{
+    await Provider.of<UserState>(context, listen: false).searchGroupUser(
+      groupId,
+      ageRangeValues.start.ceil(), 
+      ageRangeValues.end.ceil(),
+      heightRangeValues.start.ceil(),
+      heightRangeValues.end.ceil(),
+      prefectureIds,
+      bodyTypes,
+      maritalHistories,
+      attitudes 
+    );
+    setState(() {
+      groupUsers = Provider.of<UserState>(context, listen: false).groupSearchUsers;
+      clickedSearch = false;
+      ageRangeValues = const RangeValues(40, 40);
+      heightRangeValues = const RangeValues(130, 130);
+      prefectureIds = [];
+      bodyTypes = [];
+      maritalHistories = [];
+      attitudes = [];
+    });
   }
 
   void handlePrefecture(String text) {
@@ -83,6 +199,7 @@ class _GroupMemberScreenState extends State<GroupMemberScreen> {
   }
 
   Widget searchWidget(){
+    final args = ModalRoute.of(context)!.settings.arguments as SwipeGroupModel;
     return 
       Center(
         child: CustomContainer(
@@ -452,7 +569,7 @@ class _GroupMemberScreenState extends State<GroupMemberScreen> {
                                   color: AppColors.secondaryGreen, 
                                   titleColor: AppColors.primaryWhite, 
                                   onTap: (){
-                                    
+                                    searchSwipeUser(args.id);
                                   }
                                 ),
                               ],
@@ -510,7 +627,7 @@ class _GroupMemberScreenState extends State<GroupMemberScreen> {
     // final bottomInset = MediaQuery.of(context).viewInsets.bottom;
     final args = ModalRoute.of(context)!.settings.arguments as SwipeGroupModel;
     return BaseScreen(
-      child: Stack(
+      child: isLoding? Stack(
         children: [
           Center(
             child: CustomContainer(
@@ -519,21 +636,85 @@ class _GroupMemberScreenState extends State<GroupMemberScreen> {
               ),
               child: Padding(
                 padding: const EdgeInsets.only(top:260, left: 20, right: 20, bottom: 50),
-                child: SingleChildScrollView(
+                child: groupUsers.isNotEmpty?  SingleChildScrollView(
                   child: Wrap(
                     alignment: WrapAlignment.start,
-                    children: users.map((item){
+                    children: groupUsers.map((item){
                       return MemberItem(
                         id: item.id, 
                         name: item.name, 
                         prefectureId: item.prefectureId, 
                         age: item.age, 
                         introduction: item.introduction, 
-                        avatars: item.avatars
+                        avatar: item.avatar
                       );
                     }).toList()
                   ),
-                )
+                ): Center(
+                    child: CustomContainer(
+                      decoration: BoxDecoration(
+                        color: AppColors.primaryBackground
+                      ),
+                      child: Center(
+                        child: Container(
+                          width: 345,
+                          height: 215,
+                          padding: const EdgeInsets.only(top: 46, bottom: 26),
+                          decoration: BoxDecoration(
+                            color: AppColors.primaryWhite,
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.secondaryGray.withOpacity(0.5), // Shadow color
+                                spreadRadius: 0.5, // Spread radius
+                                blurRadius: 5, // Blur radius
+                                offset: const Offset(0, 1), // Shadow position (x, y)
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                "条件に該当する\n会員が見つかりませんでした",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: AppColors.primaryBlack,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.normal,
+                                  letterSpacing: -1
+                                ),
+                              ),
+                              Container(
+                                width: 280,
+                                height: 46,
+                                decoration: BoxDecoration(
+                                  color: AppColors.secondaryGreen,
+                                  borderRadius: BorderRadius.circular(50)
+                                ),
+                                child: MaterialButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Center(
+                                    child: CustomText(
+                                      text: "他のおすすめ会員を表示", 
+                                      fontSize: 16, 
+                                      fontWeight: FontWeight.normal, 
+                                      lineHeight: 1, 
+                                      letterSpacing: -1, 
+                                      color: AppColors.primaryWhite
+                                    ),
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      )
+                    ),
+                  ),
               ),
             ),
           ),
@@ -606,12 +787,14 @@ class _GroupMemberScreenState extends State<GroupMemberScreen> {
                               width: 183,
                               height: 38,
                               decoration: BoxDecoration(
-                                color: AppColors.secondaryGreen,
+                                color: isMember? AppColors.secondaryGray.withOpacity(0.8):AppColors.secondaryGreen,
                                 borderRadius: BorderRadius.circular(50)
                               ),
                               child: MaterialButton(
                                 onPressed: () {
-                                  
+                                  if (!isMember) {
+                                    enterGroup(args.id);
+                                  }
                                 },
                                 child: Center(
                                   child: CustomText(
@@ -675,6 +858,10 @@ class _GroupMemberScreenState extends State<GroupMemberScreen> {
           if(clickedSearch)
            searchWidget()
         ],
+      ):const CustomContainer(
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
       ),
     );
   }
