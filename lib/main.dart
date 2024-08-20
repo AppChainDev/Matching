@@ -1,7 +1,11 @@
+import 'package:drone/services/blockapi_service.dart';
+import 'package:drone/services/notificationapi_service.dart';
 import 'package:drone/services/postapi_service.dart';
 import 'package:drone/services/likeapi_service.dart';
 import 'package:drone/services/recordapi_service.dart';
+import 'package:drone/state/block_state.dart';
 import 'package:drone/state/like_state.dart';
+import 'package:drone/state/notification_state.dart';
 import 'package:drone/state/post_state.dart';
 import 'package:drone/state/record_state.dart';
 import 'package:flutter/material.dart';
@@ -42,6 +46,12 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => PostState(postApiService: PostApiService(baseUrl: dotenv.get('BASE_URL'))),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => BlockState(blockApiService: BlockApiService(baseUrl: dotenv.get('BASE_URL'))),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => NotificationState(notificationApiService: NotificationApiService(baseUrl: dotenv.get('BASE_URL'))),
         ),
         ChangeNotifierProvider(create: (_) => SettingsState()),
       ],

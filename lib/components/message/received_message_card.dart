@@ -1,16 +1,18 @@
 import 'package:drone/components/app_colors.dart';
 import 'package:drone/components/custom_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
 
 class ReceivedMessageItem extends StatelessWidget{
   const ReceivedMessageItem({
-    super.key, required this.text, required this.avatar, required this.date,
+    super.key, required this.text, required this.avatar, required this.date, this.image,
   });
 
   final String text;
   final String avatar;
   final String date;
+  final String? image;
 
   String formatTime(DateTime date) {
     DateFormat timeFormat = DateFormat('HH:mm');
@@ -77,6 +79,19 @@ class ReceivedMessageItem extends StatelessWidget{
                   )
                 ],
               ),
+              if(image != null)
+                Container(
+                  width: 235,
+                  height: 145,
+                  margin: const EdgeInsets.only(left: 10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    image: DecorationImage(
+                      image: NetworkImage("${dotenv.get('BASE_URL')}/img/$image"),
+                      fit: BoxFit.cover
+                    )
+                  )
+                ),
             ],
           ),
         ],

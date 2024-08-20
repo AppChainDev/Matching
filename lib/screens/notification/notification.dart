@@ -2,8 +2,10 @@ import 'package:drone/components/app_colors.dart';
 import 'package:drone/components/base_screen.dart';
 import 'package:drone/components/custom_container.dart';
 import 'package:drone/components/custom_text.dart';
-import 'package:drone/models/notification_transfermodel.dart';
+import 'package:drone/models/notification_model.dart';
+import 'package:drone/state/notification_state.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class NotificationScreen extends StatefulWidget {
 
@@ -15,8 +17,12 @@ class NotificationScreen extends StatefulWidget {
 
 class _NotificationScreenState extends State<NotificationScreen> {
 
+  late List<NotificationModel> notifications;
+  bool isLoding = false;
+
   @override
   void initState() {
+    getNotifications();
     super.initState();
   }
 
@@ -24,13 +30,22 @@ class _NotificationScreenState extends State<NotificationScreen> {
   void dispose() {
     super.dispose();
   }
+
+  Future getNotifications() async{
+    await Provider.of<NotificationState>(context, listen: false).getNotifications();
+    setState(() {
+      notifications = Provider.of<NotificationState>(context, listen: false).notifications;
+      isLoding = true;
+    });
+  }
   
   @override
   Widget build(BuildContext context) {
     return BaseScreen(
-      child: Stack(
+      child: isLoding? Stack(
         children: [
-           Center(
+          if(notifications.isNotEmpty)
+            Center(
             child: CustomContainer(
               decoration: BoxDecoration(
                 color: AppColors.primaryBackground
@@ -39,91 +54,96 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 padding: const EdgeInsets.only(top: 137),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    MaterialButton(
+                  children: notifications.map((notification){
+                    return MaterialButton(
                       onPressed: () {
-                        Navigator.pushNamed(context, "/notification_detail", arguments: NotificationTransferModel(1, "本人確認の結果について", "test Messagetest Message"));
+                        Navigator.pushNamed(context, "/notification_detail", arguments: NotificationModel(notification.id, notification.title, notification.content));
                       },
-                      child: const NotificationItem(
-                        id: 1, 
-                        text: "本人確認の結果について"
+                      child: NotificationItem(
+                        id: notification.id, 
+                        text: notification.title
                       ),
-                    ),
-                    MaterialButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, "/notification_detail", arguments: NotificationTransferModel(2, "不具合の修正について", "test Messagetest Message\ntest Messagetest Message"));
-                      },
-                      child: const NotificationItem(
-                        id: 2, 
-                        text: "不具合の修正について"
-                      ),
-                    ),
-                    MaterialButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, "/notification_detail", arguments: NotificationTransferModel(3, "キャンペーンについて", "test Messagetest Message\ntest Messagetest Message"));
-                      },
-                      child: const NotificationItem(
-                        id: 3, 
-                        text: "キャンペーンについて"
-                      ),
-                    )
-                  ],
+                    );
+                  }).toList()
                 ),
               ),
             ),
-           ),
-           Center(
+            ),
+          if(notifications.isEmpty)
+            Center(
+              child: CustomContainer(
+                decoration: BoxDecoration(
+                  color: AppColors.primaryBackground
+                ),
+                child: Center(
+                  child: CustomText(
+                    text: "メッセージはありません", 
+                    fontSize: 14, 
+                    fontWeight: FontWeight.normal, 
+                    lineHeight: 1, 
+                    letterSpacing: -1, 
+                    color: AppColors.secondaryGreen
+                  ),
+                ),
+              ),
+            ),
+
+          Center(
+          child: CustomContainer(
+            height: 94,
+            decoration: BoxDecoration(
+              color: AppColors.secondaryGreen
+            ),
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 20),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  CustomText(
+                    text: "お知らせ", 
+                    fontSize: 17, 
+                    fontWeight: FontWeight.bold, 
+                    lineHeight: 1, 
+                    letterSpacing: 1, 
+                    color:AppColors.primaryWhite
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        Center(
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 10),
             child: CustomContainer(
               height: 94,
-              decoration: BoxDecoration(
-                color: AppColors.secondaryGreen
-              ),
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 20),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    CustomText(
-                      text: "お知らせ", 
-                      fontSize: 17, 
-                      fontWeight: FontWeight.bold, 
-                      lineHeight: 1, 
-                      letterSpacing: 1, 
-                      color:AppColors.primaryWhite
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 10),
-              child: CustomContainer(
-                height: 94,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        IconButton(
-                          onPressed: (){
-                            Navigator.pop(context);
-                          }, 
-                          icon: Icon(
-                            Icons.arrow_back_ios_rounded,
-                            color: AppColors.primaryWhite,
-                          )
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      IconButton(
+                        onPressed: (){
+                          Navigator.pop(context);
+                        }, 
+                        icon: Icon(
+                          Icons.arrow_back_ios_rounded,
+                          color: AppColors.primaryWhite,
+                        )
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
           ),
+        ),
         ],
+      ): const CustomContainer(
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
       )
     );
   }

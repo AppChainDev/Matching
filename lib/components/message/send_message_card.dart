@@ -1,8 +1,7 @@
-import 'dart:io';
-
 import 'package:drone/components/app_colors.dart';
 import 'package:drone/components/custom_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
 
 class SendMessageItem extends StatelessWidget{
@@ -12,7 +11,7 @@ class SendMessageItem extends StatelessWidget{
 
   final String? text;
   final String date;
-  final File? image;
+  final String? image;
   String formatTime(DateTime date) {
     DateFormat timeFormat = DateFormat('HH:mm');
     return timeFormat.format(date);
@@ -68,10 +67,7 @@ class SendMessageItem extends StatelessWidget{
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                     image: DecorationImage(
-                      image: FileImage(
-                        image!,
-                        scale: 1.0
-                      ),
+                      image: NetworkImage("${dotenv.get('BASE_URL')}/img/$image"),
                       fit: BoxFit.cover
                     )
                   )

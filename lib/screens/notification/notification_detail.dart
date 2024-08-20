@@ -2,7 +2,7 @@ import 'package:drone/components/app_colors.dart';
 import 'package:drone/components/base_screen.dart';
 import 'package:drone/components/custom_container.dart';
 import 'package:drone/components/custom_text.dart';
-import 'package:drone/models/notification_transfermodel.dart';
+import 'package:drone/models/notification_model.dart';
 import 'package:flutter/material.dart';
 
 class NotificationDetailScreen extends StatefulWidget {
@@ -27,7 +27,7 @@ class _NotificationDetailScreenState extends State<NotificationDetailScreen> {
   
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as NotificationTransferModel;
+    final args = ModalRoute.of(context)!.settings.arguments as NotificationModel;
     return BaseScreen(
       child: Stack(
         children: [

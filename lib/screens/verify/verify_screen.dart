@@ -41,7 +41,7 @@ class _VerifyScreenState extends State<VerifyScreen> {
       setState(() {
         // ignore: unnecessary_null_comparison
         if (croppedFile != null) {
-          Navigator.pushNamed(context, "/verify_send", arguments: ImageModel(croppedFile));
+          Navigator.pushNamed(context, "/verify_send", arguments: ImageModel(verifyType, croppedFile));
         }
       });
     }
@@ -56,7 +56,7 @@ class _VerifyScreenState extends State<VerifyScreen> {
       setState(() {
         // ignore: unnecessary_null_comparison
         if (croppedFile != null) {
-          Navigator.pushNamed(context, "/verify_send", arguments: ImageModel(croppedFile));
+          Navigator.pushNamed(context, "/verify_send", arguments: ImageModel(verifyType, croppedFile));
         }
       });
     }

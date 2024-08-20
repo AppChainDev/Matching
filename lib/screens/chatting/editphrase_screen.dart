@@ -3,7 +3,9 @@ import 'package:drone/components/base_screen.dart';
 import 'package:drone/components/custom_container.dart';
 import 'package:drone/components/custom_text.dart';
 import 'package:drone/models/phrase_model.dart';
+import 'package:drone/state/user_state.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class EditPhraseScreen extends StatefulWidget {
   const EditPhraseScreen({super.key});
@@ -25,6 +27,13 @@ class _EditPhraseScreenState extends State<EditPhraseScreen> {
     super.dispose();
   }
 
+  Future<void> updatePhrase(int id) async{
+    final result = await Provider.of<UserState>(context, listen: false).updatePhrase(id, phraseController.text);
+    if (result) {
+      // await Provider.of<UserState>(context, listen: false).getPhrase();
+      Navigator.pop(context);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -141,7 +150,10 @@ class _EditPhraseScreenState extends State<EditPhraseScreen> {
                                   ),
                                   child: MaterialButton(
                                     onPressed: () {
-                                        Navigator.pop(context);
+                                      // Navigator.pop(context);
+                                      if (phraseController.text.trim().isNotEmpty) {
+                                        updatePhrase(args.id);
+                                      }
                                     },
                                     child: Center(
                                       child: Text(

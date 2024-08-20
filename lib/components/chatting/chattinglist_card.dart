@@ -3,6 +3,7 @@ import 'package:drone/components/custom_text.dart';
 import 'package:drone/models/usertransfer_model.dart';
 import 'package:drone/utils/const_file.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
 
 class ChattingListItem extends StatelessWidget{
@@ -19,13 +20,21 @@ class ChattingListItem extends StatelessWidget{
  final String stateText;
  final String date;
 
+  String convertTime(String dateString) {
+    DateFormat inputFormat = DateFormat('EEE MMM dd yyyy HH:mm:ss');
+    String datePart = dateString.split('GMT')[0].trim();
+    DateTime dateTime = inputFormat.parse(datePart);
+    String formattedDate = DateFormat('M/d HH:mm').format(dateTime);
+    return formattedDate;
+  }
+
   @override
   Widget build(BuildContext context){
     return Container(
       width: MediaQuery.of(context).size.width,
       padding: const EdgeInsets.only(left: 8, right: 16, top: 20, bottom: 16),
       decoration: BoxDecoration(
-        color: state=="receive"?AppColors.primaryBackground:AppColors.primaryWhite,
+        color: state!="あなたのメッセージを待っています！"?AppColors.primaryBackground:AppColors.primaryWhite,
         border: Border(
           bottom: BorderSide(
             color: AppColors.primaryGray,
@@ -45,8 +54,8 @@ class ChattingListItem extends StatelessWidget{
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(50),
                 image: DecorationImage(
-                  image: AssetImage("assets/images/$avatar"),
-                  fit: BoxFit.cover 
+                  image: NetworkImage("${dotenv.get('BASE_URL')}/img/$avatar"),
+                  fit: BoxFit.cover
                 )
               ),
             ),
@@ -85,7 +94,7 @@ class ChattingListItem extends StatelessWidget{
                       ],
                     ),
                     CustomText(
-                      text: DateFormat('M/d HH:mm').format(DateTime.parse(date)), 
+                      text: convertTime(date), 
                       fontSize: 11, 
                       fontWeight: FontWeight.normal, 
                       lineHeight: 1.5, 

@@ -4,7 +4,9 @@ import 'package:drone/components/blockaccount/block_card.dart';
 import 'package:drone/components/custom_container.dart';
 import 'package:drone/components/custom_text.dart';
 import 'package:drone/models/block_model.dart';
+import 'package:drone/state/block_state.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class BlockListScreen extends StatefulWidget {
 
@@ -15,14 +17,17 @@ class BlockListScreen extends StatefulWidget {
 }
 
 class _BlockListScreenState extends State<BlockListScreen> {
-  final List<BlockModel> blocks = [
-    BlockModel(id: 1, avatar: "avatar1.png", name: 'Test1', age: 50, prefectureId: 12),
-    BlockModel(id: 2, avatar: "avatar1.png", name: 'Test2', age: 48, prefectureId: 13),
-    BlockModel(id: 3, avatar: "avatar1.png", name: 'Test3', age: 53, prefectureId: 14),
-  ];
+  // final List<BlockModel> blocks = [
+  //   BlockModel(id: 1, avatar: "avatar1.png", name: 'Test1', age: 50, prefectureId: 12),
+  //   BlockModel(id: 2, avatar: "avatar1.png", name: 'Test2', age: 48, prefectureId: 13),
+  //   BlockModel(id: 3, avatar: "avatar1.png", name: 'Test3', age: 53, prefectureId: 14),
+  // ];
+  late List<BlockModel> blocks;
+  bool isLoding = false;
 
   @override
   void initState() {
+    getBlockList();
     super.initState();
   }
 
@@ -31,8 +36,27 @@ class _BlockListScreenState extends State<BlockListScreen> {
     super.dispose();
   }
 
+  Future getBlockList() async{
+    await Provider.of<BlockState>(context, listen: false).getBlockList();
+    setState(() {
+      blocks = Provider.of<BlockState>(context, listen: false).blocks;
+      isLoding = true;
+    });
+  }
+
+  Future removeBlock(int id) async{
+    final result = await Provider.of<BlockState>(context, listen: false).removeBlock(id);
+    if (result) {
+      Navigator.pop(context);
+    }
+    await Provider.of<BlockState>(context, listen: false).getBlockList();
+    setState(() {
+      blocks = Provider.of<BlockState>(context, listen: false).blocks;
+    });
+  }
+
   void processUnblock(int id){
-    showDialog(
+    showDialog( 
       barrierDismissible: false,
       context: context,
       builder: (_) => Center( // Aligns the container to center
@@ -79,7 +103,7 @@ class _BlockListScreenState extends State<BlockListScreen> {
                       ),
                       child: TextButton(
                         onPressed: (){
-                          Navigator.pop(context);
+                          removeBlock(id);
                         },
                         child: Text(
                           'キャンセル',
@@ -131,13 +155,14 @@ class _BlockListScreenState extends State<BlockListScreen> {
   @override
   Widget build(BuildContext context) {
     return BaseScreen(
-      child: Stack(
+      child: isLoding? Stack(
         children: [
-          Center(
-            child: CustomContainer(
-              decoration: BoxDecoration(
-                color: AppColors.primaryBackground
-              ),
+          if(blocks.isNotEmpty)
+            Center(
+              child: CustomContainer(
+                decoration: BoxDecoration(
+                  color: AppColors.primaryBackground
+                ),
                 child: SingleChildScrollView(
                   child: Padding(
                     padding: const EdgeInsets.only(top: 10, bottom: 50),
@@ -168,7 +193,25 @@ class _BlockListScreenState extends State<BlockListScreen> {
                 ),
               ),
             ),
-           Center(
+          if(blocks.isEmpty)
+            Center(
+              child: CustomContainer(
+                decoration: BoxDecoration(
+                  color: AppColors.primaryBackground
+                ),
+                child: Center(
+                  child: CustomText(
+                    text: "ブロックされたユーザーがいません。", 
+                    fontSize: 16, 
+                    fontWeight: FontWeight.normal, 
+                    lineHeight: 1, 
+                    letterSpacing: -1, 
+                    color: AppColors.secondaryGreen
+                  ),
+                )
+              ),
+            ),
+          Center(
             child: CustomContainer(
               height: 94,
               decoration: BoxDecoration(
@@ -216,6 +259,10 @@ class _BlockListScreenState extends State<BlockListScreen> {
           ),
           
         ],
+      ): const CustomContainer(
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
       )
     );
   }

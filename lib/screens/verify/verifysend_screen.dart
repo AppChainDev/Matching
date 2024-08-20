@@ -1,10 +1,15 @@
+import 'dart:io';
+
 import 'package:drone/components/app_colors.dart';
 import 'package:drone/components/base_screen.dart';
 import 'package:drone/components/custom_button.dart';
 import 'package:drone/components/custom_container.dart';
 import 'package:drone/components/custom_text.dart';
 import 'package:drone/models/image_model.dart';
+import 'package:drone/state/user_state.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:provider/provider.dart';
 
 class VerifySendScreen extends StatefulWidget {
 
@@ -24,6 +29,15 @@ class _VerifySendScreenState extends State<VerifySendScreen> {
   @override
   void dispose() {
     super.dispose();
+  }
+
+  Future sendVerifyCard(File image, String verifyType) async{
+    final result = await Provider.of<UserState>(context, listen: false).sendVerifyCard(image, verifyType);
+    if (result) {
+      const storage = FlutterSecureStorage();
+      await storage.write(key: 'verifyState', value: "pending");
+      Navigator.pushNamed(context, "/verify_waiting");
+    }
   }
 
   @override
@@ -75,7 +89,7 @@ class _VerifySendScreenState extends State<VerifySendScreen> {
                       color: AppColors.secondaryGreen, 
                       titleColor: AppColors.primaryWhite, 
                       onTap: () { 
-                        Navigator.pushNamed(context, "/verify_waiting");
+                        sendVerifyCard(args.image, args.verifyType);
                       }
                     ),
                   ),

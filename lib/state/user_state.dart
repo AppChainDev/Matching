@@ -1,10 +1,13 @@
 import 'dart:io';
 
+import 'package:drone/models/advicestate_model.dart';
 import 'package:drone/models/category_model.dart';
 import 'package:drone/models/community_model.dart';
 import 'package:drone/models/like_model.dart';
 import 'package:drone/models/member_model.dart';
+import 'package:drone/models/phrase_model.dart';
 import 'package:drone/models/swipegroup_model.dart';
+import 'package:drone/models/user.dart';
 import 'package:flutter/material.dart';
 import '../models/user_model.dart';
 import '../services/userapi_service.dart';
@@ -13,6 +16,7 @@ class UserState with ChangeNotifier {
   UserModel? _user;
   UserModel? _userById;
   List<LikeModel> _users = [];
+  List<PhraseModel> _phrase = [];
   final UserApiService userApiService;
   bool _isAuthenticated = false;
   List<CommunityModel> _groups = [];
@@ -22,12 +26,15 @@ class UserState with ChangeNotifier {
   List<MemberModel> _groupUsers = [];
   List<LikeModel> _swipeSearchUsers = [];
   List<MemberModel> _groupSearchUsers = [];
+  List<User> _matchedUserList = [];
+  AdviceStateModel? _adviceState;
 
   UserState({required this.userApiService});
 
   UserModel? get user => _user;
   UserModel? get userById => _userById;
   List<LikeModel> get users => _users;
+  List<PhraseModel> get phrase => _phrase;
   bool get isAuthenticated => _isAuthenticated;
   List<CommunityModel> get groups => _groups;
   List<SwipeGroupModel> get topGroups => _topGroups;
@@ -36,6 +43,8 @@ class UserState with ChangeNotifier {
   List<MemberModel> get groupUsers => _groupUsers;
   List<LikeModel> get swipeSearchUsers => _swipeSearchUsers;
   List<MemberModel> get groupSearchUsers => _groupSearchUsers;
+  List<User> get matchedUserList => _matchedUserList;
+  AdviceStateModel? get adviceState => _adviceState;
 
   Future<bool> phoneNumberSend(String phoneNumber) async {
     return await userApiService.phoneNumberSend(phoneNumber);
@@ -297,6 +306,40 @@ class UserState with ChangeNotifier {
       attitudes
     );
     notifyListeners();
+  }
+
+  Future<void> getMatchedUserList() async {
+    _matchedUserList = await userApiService.getMatchedUserList();
+    notifyListeners();
+  }
+
+  Future<void> getPhrase() async {
+    _phrase = await userApiService.getPhrase();
+    notifyListeners();
+  }
+
+  Future<bool> updatePhrase(int id, String text) async {
+    return await userApiService.updatePhrase(id, text);
+  }
+
+  Future<bool> sendAdviceRequest(int id) async {
+    return await userApiService.sendAdviceRequest(id);
+  }
+
+  Future<void> getAdviceState(int id) async {
+    _adviceState =  await userApiService.getAdviceState(id);
+  }
+
+  Future<bool> sendVerifyCard(File image, String verifyType) async {
+    return await userApiService.sendVerifyCard(image, verifyType);
+  }
+
+  Future<String?> getVerifyState() async {
+    return await userApiService.getVerifyState();
+  }
+
+  Future<bool> verifyChecked() async {
+    return await userApiService.verifyChecked();
   }
 
   // Future<void> login(String email, String password) async {

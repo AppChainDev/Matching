@@ -92,7 +92,7 @@ class Routes {
     '/create_post': (context) => const CreatePostScreen(),
     '/likelist': (context) => const LikeListScreen(),
     '/chattinglist': (context) => const ChattingListScreen(),
-    '/chatting_detail': (context) => const ChattingDetailScreen(),
+    // '/chatting_detail': (context) => const ChattingDetailScreen(),
     '/edit_phrase': (context) => const EditPhraseScreen(),
     '/violation_screen': (context) => const ViolationScreen(),
     '/violationconfirm_screen': (context) => const ViolationConfirmScreen(),

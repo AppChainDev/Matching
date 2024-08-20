@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:drone/components/app_colors.dart';
@@ -7,45 +9,136 @@ import 'package:drone/components/custom_container.dart';
 import 'package:drone/components/custom_text.dart';
 import 'package:drone/components/message/received_message_card.dart';
 import 'package:drone/components/message/send_message_card.dart';
+import 'package:drone/models/chat_message.dart';
 import 'package:drone/models/chattingtransfer_model.dart';
 import 'package:drone/models/phrase_model.dart';
+import 'package:drone/models/user.dart';
+import 'package:drone/state/user_state.dart';
+import 'package:drone/utils/database_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
+import 'package:socket_io_client/socket_io_client.dart' as IO;
+// import 'package:socket_io_client/socket_io_client.dart';
 
 class ChattingDetailScreen extends StatefulWidget {
-  const ChattingDetailScreen({super.key});
+  final User user;
+  const ChattingDetailScreen({super.key, required this.user});
 
   @override
   State<ChattingDetailScreen> createState() => _ChattingDetailScreenState();
 }
 
 class _ChattingDetailScreenState extends State<ChattingDetailScreen> {
+  IO.Socket socket = IO.io('http://10.0.2.2:5000', IO.OptionBuilder().setTransports(['websocket']).build());
+  final DatabaseHelper _dbHelper = DatabaseHelper();
+  List<ChatMessage> messages = [];
   final TextEditingController messageController = TextEditingController();
+  // late IOWebSocketChannel channel;
+  bool connected = false;
   int textCount = 0;
+  bool isLoding = false;
   bool displayPhrase = false;
-  String adviceState = "none";
-  List<Widget> messages = [ 
-    const ReceivedMessageItem(text: "こんにちは、話したいです", avatar: "avatar1.png", date: "2024-02-26 03:58:48"),
-    const SendMessageItem(text: '初めまして。\n私は東京都に在住する40歳の太郎です。\nお互いまずはゆっくりとメッセージを重ねて仲良くなりたいです。\nよろしくお願いいたします。', date: "2024-02-26 03:58:48")
-  ];
-  List<PhraseModel> phrases = [
-    PhraseModel(1, "こんにちは！\n共通する趣味や性格に惹かれて、メッセージを送ってみました。\n私はuniqueADREESに在住するuniqueAGE歳のuniqueNAMEです。\nメッセージお待ちしております。" ),
-    PhraseModel(2, "初めまして。\n私はuniqueADREESに在住するuniqueAGE歳のuniqueNAMEです。\nお互いまずはゆっくりとメッセージを重ねて仲良くなりたいです。\nよろしくお願いいたします。" ),
-    PhraseModel(3, "初めまして。uniqueNAMEと申します。\nプロフィールを拝見して、ぜひ一度メッセージをしたいと思いご連絡いたしました。\nよろしくお願いいたします。" ),
-  ];
+  bool displayAnswer = false;
+  late String adviceState;
+  String? answer;
+  late List<PhraseModel> phrases;
   @override
   void initState() {
+    
+    // connectWebSocket();
+    loadPhraseAndAdviceState();
+    // loadChatHistory();
     super.initState();
+    socket.connect();
+    connected = true;
+    print(connected);
+    socket.on('messageFromServer', (data) {
+      print(data);
+      // final messageData = jsonDecode(data);
+      //   final ChatMessage newMessage = ChatMessage(
+      //     id: messages.length + 1,
+      //     userId: widget.user.id,
+      //     text: messageData['text'] ?? '',
+      //     imagePath: messageData['imagePath'],
+      //     isSentByMe: false,
+      //     timestamp: DateTime.parse(messageData['timestamp']),
+      //   );
+
+      //   setState(() {
+      //     messages.add(newMessage);
+      //   });
+
+      //   _dbHelper.insertMessage(newMessage.toJson());
+    });
     messageController.addListener(_updateButtonColor);
   }
 
   @override
   void dispose() {
     messageController.removeListener(_updateButtonColor);
+    socket.onDisconnect((_){
+      print("disconnect");
+    });
     messageController.dispose();
     super.dispose();
+  }
+
+  Future loadPhraseAndAdviceState() async{
+    await Provider.of<UserState>(context, listen: false).getPhrase();
+    await Provider.of<UserState>(context, listen: false).getAdviceState(widget.user.id);
+    setState(() {
+      phrases = Provider.of<UserState>(context, listen: false).phrase;
+      if(Provider.of<UserState>(context, listen: false).adviceState != null){
+        adviceState = Provider.of<UserState>(context, listen: false).adviceState!.state;
+        answer =  Provider.of<UserState>(context, listen: false).adviceState!.answer;
+      } else{
+        adviceState = 'none';
+      }
+      isLoding = true;
+    });
+  }
+
+  Future sendAdviceRequest() async{
+    final result = await Provider.of<UserState>(context, listen: false).sendAdviceRequest(widget.user.id);
+    if (result) {
+      Navigator.pop(context);
+      setState(() {
+        adviceState = "request";
+      });
+    }
+  }
+
+  // void connectWebSocket(){
+  //   socket.onConnect((_) {
+  //     print('Connected to server');
+  //     setState(() {
+  //       connected = true;
+  //       print(connected);
+  //     });
+  //     // socket.emit('msg', 'test');
+  //   });
+
+  //   socket.on('messageFromServer', (data) {
+  //     print('Message from server: $data');
+  //   });
+    
+  //   socket.onDisconnect((_){
+  //     print("disconnect!");
+  //   });
+  // }
+  
+  Future<void> loadChatHistory() async {
+    List<Map<String, dynamic>> loadedMessages = await _dbHelper.getMessages(widget.user.id);
+    setState(() {
+      if (loadedMessages.isNotEmpty) {
+        messages = loadedMessages.map((json) => ChatMessage.fromJson(json)).toList();
+      }
+    });
   }
 
   void _updateButtonColor() {
@@ -61,19 +154,48 @@ class _ChattingDetailScreenState extends State<ChattingDetailScreen> {
     });
   }
 
+  Future<void> _sendMessage({String? text, String? imagePath}) async {
+    if (text == null && imagePath == null) return;
+    // ChatMessage newMessage = ChatMessage(
+    //   id: messages.length+1,
+    //   userId: widget.user.id,
+    //   text: text ?? '',
+    //   imagePath: imagePath,
+    //   isSentByMe: true,
+    //   timestamp: DateTime.now(),
+    // );
+
+    // await _dbHelper.insertMessage(newMessage.toJson());
+    setState(() {
+      // messages.add(newMessage);
+      messageController.clear();
+    });
+
+    // Send the message to the backend
+    // final messageData = {
+    //   'userId': widget.user.id,
+    //   'text': text,
+    //   'imagePath': imagePath,
+    //   'timestamp': newMessage.timestamp.toIso8601String(),
+    // };
+    print(text);
+    socket.emit("messageFromClient", {'data' : text});
+    // socket.emit("messageFromClient", jsonEncode(messageData));
+
+  }
+
   Future getImageFromGallery() async {
     // ignore: deprecated_member_use
     final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
       File? croppedFile = await cropImage(File(pickedFile.path));
-      setState(() {
-        // ignore: unnecessary_null_comparison
-        if (croppedFile != null) {
-          DateTime now = DateTime.now();
-          messages.add(SendMessageItem(image: croppedFile, date: DateFormat('yyyy-MM-dd HH:mm:ss').format(now)));
+      if (croppedFile != null) {
+        final imagePath = await _uploadImage(croppedFile);
+        if (imagePath != null && connected) {
+          _sendMessage(imagePath: imagePath);
         }
-      });
+      }
     }
   }
 
@@ -112,26 +234,40 @@ class _ChattingDetailScreenState extends State<ChattingDetailScreen> {
     }
   }
 
-  void _sendMessage() {
-    if (messageController.text.isNotEmpty) {
-      setState(() {
-        DateTime now = DateTime.now();
-        messages.add(SendMessageItem(text: messageController.text, date: DateFormat('yyyy-MM-dd HH:mm:ss').format(now)));
-        messageController.clear();
-      });
+  Future<String?> _uploadImage(File image) async {
+    final url = Uri.parse('${dotenv.get('BASE_URL')}/api/upload/upload_messageimage');
+    final imageUploadRequest = http.MultipartRequest('POST', url)
+      ..files.add(await http.MultipartFile.fromPath(
+        'file',
+        image.path,
+      ));
+    final response = await imageUploadRequest.send();
+    if (response.statusCode == 200) {
+      final responseBody = await response.stream.bytesToString();
+      final decodedResponse = jsonDecode(responseBody);
+      return decodedResponse['imagePath'];
+    } else {
+      print('Image upload failed with status: ${response.statusCode}');
+      return null;
     }
   }
 
   Widget messageList(String avatar){
-    // setState(() {
-    //   messages = [ 
-    //     ReceivedMessageItem(text: "こんにちは、話したいです", avatar: avatar, date: "2024-02-26 03:58:48"),
-    //     const SendMessageItem(text: '初めまして。\n私は東京都に在住する40歳の太郎です。\nお互いまずはゆっくりとメッセージを重ねて仲良くなりたいです。\nよろしくお願いいたします。', date: "2024-02-26 03:58:48")
-    //   ];  
-    // });
     return SingleChildScrollView(
       child: Column(
-        children: messages
+        children: [
+          if(messages.isNotEmpty)
+            Expanded(
+              child: ListView.builder(
+                itemCount: messages.length,
+                itemBuilder: (context, index) {
+                  ChatMessage message = messages[index];
+                  return message.isSentByMe ? SendMessageItem(text:message.text, date: DateFormat('yyyy-MM-dd HH:mm').format(message.timestamp), image: message.imagePath):
+                          ReceivedMessageItem(text: message.text, avatar: widget.user.avatar, date: DateFormat('yyyy-MM-dd HH:mm').format(message.timestamp), image: message.imagePath);
+                },
+              ),
+            ),
+        ]
       ),
     );
   }
@@ -177,6 +313,9 @@ class _ChattingDetailScreenState extends State<ChattingDetailScreen> {
         ),
         child: MaterialButton(
           onPressed: () {
+            setState(() {
+              displayAnswer = true;
+            });
           },
           child: Center(
             child: CustomText(
@@ -422,7 +561,6 @@ class _ChattingDetailScreenState extends State<ChattingDetailScreen> {
 }
 
 setAdviceAlert(BuildContext context){
-  final args = ModalRoute.of(context)!.settings.arguments as ChattingTransferModel;
   showDialog(
     barrierDismissible: false,
     context: context,
@@ -439,7 +577,7 @@ setAdviceAlert(BuildContext context){
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
-              "${args.name}さんと仲良くなるアドバイスを\nコンシェルジュに依頼しますか？",
+              "${widget.user.name}さんと仲良くなるアドバイスを\nコンシェルジュに依頼しますか？",
               textAlign:TextAlign.center,
               style: TextStyle(
                 color: AppColors.primaryBlack,
@@ -542,10 +680,8 @@ setAdviceConfirmAlert(BuildContext context){
               ),
               child: MaterialButton(
                 onPressed: () {
-                  Navigator.pop(context);
-                  setState(() {
-                    adviceState = "request";
-                  });
+                  sendAdviceRequest();
+                  
                 },
                 child: Center(
                   child: CustomText(
@@ -568,10 +704,8 @@ setAdviceConfirmAlert(BuildContext context){
 
   @override
   Widget build(BuildContext context) {
-    // final bottomInset = MediaQuery.of(context).viewInsets.bottom;
-    final args = ModalRoute.of(context)!.settings.arguments as ChattingTransferModel;
     return BaseScreen(
-      child: Stack(
+      child: isLoding? Stack(
         children: [
           Center(
             child: CustomContainer(
@@ -580,7 +714,7 @@ setAdviceConfirmAlert(BuildContext context){
               ),
               child: Padding(
                 padding: const EdgeInsets.only(top:200, bottom: 100),
-                child: messageList(args.avatar)
+                child: messageList(widget.user.avatar)
               ),
             ),
           ),
@@ -598,7 +732,7 @@ setAdviceConfirmAlert(BuildContext context){
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         CustomText(
-                          text: args.name, 
+                          text: widget.user.name, 
                           fontSize: 17, 
                           fontWeight: FontWeight.bold, 
                           lineHeight: 1, 
@@ -780,7 +914,11 @@ setAdviceConfirmAlert(BuildContext context){
                         ),
                         const SizedBox(width: 14),
                         IconButton(
-                          onPressed: _sendMessage,
+                          onPressed: (){
+                            if( messageController.text.trim().isNotEmpty && connected){
+                              _sendMessage(text : messageController.text);
+                            }
+                          },
                           icon: Icon(
                             Icons.send,
                             color: AppColors.secondaryGreen,
@@ -864,7 +1002,108 @@ setAdviceConfirmAlert(BuildContext context){
                 ),
               ),
             ),
+          if(displayAnswer)
+            Center(
+              child: CustomContainer(
+                child: Padding(
+                  padding: const EdgeInsets.only(top:60),
+                  child: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height-60,
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryWhite,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(10),
+                        topRight: Radius.circular(10)
+                      )
+                    ),
+                    child: Stack(
+                      children: [
+                        Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(left: 16, top: 40, bottom: 22),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  SizedBox(
+                                    width: 39,
+                                    height: 39,
+                                    child: Image.asset("assets/images/answer.png", fit: BoxFit.cover),
+                                  ),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  CustomText(
+                                    text: "公式サポート", 
+                                    fontSize: 13, 
+                                    fontWeight: FontWeight.normal, 
+                                    lineHeight: 1, 
+                                    letterSpacing: -1, 
+                                    color: AppColors.primaryBlack
+                                  )
+                                ],
+                              )
+                            ),
+                            SingleChildScrollView(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 15, right: 30),
+                                    child: Container(
+                                      width: MediaQuery.of(context).size.width,
+                                      padding: const EdgeInsets.all(10),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(10),
+                                        color: AppColors.primaryGray
+                                      ),
+                                      child: CustomText(
+                                        text: answer!, 
+                                        fontSize: 13, 
+                                        fontWeight: FontWeight.normal, 
+                                        lineHeight: 1.5, 
+                                        letterSpacing: -1, 
+                                        color: AppColors.primaryBlack
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            TextButton(
+                              onPressed: (){
+                                setState(() {
+                                  displayAnswer = false;
+                                });
+                              }, 
+                              child: CustomText(
+                                text: "とじる", 
+                                fontSize: 15, 
+                                fontWeight: FontWeight.normal, 
+                                lineHeight: 1, 
+                                letterSpacing: -1, 
+                                color: AppColors.secondaryGreen
+                              )
+                            )
+                          ],
+                        )
+                      ],
+                    ),
+                  )
+                ),
+              ),
+            ),
         ],
+      ):const CustomContainer(
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
       ),
     );
   }

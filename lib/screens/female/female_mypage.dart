@@ -11,6 +11,7 @@ import 'package:drone/state/user_state.dart';
 import 'package:drone/utils/const_file.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
 class FemaleMyPage extends StatefulWidget {
 
@@ -21,6 +22,7 @@ class FemaleMyPage extends StatefulWidget {
 }
 
 class _FemaleMyPageState extends State<FemaleMyPage> {
+  final storage = const FlutterSecureStorage();
   late UserModel user;
   late List<RecordModel> records;
   bool isLoding = false;
@@ -33,6 +35,7 @@ class _FemaleMyPageState extends State<FemaleMyPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       notificationAlert();
     });
+    getVerifyState();
   }
 
   @override
@@ -48,6 +51,31 @@ class _FemaleMyPageState extends State<FemaleMyPage> {
       records = Provider.of<RecordState>(context, listen: false).records;
       isLoding = true;
     });
+  }
+  Future getVerifyState() async{
+    String? verifyState = await storage.read(key: 'verifyState');
+    if (verifyState == "pending") { 
+      final state =  await Provider.of<UserState>(context, listen: false).getVerifyState();
+      if (state != null) {
+        if (state == "checked") {
+          verifyConfirmAlert(context);
+        }
+        if (state == "failed") {
+          verifyFailedAlert(context);
+        }
+      }
+    }
+  }
+  Future clickedConfirm(String state) async{
+    final result = await Provider.of<UserState>(context, listen: false).verifyChecked();
+    if (result) {
+      await storage.write(key: 'verifyState', value: state);
+      if (state == "checked") {
+        Navigator.pop(context);
+      } else {
+        Navigator.pushNamed(context, "/verifyscreen");
+      }
+    } 
   }
 
   void notificationAlert() {
@@ -715,6 +743,335 @@ class _FemaleMyPageState extends State<FemaleMyPage> {
     }
   }
 
+  verifyConfirmAlert(BuildContext context) {
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (_) => Center( // Aligns the container to center
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Container( // A simplified version of dialog. 
+            width: MediaQuery.of(context).size.width,
+            height: 380,
+            padding: const EdgeInsets.symmetric(horizontal: 30),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: AppColors.primaryWhite
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  "本人確認が\n認証されました",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: AppColors.primaryBlack,
+                    letterSpacing: 1,
+                    fontSize: 18,
+                    fontWeight: FontWeight.normal,
+                    decoration: TextDecoration.none
+                  ),
+                ),
+                Container(
+                  width: 70,
+                  height: 70,
+                  margin: const EdgeInsets.only(top: 40, bottom: 63),
+                  decoration: const BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage("assets/images/verify_confirm.png"),
+                      fit: BoxFit.cover     
+                    ),
+                  ),
+                ),
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: AppColors.secondaryGreen,
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                  child: MaterialButton(
+                    onPressed: () {
+                      clickedConfirm("checked");
+                    },
+                    child: Center(
+                      child: Text(
+                        "とじる",
+                        style: TextStyle(
+                          fontSize: 16, 
+                          fontWeight: FontWeight.normal, 
+                          letterSpacing: 1, 
+                          color: AppColors.primaryWhite,
+                          decoration: TextDecoration.none
+                        ), 
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+            ),
+        )
+        )
+    );
+  }
+
+  verifyFailedAlert(BuildContext context) {
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (_) => Center( // Aligns the container to center
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Container( // A simplified version of dialog. 
+            width: MediaQuery.of(context).size.width,
+            height: 628,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: AppColors.primaryWhite
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: 314,
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryBackground,
+                    borderRadius: const BorderRadius.only(
+                      bottomLeft: Radius.circular(5),
+                      bottomRight: Radius.circular(5),
+                    )
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: 92,
+                        height: 92,
+                        margin: const EdgeInsets.only(bottom: 42),
+                        decoration: const BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage("assets/images/warning.png"),
+                            fit: BoxFit.cover     
+                          ),
+                        ),
+                      ),
+                      Text(
+                        "ご提出いただいた公的書類では審査が\n完了できませんでした\n以下の点に注意して再度ご提出お願いいたします",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: AppColors.primaryBlack,
+                          letterSpacing: 1,
+                          fontSize: 13,
+                          height: 0,
+                          fontWeight: FontWeight.normal,
+                          decoration: TextDecoration.none
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 37,
+                      )
+                    ],
+                  ),
+                ),
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: 314,
+                  padding: const EdgeInsets.only(left: 5, right: 5),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "以下のような身分証は認証されません",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: AppColors.primaryBlack,
+                          letterSpacing: -0.5,
+                          fontSize: 14,
+                          height: 0,
+                          fontWeight: FontWeight.normal,
+                          decoration: TextDecoration.none
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 30,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: 93,
+                                height: 60,
+                                margin: const EdgeInsets.only(bottom: 3),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(5),
+                                  border: Border.all(
+                                    color: AppColors.primaryGray
+                                  ),
+                                  image: const DecorationImage(
+                                    image: AssetImage("assets/images/driver_licence2.png"),
+                                    fit: BoxFit.cover     
+                                  ),
+                                ),
+                              ),
+                              Text(
+                                "不透明で\n読み取れない",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: AppColors.primaryBlack,
+                                  fontSize: 9,
+                                  letterSpacing: -0.5,
+                                  height: 1.5,
+                                  fontWeight: FontWeight.normal
+                                ),
+                              )
+                            ],
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: 93,
+                                height: 60,
+                                margin: const EdgeInsets.only(bottom: 3),
+                                decoration: const BoxDecoration(
+                                  image: DecorationImage(
+                                    image: AssetImage("assets/images/driver_licence3.png"),
+                                    fit: BoxFit.cover     
+                                  ),
+                                ),
+                              ),
+                              Text(
+                                "画像が\n見切れている",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: AppColors.primaryBlack,
+                                  fontSize: 9,
+                                  letterSpacing: -0.5,
+                                  height: 1.5,
+                                  fontWeight: FontWeight.normal
+                                ),
+                              )
+                            ],
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: 93,
+                                height: 60,
+                                margin: const EdgeInsets.only(bottom: 3),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(5),
+                                  border: Border.all(
+                                    color: AppColors.primaryGray
+                                  ),
+                                  image: const DecorationImage(
+                                    image: AssetImage("assets/images/driver_licence4.png"),
+                                    fit: BoxFit.cover     
+                                  ),
+                                ),
+                              ),
+                              Text(
+                                "隠されている\n部分がある",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: AppColors.primaryBlack,
+                                  fontSize: 9,
+                                  letterSpacing: -0.5,
+                                  height: 1.5,
+                                  fontWeight: FontWeight.normal
+                                ),
+                              )
+                            ],
+                          )
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 30,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 25, right: 25),
+                        child: Column(
+                          children: [
+                            Container(
+                              width: MediaQuery.of(context).size.width,
+                              height: 48,
+                              decoration: BoxDecoration(
+                                color: AppColors.secondaryGreen,
+                                borderRadius: BorderRadius.circular(50),
+                              ),
+                              child: MaterialButton(
+                                onPressed: () {
+                                  clickedConfirm("checked");
+                                },
+                                child: Center(
+                                  child: Text(
+                                    "再申請する",
+                                    style: TextStyle(
+                                      fontSize: 16, 
+                                      fontWeight: FontWeight.normal, 
+                                      letterSpacing: 1, 
+                                      color: AppColors.primaryWhite,
+                                      decoration: TextDecoration.none
+                                    ), 
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Container(
+                              width: MediaQuery.of(context).size.width,
+                              height: 48,
+                              decoration: BoxDecoration(
+                                color: AppColors.primaryWhite,
+                                borderRadius: BorderRadius.circular(50),
+                              ),
+                              child: MaterialButton(
+                                onPressed: () async{
+                                  final result = await Provider.of<UserState>(context, listen: false).verifyChecked();
+                                  if (result) {
+                                    await storage.write(key: 'verifyState', value: "failed");
+                                    Navigator.pop(context);
+                                  }
+                                },
+                                child: Center(
+                                  child: Text(
+                                    "とじる",
+                                    style: TextStyle(
+                                      fontSize: 16, 
+                                      fontWeight: FontWeight.normal, 
+                                      letterSpacing: 1, 
+                                      color: AppColors.secondaryGreen,
+                                      decoration: TextDecoration.none
+                                    ), 
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
+            ),
+        )
+        )
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BaseScreen(
@@ -863,7 +1220,9 @@ class _FemaleMyPageState extends State<FemaleMyPage> {
                                 children: [
                                   GestureDetector(
                                     onTap: () {
-                                      Navigator.pushNamed(context, "/verifyscreen");
+                                      if (!user.isVerify) {
+                                        Navigator.pushNamed(context, "/verifyscreen");
+                                      }
                                     },
                                     child: Container(
                                       width: 99,

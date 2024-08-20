@@ -161,7 +161,7 @@ class _PostScreenState extends State<PostScreen> {
     if (pickedFile != null) {
       File? croppedFile = await cropImage(File(pickedFile.path));
       if (croppedFile != null) {
-         Navigator.pushNamed(context, "/create_post", arguments: ImageModel(croppedFile));
+         Navigator.pushNamed(context, "/create_post", arguments: ImageModel('', croppedFile));
       }
     }
   }

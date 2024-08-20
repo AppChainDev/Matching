@@ -4,10 +4,15 @@ import 'package:drone/components/chatting/chattinglist_card.dart';
 import 'package:drone/components/chatting/replylist_card.dart';
 import 'package:drone/components/custom_container.dart';
 import 'package:drone/components/custom_text.dart';
-import 'package:drone/models/chatting_model.dart';
 import 'package:drone/models/chattingtransfer_model.dart';
+import 'package:drone/models/user.dart';
+import 'package:drone/screens/chatting/chattingdetail_screen.dart';
+import 'package:drone/state/user_state.dart';
+import 'package:drone/utils/database_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class ChattingListScreen extends StatefulWidget {
 
@@ -19,36 +24,86 @@ class ChattingListScreen extends StatefulWidget {
 
 class _ChattingListScreenState extends State<ChattingListScreen> {
 
-  List<ChattingModel> allLists = [
-    ChattingModel(1, "WomanK1", 12, 55, "avatar1.png", "", "あなたのメッセージを待っています！", "2024-02-26 03:58:48"),
-    ChattingModel(2, "WomanK2", 12, 65, "avatar1.png", "", "あなたのメッセージを待っています！", "2024-02-26 03:58:48"),
-    ChattingModel(3, "WomanK3", 12, 55, "avatar1.png", "send", "メッセージが届いています。", "2024-02-26 03:58:48"),
-    ChattingModel(4, "WomanK4", 12, 65, "avatar1.png", "receive", "メッセージが届いています。", "2024-02-26 03:58:48"),
-    ChattingModel(5, "WomanK3", 13, 57, "avatar1.png", "send", "メッセージが届いています。", "2024-02-26 03:58:48"),
+  // List<ChattingModel> allLists = [
+  //   ChattingModel(1, "WomanK1", 12, 55, "avatar1.png", "", "あなたのメッセージを待っています！", "2024-02-26 03:58:48"),
+  //   ChattingModel(2, "WomanK2", 12, 65, "avatar1.png", "", "あなたのメッセージを待っています！", "2024-02-26 03:58:48"),
+  //   ChattingModel(3, "WomanK3", 12, 55, "avatar1.png", "send", "メッセージが届いています。", "2024-02-26 03:58:48"),
+  //   ChattingModel(4, "WomanK4", 12, 65, "avatar1.png", "receive", "メッセージが届いています。", "2024-02-26 03:58:48"),
+  //   ChattingModel(5, "WomanK3", 13, 57, "avatar1.png", "send", "メッセージが届いています。", "2024-02-26 03:58:48"),
 
-  ];
+  // ];
+  final DatabaseHelper _dbHelper = DatabaseHelper();
 
-  late List<ChattingModel> displayLists;
-  late List<ChattingModel> replyLists;
+  late List<User> replayLists;
+  late List<User> chattingLists;
+  late List<User> chattingPossibleLists;
+  List<User> displayLists = [];
+  bool isLoding = false;
 
   String filterText = "matching";
 
   @override
   void initState() {
-    setState(() {
-      replyLists = allLists.where((list)=>list.state == "send").toList();
-      if (filterText == "matching") {
-        displayLists = allLists.where((list)=>list.state == "").toList();
-      } else {
-        displayLists = allLists.where((list)=>list.state != "").toList();
-      }
-    });
+    _loadUsers();
     super.initState();
   }
 
   @override
   void dispose() {
     super.dispose();
+  }
+
+  Future<void> _loadUsers() async {
+    List<Map<String, dynamic>> loadedUsers = await _dbHelper.getUsers();
+    print("loadedUsers===$loadedUsers");
+    List<User> userList = loadedUsers.map((json) => User.fromJson(json)).toList();
+    print("userList===$userList");
+
+    List<User> filteredUsers = await _dbHelper.getUsersWithLastMessageSentByMe();
+    print("filteredUsers===$filteredUsers");
+    for (var user in userList) {
+      final lastMessage = await _dbHelper.getLastMessageForUser(user.id);
+      if (lastMessage != null) {
+        user.state = lastMessage['text']?.split(' ').first ?? 'No message'; // Show first sentence
+        user.time = DateFormat('MM/dd HH:mm').format(DateTime.parse(lastMessage['timestamp']));
+      } else {
+        user.state = 'あなたのメッセージを待っています！'; // Default message
+        user.time = '';
+      }
+    }
+    print("userList===$userList");
+    await Provider.of<UserState>(context, listen: false).getMatchedUserList();
+    print("userList========================");
+    setState(() {
+      chattingLists = userList;
+      print("chattingLists-----$chattingLists");
+      replayLists = filteredUsers;
+      chattingPossibleLists = Provider.of<UserState>(context, listen: false).matchedUserList;
+      displayLists = chattingPossibleLists;
+      isLoding = true;
+    });
+  }
+
+  Future<void> _addUser(int id, String name, int age, int prefectureId, String avatar) async {
+    User newUser = User(
+      id: id,
+      name: name,
+      age: age,
+      prefectureId: prefectureId,
+      avatar: avatar,
+      state: 'あなたのメッセージを待っています！', // Default state
+      time: DateFormat('MM/dd HH:mm').format(DateTime.now()),  // Current time
+    );
+    await _dbHelper.insertUser(newUser.toJson());
+    // _loadUsers();
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ChattingDetailScreen(user: newUser),
+      ),
+    );
+    // Navigator.pushNamed(context, "/chatting_detail", arguments: ChattingTransferModel(id, name, avatar, prefectureId, age));  
+    
   }
 
   Future moveProfile() async{
@@ -232,12 +287,12 @@ class _ChattingListScreenState extends State<ChattingListScreen> {
     if (text == "matching") {
       setState(() {
         filterText = text;
-        displayLists = allLists.where((list)=>list.state == "").toList();
+        displayLists = chattingPossibleLists;
       });
     } else {
       setState(() {
         filterText = text;
-        displayLists = allLists.where((list)=>list.state != "").toList();
+        displayLists = chattingLists;
       });
     }
   }
@@ -245,7 +300,7 @@ class _ChattingListScreenState extends State<ChattingListScreen> {
   @override
   Widget build(BuildContext context) {
     return BaseScreen(
-      child: Stack(
+      child: isLoding? Stack(
         children: [
           Center(
             child: CustomContainer(
@@ -278,22 +333,27 @@ class _ChattingListScreenState extends State<ChattingListScreen> {
                             Expanded(
                               child: ListView(
                                 scrollDirection: Axis.horizontal,
-                                children: replyLists.map((item){
+                                children: replayLists.map((item){
                                   return ReplyListItem(
                                     id: item.id, 
                                     name: item.name, 
                                     prefectureId: item.id, 
                                     age: item.age, 
                                     avatar: item.avatar, 
-                                    date: item.date,
+                                    date: item.time,
                                     onClick: () {
-                                      Navigator.pushNamed(context, "/chatting_detail", arguments: ChattingTransferModel(item.id, item.name, item.avatar, item.prefectureId, item.age));
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => ChattingDetailScreen(user: item),
+                                        ),
+                                      );
+                                      // Navigator.pushNamed(context, "/chatting_detail", arguments: ChattingTransferModel(item.id, item.name, item.avatar, item.prefectureId, item.age));
                                     },
                                   );
                                 }).toList(),
                               )
                             )
-
                           ],
                         ),
                       ),
@@ -302,16 +362,18 @@ class _ChattingListScreenState extends State<ChattingListScreen> {
                         children: displayLists.map((item){
                           return GestureDetector(
                             onTap: () {
-                              Navigator.pushNamed(context, "/chatting_detail", arguments: ChattingTransferModel(item.id, item.name, item.avatar, item.prefectureId, item.age));  
+                              if(filterText == "matching"){
+                                _addUser(item.id, item.name, item.age, item.prefectureId, item.avatar);
+                              }
                             },
                             child: ChattingListItem(
                               id: item.id, 
                               name: item.name, 
                               prefectureId: item.prefectureId, 
                               age: item.age, 
-                              stateText: item.stateText, 
+                              stateText: item.state, 
                               avatar: item.avatar, 
-                              date: item.date, 
+                              date: item.time, 
                               state: item.state
                             ),
                           );
@@ -390,6 +452,10 @@ class _ChattingListScreenState extends State<ChattingListScreen> {
           bottomBar()
           
         ],
+      ):const CustomContainer(
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
       )
     );
   }

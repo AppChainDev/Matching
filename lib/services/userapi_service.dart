@@ -1,10 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:drone/models/advicestate_model.dart';
 import 'package:drone/models/category_model.dart';
 import 'package:drone/models/community_model.dart';
 import 'package:drone/models/like_model.dart';
 import 'package:drone/models/member_model.dart';
+import 'package:drone/models/phrase_model.dart';
 import 'package:drone/models/swipegroup_model.dart';
+import 'package:drone/models/user.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:jwt_decoder/jwt_decoder.dart';
@@ -1123,6 +1126,171 @@ class UserApiService {
       return array;
     }else{
       return [];
+    }
+  }
+
+  Future<List<User>> getMatchedUserList() async{
+    String? userId = await storage.read(key: 'userId');
+    String? accessToken = await storage.read(key: 'accessToken');
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/auth/get_matchedusers?userId=$userId'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+    if(response.statusCode == 200){
+      List<User> array = [];
+      var reasonData = jsonDecode(response.body);
+      for(var singleItem in reasonData){
+        User item = User(id: singleItem["id"], name: singleItem["name"], age: singleItem["age"], prefectureId: singleItem["prefectureId"], avatar: singleItem["avatar"], state: "あなたのメッセージを待っています！", time: singleItem["time"]);
+        array.add(item);
+      }
+      return array;
+    }else{
+      return [];
+    }
+  }
+
+  Future<List<PhraseModel>> getPhrase() async{
+    String? userId = await storage.read(key: 'userId');
+    String? accessToken = await storage.read(key: 'accessToken');
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/auth/get_phrase?userId=$userId'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+    if(response.statusCode == 200){
+      List<PhraseModel> array = [];
+      var reasonData = jsonDecode(response.body);
+      for(var singleItem in reasonData){
+        PhraseModel item = PhraseModel(singleItem["id"], singleItem["text"]);
+        array.add(item);
+      }
+      return array;
+    }else{
+      return [];
+    }
+  }
+
+  Future<bool> updatePhrase(int id, String text) async{
+    String? userId = await storage.read(key: 'userId');
+    String? accessToken = await storage.read(key: 'accessToken');
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/auth/update_phrase'),
+      body: jsonEncode(<String, String>{
+        'userId': userId!,
+        'id': id.toString(),
+        'text': text
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+    if(response.statusCode == 200){
+      return true;
+    }else{
+      return false;
+    }
+  }
+
+  Future<bool> sendAdviceRequest(int id) async{
+    String? userId = await storage.read(key: 'userId');
+    String? accessToken = await storage.read(key: 'accessToken');
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/auth/advice_request'),
+      body: jsonEncode(<String, String>{
+        'userId': userId!,
+        'partnerId': id.toString(),
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+    if(response.statusCode == 200){
+      return true;
+    }else{
+      return false;
+    }
+  }
+
+  Future<AdviceStateModel?> getAdviceState(int partnerId) async{
+    String? userId = await storage.read(key: 'userId');
+    String? accessToken = await storage.read(key: 'accessToken');
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/auth/get_advicestate?userId=$userId&partnerId=$partnerId'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+    if(response.statusCode == 200){
+      var responseData = jsonDecode(response.body);
+      return AdviceStateModel(responseData["state"], responseData["answer"]);
+    }else{
+      return null;
+    }
+  }
+
+  Future<bool> sendVerifyCard(File image, String verifyType) async{
+    String? userId = await storage.read(key: 'userId');
+    String? accessToken = await storage.read(key: 'accessToken');
+    final url = Uri.parse('$baseUrl/api/upload/send_verifycard');
+    final imageUploadRequest = http.MultipartRequest('POST', url)
+      ..headers['Authorization'] = 'Bearer $accessToken'
+      ..fields['userId'] = userId!
+      ..fields['verifyType'] = verifyType
+      ..files.add(await http.MultipartFile.fromPath(
+        'file',
+        image.path,
+      ));
+    final response = await imageUploadRequest.send();
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<String?> getVerifyState() async{
+    String? userId = await storage.read(key: 'userId');
+    String? accessToken = await storage.read(key: 'accessToken');
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/auth/get_verifystate?userId=$userId'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+    if(response.statusCode == 200){
+      var responseData = jsonDecode(response.body);
+      return responseData["state"];
+    }else{
+      return null;
+    }
+  }
+
+  Future<bool> verifyChecked() async{
+    String? userId = await storage.read(key: 'userId');
+    String? accessToken = await storage.read(key: 'accessToken');
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/auth/checked_verifystate'),
+      body: jsonEncode(<String, String>{
+        'userId': userId!,
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+    if(response.statusCode == 200){
+      return true;
+    }else{
+      return false;
     }
   }
   // Future<UserModel> login(String email, String password) async {
