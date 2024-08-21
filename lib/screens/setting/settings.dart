@@ -2,7 +2,9 @@ import 'package:drone/components/app_colors.dart';
 import 'package:drone/components/base_screen.dart';
 import 'package:drone/components/custom_container.dart';
 import 'package:drone/components/custom_text.dart';
+import 'package:drone/state/user_state.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class SettingScreen extends StatefulWidget {
 
@@ -70,7 +72,7 @@ class _SettingScreenState extends State<SettingScreen> {
                               color: AppColors.primaryBlack
                             ),
                             CustomText(
-                              text: "ID:0000001", 
+                              text: "ID:${Provider.of<UserState>(context, listen: false).user!.id}", 
                               fontSize: 14, 
                               fontWeight: FontWeight.normal, 
                               lineHeight: 1, 
@@ -418,7 +420,8 @@ logoutAlert(BuildContext context){
                       )
                     ),
                     child: TextButton(
-                      onPressed: (){
+                      onPressed: () async {
+                        await Provider.of<UserState>(context, listen: false).logout();
                         Navigator.pop(context);
                         Navigator.pushNamed(context, "/");
                       },

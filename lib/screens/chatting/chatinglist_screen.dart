@@ -4,7 +4,6 @@ import 'package:drone/components/chatting/chattinglist_card.dart';
 import 'package:drone/components/chatting/replylist_card.dart';
 import 'package:drone/components/custom_container.dart';
 import 'package:drone/components/custom_text.dart';
-import 'package:drone/models/chattingtransfer_model.dart';
 import 'package:drone/models/user.dart';
 import 'package:drone/screens/chatting/chattingdetail_screen.dart';
 import 'package:drone/state/user_state.dart';
@@ -24,14 +23,6 @@ class ChattingListScreen extends StatefulWidget {
 
 class _ChattingListScreenState extends State<ChattingListScreen> {
 
-  // List<ChattingModel> allLists = [
-  //   ChattingModel(1, "WomanK1", 12, 55, "avatar1.png", "", "あなたのメッセージを待っています！", "2024-02-26 03:58:48"),
-  //   ChattingModel(2, "WomanK2", 12, 65, "avatar1.png", "", "あなたのメッセージを待っています！", "2024-02-26 03:58:48"),
-  //   ChattingModel(3, "WomanK3", 12, 55, "avatar1.png", "send", "メッセージが届いています。", "2024-02-26 03:58:48"),
-  //   ChattingModel(4, "WomanK4", 12, 65, "avatar1.png", "receive", "メッセージが届いています。", "2024-02-26 03:58:48"),
-  //   ChattingModel(5, "WomanK3", 13, 57, "avatar1.png", "send", "メッセージが届いています。", "2024-02-26 03:58:48"),
-
-  // ];
   final DatabaseHelper _dbHelper = DatabaseHelper();
 
   late List<User> replayLists;
@@ -55,12 +46,8 @@ class _ChattingListScreenState extends State<ChattingListScreen> {
 
   Future<void> _loadUsers() async {
     List<Map<String, dynamic>> loadedUsers = await _dbHelper.getUsers();
-    print("loadedUsers===$loadedUsers");
     List<User> userList = loadedUsers.map((json) => User.fromJson(json)).toList();
-    print("userList===$userList");
-
     List<User> filteredUsers = await _dbHelper.getUsersWithLastMessageSentByMe();
-    print("filteredUsers===$filteredUsers");
     for (var user in userList) {
       final lastMessage = await _dbHelper.getLastMessageForUser(user.id);
       if (lastMessage != null) {
@@ -71,14 +58,13 @@ class _ChattingListScreenState extends State<ChattingListScreen> {
         user.time = '';
       }
     }
-    print("userList===$userList");
     await Provider.of<UserState>(context, listen: false).getMatchedUserList();
-    print("userList========================");
     setState(() {
       chattingLists = userList;
-      print("chattingLists-----$chattingLists");
       replayLists = filteredUsers;
       chattingPossibleLists = Provider.of<UserState>(context, listen: false).matchedUserList;
+      final chattingListIds = chattingLists.map((user) => user.id).toSet();
+      chattingPossibleLists.removeWhere((user) => chattingListIds.contains(user.id));
       displayLists = chattingPossibleLists;
       isLoding = true;
     });
@@ -95,14 +81,13 @@ class _ChattingListScreenState extends State<ChattingListScreen> {
       time: DateFormat('MM/dd HH:mm').format(DateTime.now()),  // Current time
     );
     await _dbHelper.insertUser(newUser.toJson());
-    // _loadUsers();
+    _loadUsers();
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => ChattingDetailScreen(user: newUser),
       ),
-    );
-    // Navigator.pushNamed(context, "/chatting_detail", arguments: ChattingTransferModel(id, name, avatar, prefectureId, age));  
+    );  
     
   }
 
@@ -364,6 +349,13 @@ class _ChattingListScreenState extends State<ChattingListScreen> {
                             onTap: () {
                               if(filterText == "matching"){
                                 _addUser(item.id, item.name, item.age, item.prefectureId, item.avatar);
+                              } else {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ChattingDetailScreen(user: item),
+                                  ),
+                                );
                               }
                             },
                             child: ChattingListItem(

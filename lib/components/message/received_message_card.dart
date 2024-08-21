@@ -46,26 +46,27 @@ class ReceivedMessageItem extends StatelessWidget{
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  ConstrainedBox(
-                    constraints: const BoxConstraints(
-                      maxWidth: 200.0, // Set the maximum width
-                    ),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-                      decoration: BoxDecoration(
-                        color: AppColors.primaryWhite,
-                        borderRadius: BorderRadius.circular(10)
+                  if(text != null && text != "")
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(
+                        maxWidth: 200.0, // Set the maximum width
                       ),
-                      child: CustomText(
-                        text: text, 
-                        fontSize: 15, 
-                        fontWeight: FontWeight.normal, 
-                        lineHeight: 1.5, 
-                        letterSpacing: -1, 
-                        color: AppColors.primaryBlack
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+                        decoration: BoxDecoration(
+                          color: AppColors.primaryWhite,
+                          borderRadius: BorderRadius.circular(10)
+                        ),
+                        child: CustomText(
+                          text: text, 
+                          fontSize: 15, 
+                          fontWeight: FontWeight.normal, 
+                          lineHeight: 1.5, 
+                          letterSpacing: -1, 
+                          color: AppColors.primaryBlack
+                        ),
                       ),
                     ),
-                  ),
                   const SizedBox(
                     width: 10,
                   ),

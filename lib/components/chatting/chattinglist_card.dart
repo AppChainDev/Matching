@@ -21,11 +21,15 @@ class ChattingListItem extends StatelessWidget{
  final String date;
 
   String convertTime(String dateString) {
-    DateFormat inputFormat = DateFormat('EEE MMM dd yyyy HH:mm:ss');
-    String datePart = dateString.split('GMT')[0].trim();
-    DateTime dateTime = inputFormat.parse(datePart);
-    String formattedDate = DateFormat('M/d HH:mm').format(dateTime);
-    return formattedDate;
+    try {
+      DateFormat inputFormat = DateFormat('MM/dd HH:mm');
+      DateTime dateTime = inputFormat.parse(dateString);
+      String formattedDate = DateFormat('M/d HH:mm').format(dateTime);
+      
+      return formattedDate;
+    } catch (e) {
+      return "Invalid date format";
+    }
   }
 
   @override

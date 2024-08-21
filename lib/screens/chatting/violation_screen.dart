@@ -6,6 +6,7 @@ import 'package:drone/components/custom_text.dart';
 import 'package:drone/models/chattingtransfer_model.dart';
 import 'package:drone/utils/const_file.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 class ViolationScreen extends StatelessWidget {
   const ViolationScreen({super.key});
 
@@ -39,8 +40,8 @@ class ViolationScreen extends StatelessWidget {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(50),
                         image: DecorationImage(
-                          image: AssetImage("assets/images/${args.avatar}"),
-                          fit: BoxFit.cover     
+                          image: NetworkImage("${dotenv.get('BASE_URL')}/img/${args.avatar}"),
+                          fit: BoxFit.cover,  
                         ) 
                       ),
                     ),

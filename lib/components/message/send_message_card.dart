@@ -37,7 +37,7 @@ class SendMessageItem extends StatelessWidget{
                 letterSpacing: 1, 
                 color: AppColors.secondaryGray
               ),
-              if(text != null)
+              if(text != null && text != "")
                 ConstrainedBox(
                   constraints: const BoxConstraints(
                     maxWidth: 260.0,

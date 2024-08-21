@@ -17,13 +17,13 @@ import 'package:drone/state/user_state.dart';
 import 'package:drone/utils/database_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
-import 'package:socket_io_client/socket_io_client.dart' as IO;
-// import 'package:socket_io_client/socket_io_client.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 class ChattingDetailScreen extends StatefulWidget {
   final User user;
@@ -34,12 +34,12 @@ class ChattingDetailScreen extends StatefulWidget {
 }
 
 class _ChattingDetailScreenState extends State<ChattingDetailScreen> {
-  IO.Socket socket = IO.io('http://10.0.2.2:5000', IO.OptionBuilder().setTransports(['websocket']).build());
+  final storage = const FlutterSecureStorage();
+  late WebSocketChannel channel;
   final DatabaseHelper _dbHelper = DatabaseHelper();
   List<ChatMessage> messages = [];
   final TextEditingController messageController = TextEditingController();
-  // late IOWebSocketChannel channel;
-  bool connected = false;
+  bool connected = true;
   int textCount = 0;
   bool isLoding = false;
   bool displayPhrase = false;
@@ -49,42 +49,18 @@ class _ChattingDetailScreenState extends State<ChattingDetailScreen> {
   late List<PhraseModel> phrases;
   @override
   void initState() {
-    
-    // connectWebSocket();
-    loadPhraseAndAdviceState();
-    // loadChatHistory();
     super.initState();
-    socket.connect();
-    connected = true;
-    print(connected);
-    socket.on('messageFromServer', (data) {
-      print(data);
-      // final messageData = jsonDecode(data);
-      //   final ChatMessage newMessage = ChatMessage(
-      //     id: messages.length + 1,
-      //     userId: widget.user.id,
-      //     text: messageData['text'] ?? '',
-      //     imagePath: messageData['imagePath'],
-      //     isSentByMe: false,
-      //     timestamp: DateTime.parse(messageData['timestamp']),
-      //   );
-
-      //   setState(() {
-      //     messages.add(newMessage);
-      //   });
-
-      //   _dbHelper.insertMessage(newMessage.toJson());
-    });
+    loadChatHistory();
+    connectWebSocket();
+    loadPhraseAndAdviceState();
     messageController.addListener(_updateButtonColor);
   }
 
   @override
   void dispose() {
     messageController.removeListener(_updateButtonColor);
-    socket.onDisconnect((_){
-      print("disconnect");
-    });
     messageController.dispose();
+    channel.sink.close();
     super.dispose();
   }
 
@@ -113,24 +89,26 @@ class _ChattingDetailScreenState extends State<ChattingDetailScreen> {
     }
   }
 
-  // void connectWebSocket(){
-  //   socket.onConnect((_) {
-  //     print('Connected to server');
-  //     setState(() {
-  //       connected = true;
-  //       print(connected);
-  //     });
-  //     // socket.emit('msg', 'test');
-  //   });
-
-  //   socket.on('messageFromServer', (data) {
-  //     print('Message from server: $data');
-  //   });
-    
-  //   socket.onDisconnect((_){
-  //     print("disconnect!");
-  //   });
-  // }
+  Future connectWebSocket() async{
+    String? userId = await storage.read(key: 'userId');
+    channel = WebSocketChannel.connect(Uri.parse('ws://10.0.2.2:8080/$userId'));
+      channel.stream.listen((message) {
+        print(message.toString());
+        final messageData = jsonDecode(message);
+        final ChatMessage newMessage = ChatMessage(
+          id: messages.length + 1,
+          userId: widget.user.id,
+          text: messageData['text'] ?? '',
+          imagePath: messageData['imagePath'],
+          isSentByMe: false,
+          timestamp: DateTime.parse(messageData['timestamp']),
+        );
+        setState(() {
+          messages.add(newMessage);
+        });
+      },
+    );
+  }
   
   Future<void> loadChatHistory() async {
     List<Map<String, dynamic>> loadedMessages = await _dbHelper.getMessages(widget.user.id);
@@ -156,32 +134,29 @@ class _ChattingDetailScreenState extends State<ChattingDetailScreen> {
 
   Future<void> _sendMessage({String? text, String? imagePath}) async {
     if (text == null && imagePath == null) return;
-    // ChatMessage newMessage = ChatMessage(
-    //   id: messages.length+1,
-    //   userId: widget.user.id,
-    //   text: text ?? '',
-    //   imagePath: imagePath,
-    //   isSentByMe: true,
-    //   timestamp: DateTime.now(),
-    // );
+    ChatMessage newMessage = ChatMessage(
+      id: messages.length+1,
+      userId: widget.user.id,
+      text: text ?? '',
+      imagePath: imagePath,
+      isSentByMe: true,
+      timestamp: DateTime.now(),
+    );
 
-    // await _dbHelper.insertMessage(newMessage.toJson());
+    print(await _dbHelper.insertMessage(newMessage.toJson()));
     setState(() {
-      // messages.add(newMessage);
+      messages.add(newMessage);
       messageController.clear();
     });
 
     // Send the message to the backend
-    // final messageData = {
-    //   'userId': widget.user.id,
-    //   'text': text,
-    //   'imagePath': imagePath,
-    //   'timestamp': newMessage.timestamp.toIso8601String(),
-    // };
-    print(text);
-    socket.emit("messageFromClient", {'data' : text});
-    // socket.emit("messageFromClient", jsonEncode(messageData));
-
+    final messageData = {
+      'userId': widget.user.id,
+      'text': text,
+      'imagePath': imagePath,
+      'timestamp': newMessage.timestamp.toIso8601String(),
+    };
+    channel.sink.add(jsonEncode(messageData));
   }
 
   Future getImageFromGallery() async {
@@ -255,19 +230,10 @@ class _ChattingDetailScreenState extends State<ChattingDetailScreen> {
   Widget messageList(String avatar){
     return SingleChildScrollView(
       child: Column(
-        children: [
-          if(messages.isNotEmpty)
-            Expanded(
-              child: ListView.builder(
-                itemCount: messages.length,
-                itemBuilder: (context, index) {
-                  ChatMessage message = messages[index];
-                  return message.isSentByMe ? SendMessageItem(text:message.text, date: DateFormat('yyyy-MM-dd HH:mm').format(message.timestamp), image: message.imagePath):
-                          ReceivedMessageItem(text: message.text, avatar: widget.user.avatar, date: DateFormat('yyyy-MM-dd HH:mm').format(message.timestamp), image: message.imagePath);
-                },
-              ),
-            ),
-        ]
+        children: messages.map((message){
+          return message.isSentByMe ? SendMessageItem(text:message.text, date: DateFormat('yyyy-MM-dd HH:mm').format(message.timestamp), image: message.imagePath):
+                ReceivedMessageItem(text: message.text, avatar: widget.user.avatar, date: DateFormat('yyyy-MM-dd HH:mm').format(message.timestamp), image: message.imagePath);
+        }).toList()
       ),
     );
   }
@@ -360,7 +326,7 @@ class _ChattingDetailScreenState extends State<ChattingDetailScreen> {
   }
 
   moreAlertPage(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as ChattingTransferModel;
+    // final args = ModalRoute.of(context)!.settings.arguments as ChattingTransferModel;
     showDialog(
       barrierDismissible: false,
       context: context,
@@ -390,7 +356,7 @@ class _ChattingDetailScreenState extends State<ChattingDetailScreen> {
                       child: MaterialButton(
                         onPressed: () {
                           Navigator.pop(context);
-                          Navigator.pushNamed(context, "/violation_screen", arguments: ChattingTransferModel(args.id, args.name, args.avatar, args.prefectureId, args.age));
+                          Navigator.pushNamed(context, "/violation_screen", arguments: ChattingTransferModel(widget.user.id, widget.user.name, widget.user.avatar, widget.user.prefectureId, widget.user.age));
                         },
                         child: Center(
                           child: CustomText(

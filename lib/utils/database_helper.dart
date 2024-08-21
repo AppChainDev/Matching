@@ -143,19 +143,19 @@ class DatabaseHelper {
   Future<List<User>> getUsersWithLastMessageSentByMe() async {
     final db = await database;
 
-    // Get the last message for each user and filter by whether it was sent by me
+    // Get the last message for each user and ensure it's the one sent by me
     final List<Map<String, dynamic>> result = await db.rawQuery('''
       SELECT users.id, users.name, users.age, users.prefecture_id, users.avatar, users.state, users.time
       FROM users
-      LEFT JOIN (
-        SELECT user_id, text, timestamp, is_sent_by_me
+      INNER JOIN (
+        SELECT user_id, MAX(timestamp) as last_timestamp
         FROM messages
-        WHERE is_sent_by_me = 1
-        ORDER BY timestamp DESC
-      ) AS last_message ON users.id = last_message.user_id
-      WHERE last_message.is_sent_by_me = 1
+        GROUP BY user_id
+      ) AS user_last_messages ON users.id = user_last_messages.user_id
+      INNER JOIN messages ON messages.user_id = user_last_messages.user_id AND messages.timestamp = user_last_messages.last_timestamp
+      WHERE messages.is_sent_by_me = 1
     ''');
 
     return result.map((json) => User.fromJson(json)).toList();
-  }
+}
 }
