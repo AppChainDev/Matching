@@ -46,96 +46,103 @@ class _AgreementChatListScreenState extends State<AgreementChatListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BaseScreen(
-      child: isLoding? Stack(
-        children: [
-          Center(
-             child: CustomContainer(
-              decoration: BoxDecoration(
-                color: AppColors.primaryBackground
-              ),
-               child: SingleChildScrollView(
-                 child: Padding(
-                   padding: const EdgeInsets.only(top: 10, bottom: 50),
-                   child: Column(
-                     children: [
-                      Padding(
-                        padding: const EdgeInsets.only(top: 94),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: messageList.map((message){
-                            return AgreementChatItem(
-                              id:message.senderId,
-                              name: message.name, 
-                              prefectureId: message.prefectureId, 
-                              age: message.age, 
-                              content: message.content, 
-                              avatarImage: message.avatarImage
-                            );
-                          }).toList()
+    // ignore: deprecated_member_use
+    return WillPopScope(
+      onWillPop: () async{
+        Navigator.pushNamed(context, "/agreement");
+        return true;
+      },
+      child: BaseScreen(
+        child: isLoding? Stack(
+          children: [
+            Center(
+               child: CustomContainer(
+                decoration: BoxDecoration(
+                  color: AppColors.primaryBackground
+                ),
+                 child: SingleChildScrollView(
+                   child: Padding(
+                     padding: const EdgeInsets.only(top: 10, bottom: 50),
+                     child: Column(
+                       children: [
+                        Padding(
+                          padding: const EdgeInsets.only(top: 94),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: messageList.map((message){
+                              return AgreementChatItem(
+                                id:message.senderId,
+                                name: message.name, 
+                                prefectureId: message.prefectureId, 
+                                age: message.age, 
+                                content: message.content, 
+                                avatarImage: message.avatarImage
+                              );
+                            }).toList()
+                          ),
                         ),
-                      ),
-                     ],
+                       ],
+                     ),
                    ),
                  ),
                ),
              ),
-           ),
-           
-           Center(
-            child: CustomContainer(
-              height: 94,
-              decoration: BoxDecoration(
-                color: AppColors.secondaryGreen
-              ),
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 20),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    CustomText(
-                      text: "投稿管理", 
-                      fontSize: 17, 
-                      fontWeight: FontWeight.bold, 
-                      lineHeight: 1, 
-                      letterSpacing: 1, 
-                      color: AppColors.primaryWhite
-                    ),
-                  ],
+             
+             Center(
+              child: CustomContainer(
+                height: 94,
+                decoration: BoxDecoration(
+                  color: AppColors.secondaryGreen
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 20),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      CustomText(
+                        text: "投稿管理", 
+                        fontSize: 17, 
+                        fontWeight: FontWeight.bold, 
+                        lineHeight: 1, 
+                        letterSpacing: 1, 
+                        color: AppColors.primaryWhite
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-           Center(
-            child: CustomContainer(
-              height: 80,
-              child: Padding(
-                padding: const EdgeInsets.only(top:46),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    IconButton(
-                      onPressed: (){
-                        // Navigator.pushNamed(context, "/agreement");
-                        Navigator.pop(context);
-                      }, 
-                      icon: Icon(
-                        Icons.arrow_back_ios_rounded,
-                        color: AppColors.primaryWhite,
-                      )
-                    ),
-                  ],
+             Center(
+              child: CustomContainer(
+                height: 80,
+                child: Padding(
+                  padding: const EdgeInsets.only(top:46),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      IconButton(
+                        onPressed: (){
+                          // Navigator.pushNamed(context, "/agreement");
+                          Navigator.pop(context);
+                        }, 
+                        icon: Icon(
+                          Icons.arrow_back_ios_rounded,
+                          color: AppColors.primaryWhite,
+                        )
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
+            
+          ],
+        ): const CustomContainer(
+          child: Center(
+            child: CircularProgressIndicator(),
           ),
-          
-        ],
-      ): const CustomContainer(
-        child: Center(
-          child: CircularProgressIndicator(),
-        ),
-      )
+        )
+      ),
     );
   }
 }

@@ -5,11 +5,11 @@ import 'package:drone/screens/auth/loginhome_screen.dart';
 import 'package:drone/screens/auth/phone_screen.dart';
 import 'package:drone/screens/auth/phoneverify_screen.dart';
 import 'package:drone/screens/chatting/chatinglist_screen.dart';
-import 'package:drone/screens/chatting/chattingdetail_screen.dart';
 import 'package:drone/screens/chatting/editphrase_screen.dart';
 import 'package:drone/screens/chatting/violation_screen.dart';
 import 'package:drone/screens/chatting/violationconfirm_screen.dart';
 import 'package:drone/screens/female/female_mypage.dart';
+import 'package:drone/screens/like/like_matching_complete.dart';
 import 'package:drone/screens/like/like_screen.dart';
 import 'package:drone/screens/login_screen.dart';
 import 'package:drone/screens/male/male_mypage.dart';
@@ -57,6 +57,7 @@ class Routes {
     '/agreenment_chatlist': (context) => const AgreementChatListScreen(),
     '/login': (context) => LoginScreen(),
     '/matching_complete': (context) => const MatchingCompleteScreen(),
+    '/likematching_complete': (context) => const LikeMatchingCompleteScreen(),
     '/phone': (context) => const PhoneScreen(),
     '/phoneverify': (context) => const PhoneVerifyScreen(),
     '/loginhome': (context) => const LoginHomeScreen(),

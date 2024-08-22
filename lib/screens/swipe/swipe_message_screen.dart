@@ -4,7 +4,9 @@ import 'package:drone/components/custom_button.dart';
 import 'package:drone/components/custom_container.dart';
 import 'package:drone/components/custom_text.dart';
 import 'package:drone/models/chattingtransfer_model.dart';
+import 'package:drone/models/user_model.dart';
 import 'package:drone/state/like_state.dart';
+import 'package:drone/state/user_state.dart';
 import 'package:drone/utils/const_file.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -18,11 +20,13 @@ class SwipeMessageScreen extends StatefulWidget {
 }
 
 class _SwipeMessageScreenState extends State<SwipeMessageScreen> {
+  late UserModel myself;
   final TextEditingController messageController = TextEditingController();
   int messageLength = 0;
   @override
   void initState() {
     super.initState();
+    getMySelf();
     messageController.addListener(_updateButtonColor);
   }
 
@@ -37,6 +41,29 @@ class _SwipeMessageScreenState extends State<SwipeMessageScreen> {
     setState(() {
       messageLength = messageController.text.length;
     });
+  }
+
+  Future getMySelf() async{
+    await Provider.of<UserState>(context, listen: false).getUserInformation();
+    setState(() {
+      myself = Provider.of<UserState>(context, listen: false).user!;
+    });
+  }
+
+  bool checkedUser() {
+    if (myself.gender == 1) {
+      if (myself.isPay && myself.isVerify || myself.experience) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      if (myself.isVerify || myself.experience) {
+        return true;
+      } else {
+        return false;
+      }
+    }
   }
 
   Future sendMessageLike(int id) async{
@@ -110,6 +137,112 @@ class _SwipeMessageScreenState extends State<SwipeMessageScreen> {
       );
     }
   }
+
+  planAlert(BuildContext context){
+  showDialog(
+    context: context,
+    builder: (_) => Center( // Aligns the container to center
+      child: GestureDetector(
+        onTap: () {
+          Navigator.pop(context);
+          Navigator.pushNamed(context, "/planscreen");
+        },
+        child: Container( // A simplified version of dialog. 
+          width: 316,
+          height: 426,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            image: const DecorationImage(
+              image: AssetImage("assets/images/sale_card1.png"),
+              fit: BoxFit.cover
+            )
+          )
+        ),
+      )
+    )
+  );
+}
+
+verifyAlert(BuildContext context){
+  showDialog(
+    barrierDismissible: false,
+    context: context,
+    builder: (_) => Center( // Aligns the container to center
+      child: Container( // A simplified version of dialog. 
+        width: 270,
+        height: 200,
+        padding: const EdgeInsets.only(top:35),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: AppColors.primaryWhite
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              "メッセージのやりとりには\n年齢確認が必要です",
+              textAlign:TextAlign.center,
+              style: TextStyle(
+                color: AppColors.primaryBlack,
+                fontWeight: FontWeight.normal,
+                fontSize:13,
+                letterSpacing: -1,
+                decoration: TextDecoration.none
+              ),
+            ),
+            const SizedBox(
+              height: 24,
+            ),
+            Container(
+              width: 245,
+              height: 42,
+              decoration: BoxDecoration(
+                color: AppColors.secondaryGreen,
+                borderRadius: BorderRadius.circular(50)
+              ),
+              child: MaterialButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, "/verifyscreen");
+                },
+                child: Center(
+                  child: CustomText(
+                    text: "年齢確認をする", 
+                    fontSize: 13, 
+                    fontWeight: FontWeight.normal, 
+                    lineHeight: 1, 
+                    letterSpacing: -1, 
+                    color: AppColors.primaryWhite
+                  ),
+                ),
+              ),
+            ),
+            Container(
+              width: 245,
+              height: 42,
+              margin: const EdgeInsets.only(top: 5),
+              child: MaterialButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Center(
+                  child: CustomText(
+                    text: "あとでする", 
+                    fontSize: 13, 
+                    fontWeight: FontWeight.normal, 
+                    lineHeight: 1, 
+                    letterSpacing: -1, 
+                    color: AppColors.secondaryGreen
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
+        )
+      )
+  );
+}
 
   @override
   Widget build(BuildContext context) {
@@ -240,7 +373,22 @@ class _SwipeMessageScreenState extends State<SwipeMessageScreen> {
                                     titleColor: AppColors.primaryWhite, 
                                     onTap: (){
                                       if(messageController.text != ""){
-                                        sendMessageLike(args.id);
+                                        if(checkedUser()){
+                                          sendMessageLike(args.id);
+                                        } else {
+                                          if (myself.gender == 1) {
+                                            if (!myself.isPay) {
+                                              planAlert(context);
+                                            } else if(!myself.isVerify){
+                                              verifyAlert(context);
+                                            }
+                                          }
+                                          if (myself.gender == 2) {
+                                            if (!myself.isVerify) {
+                                              verifyAlert(context);
+                                            } 
+                                          }
+                                        }
                                       }else{
                                         showDialog(
                                           barrierDismissible: false,

@@ -1116,8 +1116,8 @@ void buyBottomSheet() {
                                   }
                                 },
                                 pressProfile: () {
-                                    Navigator.pushNamed(context, "/view_profile", arguments: UserTransforIdModel(null, id: users[users.length-1].id, beforePage: 'swipepage'));
-                                  }, 
+                                  Navigator.pushNamed(context, "/view_profile", arguments: UserTransforIdModel(null, id: users[users.length-1].id, beforePage: 'swipepage'));
+                                }, 
                                 verify: users[users.length-1].verify, 
                                 favouriteText: users[users.length-1].favouriteText,
                                 favouriteImage: users[users.length-1].favouriteImage,
@@ -1241,7 +1241,11 @@ void buyBottomSheet() {
                                   child: Center(
                                     child: IconButton(
                                       onPressed: (){
-                                        Navigator.pushNamed(context, "/messagescreen", arguments: ChattingTransferModel(users[currenIndex].id, users[currenIndex].name, users[currenIndex].avatars[0], users[currenIndex].prefectureId, users[currenIndex].age));
+                                        if (point>0) {
+                                          Navigator.pushNamed(context, "/messagescreen", arguments: ChattingTransferModel(users[currenIndex].id, users[currenIndex].name, users[currenIndex].avatars[0], users[currenIndex].prefectureId, users[currenIndex].age));
+                                        }else{
+                                          buyPointAlert(context);
+                                        }
                                       }, 
                                       icon: ImageIcon(
                                         const AssetImage("assets/images/like.png"),

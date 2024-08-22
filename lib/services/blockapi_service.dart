@@ -53,4 +53,46 @@ class BlockApiService {
       return false;
     }
   }
+
+  Future<bool> addBlock(int id) async{
+    String? userId = await storage.read(key: 'userId');
+    String? accessToken = await storage.read(key: 'accessToken');
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/block/add_block'),
+      body: jsonEncode(<String, String>{
+        'userId': userId!,
+        'blockUserId': id.toString()
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<bool> addReport(int id) async{
+    String? userId = await storage.read(key: 'userId');
+    String? accessToken = await storage.read(key: 'accessToken');
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/block/add_report'),
+      body: jsonEncode(<String, String>{
+        'reporterId': userId!,
+        'violatorId': id.toString()
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }

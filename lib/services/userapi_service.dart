@@ -373,6 +373,7 @@ class UserApiService {
         questions: questions, 
         phrases: phrases, 
         deadline: responseData["deadline"], 
+        experience: responseData["experience"], 
         createdAt: responseData["createdAt"], 
         updateAt: responseData["updatedAt"]
       );
@@ -412,6 +413,7 @@ class UserApiService {
         questions: null, 
         phrases: [], 
         deadline: '', 
+        experience: false, 
         createdAt: '', 
         updateAt: ''
       );
@@ -468,6 +470,7 @@ class UserApiService {
         questions: questions, 
         phrases: phrases, 
         deadline: responseData["deadline"], 
+        experience: responseData["experience"], 
         createdAt: responseData["createdAt"], 
         updateAt: responseData["updatedAt"]
       );
@@ -507,6 +510,7 @@ class UserApiService {
         questions: null, 
         phrases: [], 
         deadline: '', 
+        experience: false,
         createdAt: '', 
         updateAt: ''
       );
@@ -1288,6 +1292,27 @@ class UserApiService {
       },
     );
     if(response.statusCode == 200){
+      return true;
+    }else{
+      return false;
+    }
+  }
+
+  Future<bool> deleteAccount() async{
+    String? userId = await storage.read(key: 'userId');
+    String? accessToken = await storage.read(key: 'accessToken');
+    final response = await http.delete(
+      Uri.parse('$baseUrl/api/auth/delete_account'),
+      body: jsonEncode(<String, String>{
+        'userId': userId!,
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+    if(response.statusCode == 200){
+      await storage.deleteAll();
       return true;
     }else{
       return false;

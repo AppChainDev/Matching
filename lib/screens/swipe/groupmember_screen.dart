@@ -12,6 +12,7 @@ import 'package:drone/models/swipegroup_model.dart';
 import 'package:drone/state/user_state.dart';
 import 'package:drone/utils/const_file.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 class GroupMemberScreen extends StatefulWidget {
   const GroupMemberScreen({super.key});
@@ -759,8 +760,8 @@ class _GroupMemberScreenState extends State<GroupMemberScreen> {
                           height: 100,
                           decoration: BoxDecoration(
                             image: DecorationImage(
-                              image: AssetImage("assets/images/${args.thumbnail}"),
-                              fit: BoxFit.cover     
+                              image: NetworkImage("${dotenv.get('BASE_URL')}/img/${args.thumbnail}"),
+                              fit: BoxFit.cover
                             ),
                             borderRadius: BorderRadius.circular(10) 
                           ),

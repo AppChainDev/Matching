@@ -13,6 +13,8 @@ import 'package:drone/models/chat_message.dart';
 import 'package:drone/models/chattingtransfer_model.dart';
 import 'package:drone/models/phrase_model.dart';
 import 'package:drone/models/user.dart';
+import 'package:drone/models/user_model.dart';
+import 'package:drone/state/block_state.dart';
 import 'package:drone/state/user_state.dart';
 import 'package:drone/utils/database_helper.dart';
 import 'package:flutter/material.dart';
@@ -34,6 +36,7 @@ class ChattingDetailScreen extends StatefulWidget {
 }
 
 class _ChattingDetailScreenState extends State<ChattingDetailScreen> {
+  late UserModel myself;
   final storage = const FlutterSecureStorage();
   late WebSocketChannel channel;
   final DatabaseHelper _dbHelper = DatabaseHelper();
@@ -64,11 +67,29 @@ class _ChattingDetailScreenState extends State<ChattingDetailScreen> {
     super.dispose();
   }
 
+  bool checkedUser() {
+    if (myself.gender == 1) {
+      if (myself.isPay && myself.isVerify || myself.experience) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      if (myself.isVerify || myself.experience) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  }
+
   Future loadPhraseAndAdviceState() async{
+    await Provider.of<UserState>(context, listen: false).getUserInformation();
     await Provider.of<UserState>(context, listen: false).getPhrase();
     await Provider.of<UserState>(context, listen: false).getAdviceState(widget.user.id);
     setState(() {
       phrases = Provider.of<UserState>(context, listen: false).phrase;
+      myself = Provider.of<UserState>(context, listen: false).user!;
       if(Provider.of<UserState>(context, listen: false).adviceState != null){
         adviceState = Provider.of<UserState>(context, listen: false).adviceState!.state;
         answer =  Provider.of<UserState>(context, listen: false).adviceState!.answer;
@@ -93,7 +114,6 @@ class _ChattingDetailScreenState extends State<ChattingDetailScreen> {
     String? userId = await storage.read(key: 'userId');
     channel = WebSocketChannel.connect(Uri.parse('ws://10.0.2.2:8080/$userId'));
       channel.stream.listen((message) {
-        print(message.toString());
         final messageData = jsonDecode(message);
         final ChatMessage newMessage = ChatMessage(
           id: messages.length + 1,
@@ -134,29 +154,44 @@ class _ChattingDetailScreenState extends State<ChattingDetailScreen> {
 
   Future<void> _sendMessage({String? text, String? imagePath}) async {
     if (text == null && imagePath == null) return;
-    ChatMessage newMessage = ChatMessage(
-      id: messages.length+1,
-      userId: widget.user.id,
-      text: text ?? '',
-      imagePath: imagePath,
-      isSentByMe: true,
-      timestamp: DateTime.now(),
-    );
+    if (checkedUser()) {
+      ChatMessage newMessage = ChatMessage(
+        id: messages.length+1,
+        userId: widget.user.id,
+        text: text ?? '',
+        imagePath: imagePath,
+        isSentByMe: true,
+        timestamp: DateTime.now(),
+      );
 
-    print(await _dbHelper.insertMessage(newMessage.toJson()));
-    setState(() {
-      messages.add(newMessage);
-      messageController.clear();
-    });
+      await _dbHelper.insertMessage(newMessage.toJson());
+      setState(() {
+        messages.add(newMessage);
+        messageController.clear();
+      });
 
-    // Send the message to the backend
-    final messageData = {
-      'userId': widget.user.id,
-      'text': text,
-      'imagePath': imagePath,
-      'timestamp': newMessage.timestamp.toIso8601String(),
-    };
-    channel.sink.add(jsonEncode(messageData));
+      // Send the message to the backend
+      final messageData = {
+        'userId': widget.user.id,
+        'text': text,
+        'imagePath': imagePath,
+        'timestamp': newMessage.timestamp.toIso8601String(),
+      };
+      channel.sink.add(jsonEncode(messageData));
+    } else {
+      if (myself.gender == 1) {
+        if (!myself.isPay) {
+          planAlert(context);
+        } else if(!myself.isVerify){
+          verifyAlert(context);
+        }
+      }
+      if (myself.gender == 2) {
+        if (!myself.isVerify) {
+          verifyAlert(context);
+        } 
+      }
+    }
   }
 
   Future getImageFromGallery() async {
@@ -232,7 +267,26 @@ class _ChattingDetailScreenState extends State<ChattingDetailScreen> {
       child: Column(
         children: messages.map((message){
           return message.isSentByMe ? SendMessageItem(text:message.text, date: DateFormat('yyyy-MM-dd HH:mm').format(message.timestamp), image: message.imagePath):
-                ReceivedMessageItem(text: message.text, avatar: widget.user.avatar, date: DateFormat('yyyy-MM-dd HH:mm').format(message.timestamp), image: message.imagePath);
+                ReceivedMessageItem(
+                  text: message.text, 
+                  avatar: widget.user.avatar, 
+                  date: DateFormat('yyyy-MM-dd HH:mm').format(message.timestamp), 
+                  image: message.imagePath,
+                  onPressed: () {
+                    if (myself.gender == 1) {
+                      if (!myself.isPay) {
+                        planAlert(context);
+                      } else if(!myself.isVerify){
+                        verifyAlert(context);
+                      }
+                    }
+                    if (myself.gender == 2) {
+                      if (!myself.isVerify) {
+                        verifyAlert(context);
+                      } 
+                    }
+                  },
+                );
         }).toList()
       ),
     );
@@ -324,6 +378,15 @@ class _ChattingDetailScreenState extends State<ChattingDetailScreen> {
       );
     }
   }
+
+  Future addBlock() async{
+    final result = await Provider.of<BlockState>(context, listen: false).addBlock(widget.user.id);
+    if (result) {
+      Navigator.pop(context);
+      Navigator.pushNamed(context, "/chattinglist");
+    }
+  }
+
 
   moreAlertPage(BuildContext context) {
     // final args = ModalRoute.of(context)!.settings.arguments as ChattingTransferModel;
@@ -503,8 +566,10 @@ class _ChattingDetailScreenState extends State<ChattingDetailScreen> {
                     ),
                     child: TextButton(
                       onPressed: (){
-                        Navigator.pop(context);
-                        Navigator.pop(context);
+                        // Navigator.pop(context);
+                        // Navigator.pop(context);
+                        addBlock();
+                        
                       },
                       child: Text(
                         'OK',
@@ -657,6 +722,112 @@ setAdviceConfirmAlert(BuildContext context){
                     lineHeight: 1, 
                     letterSpacing: -1, 
                     color: AppColors.primaryWhite
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
+        )
+      )
+  );
+}
+
+planAlert(BuildContext context){
+  showDialog(
+    context: context,
+    builder: (_) => Center( // Aligns the container to center
+      child: GestureDetector(
+        onTap: () {
+          Navigator.pop(context);
+          Navigator.pushNamed(context, "/planscreen");
+        },
+        child: Container( // A simplified version of dialog. 
+          width: 316,
+          height: 426,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            image: const DecorationImage(
+              image: AssetImage("assets/images/sale_card1.png"),
+              fit: BoxFit.cover
+            )
+          )
+        ),
+      )
+    )
+  );
+}
+
+verifyAlert(BuildContext context){
+  showDialog(
+    barrierDismissible: false,
+    context: context,
+    builder: (_) => Center( // Aligns the container to center
+      child: Container( // A simplified version of dialog. 
+        width: 270,
+        height: 200,
+        padding: const EdgeInsets.only(top:35),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: AppColors.primaryWhite
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              "メッセージのやりとりには\n年齢確認が必要です",
+              textAlign:TextAlign.center,
+              style: TextStyle(
+                color: AppColors.primaryBlack,
+                fontWeight: FontWeight.normal,
+                fontSize:13,
+                letterSpacing: -1,
+                decoration: TextDecoration.none
+              ),
+            ),
+            const SizedBox(
+              height: 24,
+            ),
+            Container(
+              width: 245,
+              height: 42,
+              decoration: BoxDecoration(
+                color: AppColors.secondaryGreen,
+                borderRadius: BorderRadius.circular(50)
+              ),
+              child: MaterialButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, "/verifyscreen");
+                },
+                child: Center(
+                  child: CustomText(
+                    text: "年齢確認をする", 
+                    fontSize: 13, 
+                    fontWeight: FontWeight.normal, 
+                    lineHeight: 1, 
+                    letterSpacing: -1, 
+                    color: AppColors.primaryWhite
+                  ),
+                ),
+              ),
+            ),
+            Container(
+              width: 245,
+              height: 42,
+              margin: const EdgeInsets.only(top: 5),
+              child: MaterialButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Center(
+                  child: CustomText(
+                    text: "あとでする", 
+                    fontSize: 13, 
+                    fontWeight: FontWeight.normal, 
+                    lineHeight: 1, 
+                    letterSpacing: -1, 
+                    color: AppColors.secondaryGreen
                   ),
                 ),
               ),

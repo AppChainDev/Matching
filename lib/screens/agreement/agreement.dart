@@ -7,6 +7,7 @@ import 'package:drone/components/custom_text.dart';
 import 'package:drone/models/post_model.dart';
 import 'package:drone/state/post_state.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
 
 class AgreementScreen extends StatefulWidget {
@@ -43,211 +44,226 @@ class _AgreementScreenState extends State<AgreementScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BaseScreen(
-      child: isLoding? Stack(
-        children: [
-          if(myPosts.isNotEmpty)
-            Center(
-             child: CustomContainer(
-              decoration: BoxDecoration(
-                color: AppColors.primaryBackground
-              ),
-               child: SingleChildScrollView(
-                 child: Padding(
-                   padding: const EdgeInsets.only(top: 10, bottom: 50),
-                   child: Column(
-                     children: [
-                      Padding(
-                        padding: const EdgeInsets.only(top: 94),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: myPosts.map((post){
-                            return MaterialButton(
-                              onPressed: () {
-                                if (post.messageCount == 0) {              
-                                  showDialog(
-                                    barrierDismissible: false,
-                                    context: context,
-                                    builder: (_) => Center( // Aligns the container to center
-                                      child: Container( // A simplified version of dialog. 
-                                        width: 300,
-                                        height: 150,
-                                        padding: const EdgeInsets.only(top:35),
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(10),
-                                          color: AppColors.primaryWhite
-                                        ),
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.center,
-                                          children: [
-                                            Text(
-                                              "情報を保存できませんでした。",
-                                              textAlign:TextAlign.center,
-                                              style: TextStyle(
-                                                color: AppColors.primaryBlack,
-                                                fontWeight: FontWeight.normal,
-                                                fontSize:15,
-                                                letterSpacing: -1,
-                                                decoration: TextDecoration.none
-                                              ),
-                                            ),
-                                            const SizedBox(
-                                              height: 24,
-                                            ),
-                                            Padding(
-                                              padding: const EdgeInsets.symmetric(horizontal: 10),
-                                              child: Container(
-                                                width: 343,
-                                                height: 42,
-                                                margin: const EdgeInsets.only(top: 5),
-                                                decoration: BoxDecoration(
-                                                  border: Border(
-                                                    top: BorderSide(
-                                                      color: AppColors.secondaryGray.withOpacity(0.5)
-                                                    )
-                                                  )
+    // ignore: deprecated_member_use
+    return WillPopScope(
+      onWillPop: () async{
+        const storage = FlutterSecureStorage();
+        String? gender =  await storage.read(key: 'gender');
+        if (gender != null) {
+          if (int.parse(gender) == 1) {
+            Navigator.pushNamed(context, "/malemypage");
+          } else {
+            Navigator.pushNamed(context, "/femalemypage");
+          }
+        }
+        return true;
+      },
+      child: BaseScreen(
+        child: isLoding? Stack(
+          children: [
+            if(myPosts.isNotEmpty)
+              Center(
+               child: CustomContainer(
+                decoration: BoxDecoration(
+                  color: AppColors.primaryBackground
+                ),
+                 child: SingleChildScrollView(
+                   child: Padding(
+                     padding: const EdgeInsets.only(top: 10, bottom: 50),
+                     child: Column(
+                       children: [
+                        Padding(
+                          padding: const EdgeInsets.only(top: 94),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: myPosts.map((post){
+                              return MaterialButton(
+                                onPressed: () {
+                                  if (post.messageCount == 0) {              
+                                    showDialog(
+                                      barrierDismissible: false,
+                                      context: context,
+                                      builder: (_) => Center( // Aligns the container to center
+                                        child: Container( // A simplified version of dialog. 
+                                          width: 300,
+                                          height: 150,
+                                          padding: const EdgeInsets.only(top:35),
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(10),
+                                            color: AppColors.primaryWhite
+                                          ),
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                "情報を保存できませんでした。",
+                                                textAlign:TextAlign.center,
+                                                style: TextStyle(
+                                                  color: AppColors.primaryBlack,
+                                                  fontWeight: FontWeight.normal,
+                                                  fontSize:15,
+                                                  letterSpacing: -1,
+                                                  decoration: TextDecoration.none
                                                 ),
-                                                child: MaterialButton(
-                                                  onPressed: () {
-                                                    Navigator.pop(context);
-                                                  },
-                                                  child: Center(
-                                                    child: CustomText(
-                                                      text: "OK", 
-                                                      fontSize: 15, 
-                                                      fontWeight: FontWeight.normal, 
-                                                      lineHeight: 1, 
-                                                      letterSpacing: -1, 
-                                                      color: AppColors.alertBlue
+                                              ),
+                                              const SizedBox(
+                                                height: 24,
+                                              ),
+                                              Padding(
+                                                padding: const EdgeInsets.symmetric(horizontal: 10),
+                                                child: Container(
+                                                  width: 343,
+                                                  height: 42,
+                                                  margin: const EdgeInsets.only(top: 5),
+                                                  decoration: BoxDecoration(
+                                                    border: Border(
+                                                      top: BorderSide(
+                                                        color: AppColors.secondaryGray.withOpacity(0.5)
+                                                      )
+                                                    )
+                                                  ),
+                                                  child: MaterialButton(
+                                                    onPressed: () {
+                                                      Navigator.pop(context);
+                                                    },
+                                                    child: Center(
+                                                      child: CustomText(
+                                                        text: "OK", 
+                                                        fontSize: 15, 
+                                                        fontWeight: FontWeight.normal, 
+                                                        lineHeight: 1, 
+                                                        letterSpacing: -1, 
+                                                        color: AppColors.alertBlue
+                                                      ),
                                                     ),
                                                   ),
                                                 ),
-                                              ),
-                                            )
-                                          ],
-                                        ),
+                                              )
+                                            ],
+                                          ),
+                                          )
                                         )
-                                      )
-                                  );
-                                }else{
-                                  Navigator.pushNamed(context, "/agreenment_chatlist", arguments: PostModel(post.id, post.userId, post.name, post.description, post.prefectureId, post.age, post.avatar, post.backImage, post.messageCount));
-                                }
-                              },
-                              child: AgreementItem(
-                                name: post.name, 
-                                prefectureId: post.prefectureId, 
-                                age: post.age, 
-                                description: post.description, 
-                                bgImage: post.backImage, 
-                                avatarImage: post.avatar
-                              ),
-                            );
-                          }).toList()
+                                    );
+                                  }else{
+                                    Navigator.pushNamed(context, "/agreenment_chatlist", arguments: PostModel(post.id, post.userId, post.name, post.description, post.prefectureId, post.age, post.avatar, post.backImage, post.messageCount));
+                                  }
+                                },
+                                child: AgreementItem(
+                                  name: post.name, 
+                                  prefectureId: post.prefectureId, 
+                                  age: post.age, 
+                                  description: post.description, 
+                                  bgImage: post.backImage, 
+                                  avatarImage: post.avatar
+                                ),
+                              );
+                            }).toList()
+                          ),
                         ),
-                      ),
-                     ],
+                       ],
+                     ),
                    ),
                  ),
                ),
              ),
-           ),
-           if(myPosts.isEmpty)
-            Center(
-              child: CustomContainer(
-                decoration: BoxDecoration(
-                  color: AppColors.primaryBackground
-                ),
-                child: Center(
-                  child: CustomText(
-                    text: "投稿した共感はありません", 
-                    fontSize: 17, 
-                    fontWeight: FontWeight.normal, 
-                    lineHeight: 1, 
-                    letterSpacing: 1, 
-                    color: AppColors.secondaryGreen
+             if(myPosts.isEmpty)
+              Center(
+                child: CustomContainer(
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryBackground
                   ),
-                )
-              ),
-            ),
-           if(myPosts.isEmpty)
-            Center(
-              child: CustomContainer(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 80),
-                      child: CustomButton(
-                        title: "共感を求める",
-                        width: 343,
-                        height: 45,
-                        fontSize: 17, 
-                        fontWeight: FontWeight.normal, 
-                        color: AppColors.secondaryGreen, 
-                        titleColor: AppColors.primaryWhite, 
-                        onTap: () { 
-                          Navigator.pushNamed(context, "/postpage");
-                        }
-                      )
-                    )
-                  ],
-                ),
-              ),
-            ),
-           
-           Center(
-            child: CustomContainer(
-              height: 94,
-              decoration: BoxDecoration(
-                color: AppColors.secondaryGreen
-              ),
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 20),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    CustomText(
-                      text: "投稿管理", 
+                  child: Center(
+                    child: CustomText(
+                      text: "投稿した共感はありません", 
                       fontSize: 17, 
-                      fontWeight: FontWeight.bold, 
+                      fontWeight: FontWeight.normal, 
                       lineHeight: 1, 
                       letterSpacing: 1, 
-                      color: AppColors.primaryWhite
+                      color: AppColors.secondaryGreen
                     ),
-                  ],
+                  )
                 ),
               ),
-            ),
-          ),
-           Center(
-            child: CustomContainer(
-              height: 80,
-              child: Padding(
-                padding: const EdgeInsets.only(top:46),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    IconButton(
-                      onPressed: (){
-                        Navigator.pop(context);
-                      }, 
-                      icon: Icon(
-                        Icons.arrow_back_ios_rounded,
-                        color: AppColors.primaryWhite,
+             if(myPosts.isEmpty)
+              Center(
+                child: CustomContainer(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 80),
+                        child: CustomButton(
+                          title: "共感を求める",
+                          width: 343,
+                          height: 45,
+                          fontSize: 17, 
+                          fontWeight: FontWeight.normal, 
+                          color: AppColors.secondaryGreen, 
+                          titleColor: AppColors.primaryWhite, 
+                          onTap: () { 
+                            Navigator.pushNamed(context, "/postpage");
+                          }
+                        )
                       )
-                    ),
-                  ],
+                    ],
+                  ),
+                ),
+              ),
+             
+             Center(
+              child: CustomContainer(
+                height: 94,
+                decoration: BoxDecoration(
+                  color: AppColors.secondaryGreen
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 20),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      CustomText(
+                        text: "投稿管理", 
+                        fontSize: 17, 
+                        fontWeight: FontWeight.bold, 
+                        lineHeight: 1, 
+                        letterSpacing: 1, 
+                        color: AppColors.primaryWhite
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
+             Center(
+              child: CustomContainer(
+                height: 80,
+                child: Padding(
+                  padding: const EdgeInsets.only(top:46),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      IconButton(
+                        onPressed: (){
+                          Navigator.pop(context);
+                        }, 
+                        icon: Icon(
+                          Icons.arrow_back_ios_rounded,
+                          color: AppColors.primaryWhite,
+                        )
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            
+          ],
+        ):const CustomContainer(
+          child: Center(
+            child: CircularProgressIndicator(),
           ),
-          
-        ],
-      ):const CustomContainer(
-        child: Center(
-          child: CircularProgressIndicator(),
-        ),
-      )
+        )
+      ),
     );
   }
 }

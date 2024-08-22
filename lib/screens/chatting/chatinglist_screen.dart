@@ -4,6 +4,7 @@ import 'package:drone/components/chatting/chattinglist_card.dart';
 import 'package:drone/components/chatting/replylist_card.dart';
 import 'package:drone/components/custom_container.dart';
 import 'package:drone/components/custom_text.dart';
+import 'package:drone/models/block_model.dart';
 import 'package:drone/models/user.dart';
 import 'package:drone/screens/chatting/chattingdetail_screen.dart';
 import 'package:drone/state/user_state.dart';
@@ -25,6 +26,7 @@ class _ChattingListScreenState extends State<ChattingListScreen> {
 
   final DatabaseHelper _dbHelper = DatabaseHelper();
 
+  late List<BlockModel> blocks;
   late List<User> replayLists;
   late List<User> chattingLists;
   late List<User> chattingPossibleLists;
@@ -58,10 +60,14 @@ class _ChattingListScreenState extends State<ChattingListScreen> {
         user.time = '';
       }
     }
+    // await Provider.of<BlockState>(context, listen: false).getBlockList();
     await Provider.of<UserState>(context, listen: false).getMatchedUserList();
     setState(() {
+      // final blockListIds = Provider.of<BlockState>(context, listen: false).blocks.map((user) => user.id).toSet();
       chattingLists = userList;
+      // chattingLists.removeWhere((user) => blockListIds.contains(user.id));
       replayLists = filteredUsers;
+      // replayLists.removeWhere((user) => blockListIds.contains(user.id));
       chattingPossibleLists = Provider.of<UserState>(context, listen: false).matchedUserList;
       final chattingListIds = chattingLists.map((user) => user.id).toSet();
       chattingPossibleLists.removeWhere((user) => chattingListIds.contains(user.id));
@@ -284,171 +290,186 @@ class _ChattingListScreenState extends State<ChattingListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BaseScreen(
-      child: isLoding? Stack(
-        children: [
-          Center(
-            child: CustomContainer(
-              decoration: BoxDecoration(
-                color: AppColors.primaryWhite
-              ),
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 160, bottom: 100),
-                  child: Column(
-                    children: [
-                      Container(
-                        width: MediaQuery.of(context).size.width,
-                        height: 150,
-                        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                        decoration: BoxDecoration(
-                          color: AppColors.primaryBackground
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            CustomText(
-                              text: "いま、返信が返ってきやすい会員", 
-                              fontSize: 14, 
-                              fontWeight: FontWeight.normal, 
-                              lineHeight: 2, 
-                              letterSpacing: -1, 
-                              color: AppColors.secondaryGreen
-                            ),
-                            Expanded(
-                              child: ListView(
-                                scrollDirection: Axis.horizontal,
-                                children: replayLists.map((item){
-                                  return ReplyListItem(
-                                    id: item.id, 
-                                    name: item.name, 
-                                    prefectureId: item.id, 
-                                    age: item.age, 
-                                    avatar: item.avatar, 
-                                    date: item.time,
-                                    onClick: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => ChattingDetailScreen(user: item),
-                                        ),
-                                      );
-                                      // Navigator.pushNamed(context, "/chatting_detail", arguments: ChattingTransferModel(item.id, item.name, item.avatar, item.prefectureId, item.age));
-                                    },
-                                  );
-                                }).toList(),
-                              )
-                            )
-                          ],
-                        ),
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: displayLists.map((item){
-                          return GestureDetector(
-                            onTap: () {
-                              if(filterText == "matching"){
-                                _addUser(item.id, item.name, item.age, item.prefectureId, item.avatar);
-                              } else {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => ChattingDetailScreen(user: item),
-                                  ),
-                                );
-                              }
-                            },
-                            child: ChattingListItem(
-                              id: item.id, 
-                              name: item.name, 
-                              prefectureId: item.prefectureId, 
-                              age: item.age, 
-                              stateText: item.state, 
-                              avatar: item.avatar, 
-                              date: item.time, 
-                              state: item.state
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                    ],
-                  ),
+    // ignore: deprecated_member_use
+    return WillPopScope(
+      onWillPop: () async{
+        const storage = FlutterSecureStorage();
+        String? gender =  await storage.read(key: 'gender');
+        if (gender != null) {
+          if (int.parse(gender) == 1) {
+            Navigator.pushNamed(context, "/malemypage");
+          } else {
+            Navigator.pushNamed(context, "/femalemypage");
+          }
+        }
+        return true;
+      },
+      child: BaseScreen(
+        child: isLoding? Stack(
+          children: [
+            Center(
+              child: CustomContainer(
+                decoration: BoxDecoration(
+                  color: AppColors.primaryWhite
                 ),
-              ),
-            ),
-          ),
-           
-           Center(
-            child: Column(
-              children: [
-                CustomContainer(
-                  height: 84,
-                  decoration: BoxDecoration(
-                    color: AppColors.secondaryGreen
-                  ),
+                child: SingleChildScrollView(
                   child: Padding(
-                    padding: const EdgeInsets.only(bottom: 20),
+                    padding: const EdgeInsets.only(top: 160, bottom: 100),
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        CustomText(
-                          text: "メッセージ", 
-                          fontSize: 16, 
-                          fontWeight: FontWeight.bold, 
-                          lineHeight: 1, 
-                          letterSpacing: 1, 
-                          color: AppColors.primaryWhite
+                        Container(
+                          width: MediaQuery.of(context).size.width,
+                          height: 150,
+                          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                          decoration: BoxDecoration(
+                            color: AppColors.primaryBackground
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              CustomText(
+                                text: "いま、返信が返ってきやすい会員", 
+                                fontSize: 14, 
+                                fontWeight: FontWeight.normal, 
+                                lineHeight: 2, 
+                                letterSpacing: -1, 
+                                color: AppColors.secondaryGreen
+                              ),
+                              Expanded(
+                                child: ListView(
+                                  scrollDirection: Axis.horizontal,
+                                  children: replayLists.map((item){
+                                    return ReplyListItem(
+                                      id: item.id, 
+                                      name: item.name, 
+                                      prefectureId: item.id, 
+                                      age: item.age, 
+                                      avatar: item.avatar, 
+                                      date: item.time,
+                                      onClick: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => ChattingDetailScreen(user: item),
+                                          ),
+                                        );
+                                        // Navigator.pushNamed(context, "/chatting_detail", arguments: ChattingTransferModel(item.id, item.name, item.avatar, item.prefectureId, item.age));
+                                      },
+                                    );
+                                  }).toList(),
+                                )
+                              )
+                            ],
+                          ),
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: displayLists.map((item){
+                            return GestureDetector(
+                              onTap: () {
+                                if(filterText == "matching"){
+                                  _addUser(item.id, item.name, item.age, item.prefectureId, item.avatar);
+                                } else {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ChattingDetailScreen(user: item),
+                                    ),
+                                  );
+                                }
+                              },
+                              child: ChattingListItem(
+                                id: item.id, 
+                                name: item.name, 
+                                prefectureId: item.prefectureId, 
+                                age: item.age, 
+                                stateText: item.state, 
+                                avatar: item.avatar, 
+                                date: item.time, 
+                                state: item.state
+                              ),
+                            );
+                          }).toList(),
                         ),
                       ],
                     ),
                   ),
                 ),
-                CustomContainer(
-                  height: 70,
-                  decoration: BoxDecoration(
-                    color: AppColors.primaryWhite
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        width: 320,
-                        height: 42,
-                        decoration: BoxDecoration(
-                          color: AppColors.primaryBackground,
-                          borderRadius: BorderRadius.circular(10)
-                        ),
-                        child: Row(
-                          children: [
-                            SelectItem(
-                              text: "マッチング中", 
-                              keyText: "matching",
-                              inChecked: filterText == "matching", 
-                              onCartChanged: handleChange
-                            ),
-                            SelectItem(
-                              text: "お話中", 
-                              keyText: "chatting",
-                              inChecked: filterText == "chatting", 
-                              onCartChanged: handleChange
-                            )
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+              ),
             ),
+             
+             Center(
+              child: Column(
+                children: [
+                  CustomContainer(
+                    height: 84,
+                    decoration: BoxDecoration(
+                      color: AppColors.secondaryGreen
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 20),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          CustomText(
+                            text: "メッセージ", 
+                            fontSize: 16, 
+                            fontWeight: FontWeight.bold, 
+                            lineHeight: 1, 
+                            letterSpacing: 1, 
+                            color: AppColors.primaryWhite
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  CustomContainer(
+                    height: 70,
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryWhite
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 320,
+                          height: 42,
+                          decoration: BoxDecoration(
+                            color: AppColors.primaryBackground,
+                            borderRadius: BorderRadius.circular(10)
+                          ),
+                          child: Row(
+                            children: [
+                              SelectItem(
+                                text: "マッチング中", 
+                                keyText: "matching",
+                                inChecked: filterText == "matching", 
+                                onCartChanged: handleChange
+                              ),
+                              SelectItem(
+                                text: "お話中", 
+                                keyText: "chatting",
+                                inChecked: filterText == "chatting", 
+                                onCartChanged: handleChange
+                              )
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            bottomBar()
+            
+          ],
+        ):const CustomContainer(
+          child: Center(
+            child: CircularProgressIndicator(),
           ),
-          bottomBar()
-          
-        ],
-      ):const CustomContainer(
-        child: Center(
-          child: CircularProgressIndicator(),
-        ),
-      )
+        )
+      ),
     );
   }
 }

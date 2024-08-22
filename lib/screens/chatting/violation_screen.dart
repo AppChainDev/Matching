@@ -4,12 +4,102 @@ import 'package:drone/components/custom_button.dart';
 import 'package:drone/components/custom_container.dart';
 import 'package:drone/components/custom_text.dart';
 import 'package:drone/models/chattingtransfer_model.dart';
+import 'package:drone/state/block_state.dart';
 import 'package:drone/utils/const_file.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-class ViolationScreen extends StatelessWidget {
+import 'package:provider/provider.dart';
+class ViolationScreen extends StatefulWidget {
   const ViolationScreen({super.key});
 
+  @override
+  State<ViolationScreen> createState() => _ViolationScreenState();
+}
+
+class _ViolationScreenState extends State<ViolationScreen> {
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  Future addReport(int id) async{
+    final result = await Provider.of<BlockState>(context, listen: false).addReport(id);
+    if (result) {
+      Navigator.pushNamed(context, "/violationconfirm_screen");
+    } else {
+      showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (_) => Center( // Aligns the container to center
+          child: Container( // A simplified version of dialog. 
+            width: 300,
+            height: 150,
+            padding: const EdgeInsets.only(top:35),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: AppColors.primaryWhite
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  "すでに申告済みのユーザーです。",
+                  textAlign:TextAlign.center,
+                  style: TextStyle(
+                    color: AppColors.primaryBlack,
+                    fontWeight: FontWeight.normal,
+                    fontSize:15,
+                    letterSpacing: -1,
+                    decoration: TextDecoration.none
+                  ),
+                ),
+                const SizedBox(
+                  height: 24,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Container(
+                    width: 343,
+                    height: 42,
+                    margin: const EdgeInsets.only(top: 5),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        top: BorderSide(
+                          color: AppColors.secondaryGray.withOpacity(0.5)
+                        )
+                      )
+                    ),
+                    child: MaterialButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Center(
+                        child: CustomText(
+                          text: "OK", 
+                          fontSize: 15, 
+                          fontWeight: FontWeight.normal, 
+                          lineHeight: 1, 
+                          letterSpacing: -1, 
+                          color: AppColors.alertBlue
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+            )
+          )
+      );
+    }
+  }
+ 
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as ChattingTransferModel;
@@ -145,8 +235,8 @@ class ViolationScreen extends StatelessWidget {
                       fontWeight: FontWeight.normal, 
                       color: AppColors.secondaryGreen, 
                       titleColor: AppColors.primaryWhite, 
-                      onTap: () async{ 
-                        Navigator.pushNamed(context, "/violationconfirm_screen");
+                      onTap: () {
+                        addReport(args.id); 
                       }
                     ),
                   ),
@@ -159,3 +249,6 @@ class ViolationScreen extends StatelessWidget {
     );
   }
 }
+
+
+

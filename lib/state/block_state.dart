@@ -18,6 +18,12 @@ class BlockState with ChangeNotifier {
   Future<bool> removeBlock(int id) async {
     return await blockApiService.removeBlock(id);
   }
+  Future<bool> addBlock(int id) async {
+    return await blockApiService.addBlock(id);
+  }
 
+  Future<bool> addReport(int id) async{
+    return await blockApiService.addReport(id);
+  }
   
 }

@@ -4,6 +4,7 @@ import 'package:drone/components/custom_container.dart';
 import 'package:drone/components/custom_text.dart';
 import 'package:drone/components/like/like_card.dart';
 import 'package:drone/models/like_model.dart';
+import 'package:drone/models/matching_model.dart';
 import 'package:drone/models/usertransfer_model.dart';
 import 'package:drone/state/like_state.dart';
 import 'package:drone/state/user_state.dart';
@@ -42,6 +43,7 @@ class _LikeListScreenState extends State<LikeListScreen> {
     await Provider.of<LikeState>(context, listen: false).getLikeList();
     setState(() {
       likes = Provider.of<LikeState>(context, listen: false).likes;
+      point = Provider.of<UserState>(context, listen: false).user!.pointCount;
       isLoding = true;
     });
   }
@@ -61,7 +63,7 @@ class _LikeListScreenState extends State<LikeListScreen> {
       }); 
     }
   }
-  Future thanksClick(int id) async{
+  Future thanksClick(int id, String avatar, String name) async{
     final result = await Provider.of<LikeState>(context, listen: false).createMatching(id);
     if (result) {
       await Provider.of<UserState>(context, listen: false).getUserInformation(); 
@@ -73,8 +75,9 @@ class _LikeListScreenState extends State<LikeListScreen> {
         } else {
           currenIndex = (currenIndex >= likes.length) ? likes.length - 1 : currenIndex;
         }
-      }); 
+      });
     }
+    Navigator.pushNamed(context, "/likematching_complete", arguments: MatchingModel(id: id, avatar: avatar, name: name));
   }
 
   
@@ -255,6 +258,226 @@ class _LikeListScreenState extends State<LikeListScreen> {
       );
   }
 
+  buyPointAlert(BuildContext context){
+  showDialog(
+    barrierDismissible: false,
+    context: context,
+    builder: (_) => Center( // Aligns the container to center
+      child: Container( // A simplified version of dialog. 
+        width: 343,
+        height: 213,
+        padding: const EdgeInsets.only(top:35),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: AppColors.primaryWhite
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              "ポイントが不足してます\n追加しますか",
+              textAlign:TextAlign.center,
+              style: TextStyle(
+                color: AppColors.primaryBlack,
+                fontWeight: FontWeight.normal,
+                fontSize:13,
+                letterSpacing: -1,
+                decoration: TextDecoration.none
+              ),
+            ),
+            const SizedBox(
+              height: 24,
+            ),
+            Container(
+              width: 245,
+              height: 42,
+              decoration: BoxDecoration(
+                color: AppColors.secondaryGreen,
+                borderRadius: BorderRadius.circular(50)
+              ),
+              child: MaterialButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  buyBottomSheet();
+                },
+                child: Center(
+                  child: CustomText(
+                    text: "追加する", 
+                    fontSize: 13, 
+                    fontWeight: FontWeight.normal, 
+                    lineHeight: 1, 
+                    letterSpacing: -1, 
+                    color: AppColors.primaryWhite
+                  ),
+                ),
+              ),
+            ),
+            Container(
+              width: 245,
+              height: 42,
+              margin: const EdgeInsets.only(top: 5),
+              child: MaterialButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Center(
+                  child: CustomText(
+                    text: "キャンセル", 
+                    fontSize: 13, 
+                    fontWeight: FontWeight.normal, 
+                    lineHeight: 1, 
+                    letterSpacing: -1, 
+                    color: AppColors.secondaryGreen
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
+        )
+      )
+  );
+}
+
+void buyBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext builder) {
+        return Container(
+            decoration: BoxDecoration(
+              color: AppColors.primaryWhite,
+              borderRadius: const BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10))
+            ),
+            height: MediaQuery.of(context).copyWith().size.height*0.4,
+            child: Container(
+              padding: const EdgeInsets.only(top: 65, left: 13, right: 13),
+              width: MediaQuery.of(context).size.width,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      CustomText(
+                        text: "ポイント購入", 
+                        fontSize: 17, 
+                        fontWeight: FontWeight.normal, 
+                        lineHeight: 1, 
+                        letterSpacing: 1, 
+                        color: AppColors.primaryBlack
+                      ),
+                      Container(
+                        width: 112,
+                        height: 30,
+                        decoration: BoxDecoration(
+                          color: AppColors.primaryBackground,
+                          borderRadius: BorderRadius.circular(50),
+                        ),
+                        child: Stack(
+                          children: [
+                            Center(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    width: 23,
+                                    height: 23,
+                                    margin: const EdgeInsets.only(left: 8),
+                                    child: Image.asset("assets/images/point.png", fit:BoxFit.cover)
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Center(
+                              child: CustomText(
+                                  text: "$point", 
+                                  fontSize: 17, 
+                                  fontWeight: FontWeight.bold, 
+                                  lineHeight: 1, 
+                                  letterSpacing: -1, 
+                                  color: AppColors.secondaryGreen
+                                ),
+                            )
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      CustomText(
+                        text: "ポイントを購入することで\nお相手にいいねを送ることができます", 
+                        fontSize: 12, 
+                        fontWeight: FontWeight.normal, 
+                        lineHeight: 1.5, 
+                        letterSpacing: -1, 
+                        color: AppColors.primaryBlack
+                      )
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 35,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        width: 110,
+                        height: 110,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          image: const DecorationImage(
+                            image: AssetImage("assets/images/10_point.png"),
+                            fit: BoxFit.cover     
+                          ),
+                        ),
+                        child: MaterialButton(
+                          onPressed: (){}
+                        )
+                      ),
+                      Container(
+                        width: 110,
+                        height: 110,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          image: const DecorationImage(
+                            image: AssetImage("assets/images/50_point.png"),
+                            fit: BoxFit.cover     
+                          ),
+                        ),
+                        child: MaterialButton(
+                          onPressed: (){}
+                        )
+                      ),
+                      Container(
+                        width: 110,
+                        height: 110,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          image: const DecorationImage(
+                            image: AssetImage("assets/images/100_point.png"),
+                            fit: BoxFit.cover     
+                          ),
+                        ),
+                        child: MaterialButton(
+                          onPressed: (){}
+                        )
+                      )
+                    ],
+                  )
+                ],
+              ),
+            )
+        );
+      });
+  }
+
   @override
   Widget build(BuildContext context) {
     // ignore: deprecated_member_use
@@ -303,11 +526,19 @@ class _LikeListScreenState extends State<LikeListScreen> {
                                 age: likes[likes.length-1].age, 
                                 avatars: likes[likes.length-1].avatars, 
                                 pressSkip: (){
-                                  if (point > 0) {
+                                  if(point > 0) {
                                     skipClick(likes[likes.length-1].id);
+                                  } else {
+                                    buyPointAlert(context);
                                   }
                                 },  
-                                pressThanks: ()=> thanksClick(likes[likes.length-1].id),
+                                pressThanks: (){
+                                  if (point > 0) {  
+                                    thanksClick(likes[likes.length-1].id, likes[likes.length-1].avatars[0], likes[likes.length-1].name);
+                                  } else {
+                                    buyPointAlert(context);
+                                  }
+                                },
                                 pressProfile: () {
                                   Navigator.pushNamed(context, "/view_profile", arguments: UserTransforIdModel(null ,id: likes[likes.length-1].id, beforePage: 'likepage'));
                                 }, 
@@ -332,9 +563,17 @@ class _LikeListScreenState extends State<LikeListScreen> {
                               pressSkip: (){
                                 if (point > 0) {
                                   skipClick(item.id);   
+                                } else {
+                                  buyPointAlert(context);
                                 }
                               }, 
-                              pressThanks: ()=> thanksClick(item.id),
+                              pressThanks: () {
+                                if (point > 0) {  
+                                  thanksClick(item.id, item.avatars[0], item.name);
+                                } else {
+                                  buyPointAlert(context);
+                                }
+                              }, 
                               pressProfile: () {
                                 Navigator.pushNamed(context, "/view_profile", arguments: UserTransforIdModel(null, id: item.id, beforePage: 'likepage'));
                               }, 
@@ -357,10 +596,18 @@ class _LikeListScreenState extends State<LikeListScreen> {
                                   avatars: item.avatars, 
                                   pressSkip: (){
                                     if (point > 0) {
-                                      skipClick(item.id);
+                                      skipClick(item.id);   
+                                    } else {
+                                      buyPointAlert(context);
                                     }
                                   },
-                                  pressThanks: ()=> thanksClick(item.id), 
+                                  pressThanks: () {
+                                    if (point > 0) {  
+                                      thanksClick(item.id, item.avatars[0], item.name);
+                                    } else {
+                                      buyPointAlert(context);
+                                    }
+                                  }, 
                                   pressProfile: () {
                                     Navigator.pushNamed(context, "/view_profile", arguments: UserTransforIdModel(null, id: item.id, beforePage: 'likepage'));
                                   }, 
@@ -394,7 +641,11 @@ class _LikeListScreenState extends State<LikeListScreen> {
                                   ),
                                   child: MaterialButton(
                                     onPressed: (){
-                                      skipClick(likes[currenIndex].id);
+                                      if (point > 0) { 
+                                        skipClick(likes[currenIndex].id);
+                                      } else {
+                                        buyPointAlert(context);
+                                      }
                                     },
                                     child: Center(
                                       child: CustomText(
@@ -417,7 +668,11 @@ class _LikeListScreenState extends State<LikeListScreen> {
                                   ),
                                   child: MaterialButton(
                                     onPressed: (){
-                                      thanksClick(likes[currenIndex].id);
+                                      if (point > 0) {
+                                        thanksClick(likes[currenIndex].id, likes[currenIndex].avatars[0], likes[currenIndex].name);
+                                      } else {
+                                        buyPointAlert(context);
+                                      }
                                     },
                                     child: Center(
                                       child: CustomText(
@@ -486,7 +741,7 @@ class _LikeListScreenState extends State<LikeListScreen> {
                             ),
                             child: MaterialButton(
                               onPressed: () {
-                                
+                                Navigator.pushNamed(context, "/swipe");
                               },
                               child: Center(
                                 child: CustomText(

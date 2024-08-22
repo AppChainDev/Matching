@@ -2,6 +2,7 @@ import 'package:drone/components/app_colors.dart';
 import 'package:drone/components/custom_text.dart';
 import 'package:drone/models/swipegroup_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class GroupItem extends StatelessWidget{
  const GroupItem({super.key, required this.id, required this.name, required this.members, required this.thumbnail});
@@ -25,8 +26,8 @@ class GroupItem extends StatelessWidget{
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   image: DecorationImage(
-                    image: AssetImage("assets/images/$thumbnail"),
-                    fit: BoxFit.cover     
+                    image: NetworkImage("${dotenv.get('BASE_URL')}/img/$thumbnail"),
+                    fit: BoxFit.cover 
                   )
                 ),
                 child: MaterialButton(

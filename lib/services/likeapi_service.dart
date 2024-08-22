@@ -91,7 +91,6 @@ class LikeApiService {
         LikeModel item = LikeModel(singleItem["id"], singleItem["name"], singleItem["description"], singleItem["prefectureId"], singleItem["age"], avatars, singleItem["verify"], singleItem["favouriteText"], singleItem["favouriteImage"]);
         array.add(item);
       }
-      var str = array;
       return array;
     } else {
       return [];

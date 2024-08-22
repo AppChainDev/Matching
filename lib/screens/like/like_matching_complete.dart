@@ -8,15 +8,15 @@ import 'package:drone/models/matching_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-class MatchingCompleteScreen extends StatefulWidget {
+class LikeMatchingCompleteScreen extends StatefulWidget {
 
-  const MatchingCompleteScreen({super.key});
+  const LikeMatchingCompleteScreen({super.key});
 
   @override
-  State<MatchingCompleteScreen> createState() => _MatchingCompleteScreenState();
+  State<LikeMatchingCompleteScreen> createState() => _LikeMatchingCompleteScreenState();
 }
 
-class _MatchingCompleteScreenState extends State<MatchingCompleteScreen> {
+class _LikeMatchingCompleteScreenState extends State<LikeMatchingCompleteScreen> {
 
   @override
   void initState() {
@@ -121,7 +121,7 @@ class _MatchingCompleteScreenState extends State<MatchingCompleteScreen> {
                           color: Colors.transparent, 
                           titleColor: AppColors.primaryWhite, 
                           onTap: () {
-                            Navigator.pushNamed(context, "/agreenment_chatlist");
+                            Navigator.pop(context);  
                           }
                         ),
                       ],

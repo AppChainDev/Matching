@@ -33,6 +33,7 @@ class UserModel {
   final List<String>? questions;
   final List<String> phrases;
   final String? deadline;
+  final bool experience;
   final String createdAt;
   final String updateAt;
 
@@ -71,6 +72,7 @@ class UserModel {
     required this.questions, 
     required this.phrases, 
     required this.deadline, 
+    required this.experience, 
     required this.createdAt, 
     required this.updateAt
   });

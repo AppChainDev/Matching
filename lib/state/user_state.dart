@@ -365,14 +365,16 @@ class UserState with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> checkAuthStatus() async {
-    _isAuthenticated = await userApiService.isAuthenticated();
-    notifyListeners();
+   Future<bool> deleteAccount() async {
+    return await userApiService.deleteAccount();
   }
 
-  Future<void> scheduleTokenRefresh() async {
-    userApiService.scheduleTokenRefresh();
-  }
+  // Future<void> checkAuthStatus() async {
+  //   _isAuthenticated = await userApiService.isAuthenticated();
+  //   notifyListeners();
+  // }
 
-  skipSwipe() {}
+  // Future<void> scheduleTokenRefresh() async {
+  //   userApiService.scheduleTokenRefresh();
+  // }
 }
