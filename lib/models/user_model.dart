@@ -34,6 +34,7 @@ class UserModel {
   final List<String> phrases;
   final String? deadline;
   final bool experience;
+  final int? viewUsers;
   final String createdAt;
   final String updateAt;
 
@@ -73,6 +74,7 @@ class UserModel {
     required this.phrases, 
     required this.deadline, 
     required this.experience, 
+    required this.viewUsers, 
     required this.createdAt, 
     required this.updateAt
   });

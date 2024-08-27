@@ -8,6 +8,7 @@ class PostModel {
   final String avatar;
   final String backImage;
   final int messageCount;
+  final int? newNessageCount;
 
-  PostModel(this.id, this.userId, this.name, this.description, this.prefectureId, this.age, this.avatar, this.backImage, this.messageCount);
+  PostModel(this.id, this.userId, this.name, this.description, this.prefectureId, this.age, this.avatar, this.backImage, this.messageCount, this.newNessageCount);
 }

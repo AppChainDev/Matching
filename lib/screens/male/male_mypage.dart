@@ -6,6 +6,8 @@ import 'package:drone/components/custom_container.dart';
 import 'package:drone/components/custom_text.dart';
 import 'package:drone/models/record_model.dart';
 import 'package:drone/models/user_model.dart';
+import 'package:drone/state/notification_state.dart';
+import 'package:drone/state/post_state.dart';
 import 'package:drone/state/record_state.dart';
 import 'package:drone/state/user_state.dart';
 import 'package:drone/utils/const_file.dart';
@@ -25,6 +27,8 @@ class _MaleMyPageState extends State<MaleMyPage> {
   final storage = const FlutterSecureStorage();
   late UserModel user;
   late List<RecordModel> records;
+  int myPostNewMessages = 0;
+  int newNotificatons = 0;
   bool isLoding = false;
 
   @override
@@ -35,6 +39,7 @@ class _MaleMyPageState extends State<MaleMyPage> {
       notificationAlert();
     });
     getVerifyState();
+    getMyPost();
   }
 
   @override
@@ -45,9 +50,15 @@ class _MaleMyPageState extends State<MaleMyPage> {
   Future getUserInformation() async{
     await Provider.of<UserState>(context, listen: false).getUserInformation();
     await Provider.of<RecordState>(context, listen: false).getRecord();
+    await Provider.of<NotificationState>(context, listen: false).getNotifications();
     setState(() {
       user =  Provider.of<UserState>(context, listen: false).user!;
       records = Provider.of<RecordState>(context, listen: false).records;
+      Provider.of<NotificationState>(context, listen: false).notifications.map((item){
+        if (item.usersArray.contains(user.id) == false) {
+          newNotificatons++;
+        }
+      }).toList();
       isLoding = true;
     });
   }
@@ -67,6 +78,17 @@ class _MaleMyPageState extends State<MaleMyPage> {
     }
   }
 
+  Future getMyPost() async{
+    await Provider.of<PostState>(context, listen: false).getMyPost();
+    setState(() {
+      Provider.of<PostState>(context, listen: false).myPosts.map((item){
+        if (item.newNessageCount != null) {
+          myPostNewMessages = myPostNewMessages+ item.newNessageCount!;
+        }
+      }).toList();
+    });
+  }
+
   Future clickedConfirm(String state) async{
     final result = await Provider.of<UserState>(context, listen: false).verifyChecked();
     if (result) {
@@ -78,7 +100,7 @@ class _MaleMyPageState extends State<MaleMyPage> {
       }
     } 
   }
-
+ 
   void notificationAlert() {
     showModalBottomSheet(
       context: context,
@@ -1199,8 +1221,11 @@ class _MaleMyPageState extends State<MaleMyPage> {
                             margin: const EdgeInsets.only(bottom: 36.5),
                             width: MediaQuery.of(context).size.width/3,
                             child: MaterialButton(
-                              onPressed: () {
+                              onPressed: () async{
                                 if(records.isNotEmpty){
+                                  if (user.viewUsers! > 0) {
+                                    await Provider.of<UserState>(context, listen: false).clearViewUsers();
+                                  }
                                   Navigator.pushNamed(context, '/record_list');
                                 }else{
                                   Navigator.pushNamed(context, '/record_empty');
@@ -1209,10 +1234,35 @@ class _MaleMyPageState extends State<MaleMyPage> {
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  SizedBox(
-                                    width: 43,
-                                    height: 43,
-                                    child: Image.asset("assets/images/record.png", fit: BoxFit.contain,)
+                                  Stack(
+                                    alignment: Alignment.topRight,
+                                    children: [
+                                      Container(
+                                        width: 50,
+                                        height: 50,
+                                        margin: const EdgeInsets.only(top: 10, right: 10),
+                                        child: Image.asset("assets/images/record.png", fit: BoxFit.contain,)
+                                      ),
+                                      if(user.viewUsers! > 0)
+                                        Container(
+                                          width: 22,
+                                          height: 22,
+                                          decoration: BoxDecoration(
+                                            color: AppColors.thirdRed,
+                                            borderRadius: BorderRadius.circular(5)
+                                          ),
+                                          child: Center(
+                                            child: CustomText(
+                                              text: user.viewUsers.toString(), 
+                                              fontSize: 14, 
+                                              fontWeight: FontWeight.bold, 
+                                              lineHeight: 1, 
+                                              letterSpacing: 1, 
+                                              color: AppColors.primaryWhite
+                                            ),
+                                          ),
+                                        )
+                                    ],
                                   ),
                                   const SizedBox(
                                     height: 9,
@@ -1239,10 +1289,35 @@ class _MaleMyPageState extends State<MaleMyPage> {
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  SizedBox(
-                                    width: 43,
-                                    height: 43,
-                                    child: Image.asset("assets/images/bog_agreement.png", fit: BoxFit.contain,)
+                                  Stack(
+                                    alignment: Alignment.topRight,
+                                    children: [
+                                      Container(
+                                        width: 50,
+                                        height: 50,
+                                        margin: const EdgeInsets.only(top: 10, right: 10),
+                                        child: Image.asset("assets/images/bog_agreement.png", fit: BoxFit.contain,)
+                                      ),
+                                      if(myPostNewMessages > 0)
+                                        Container(
+                                          width: 22,
+                                          height: 22,
+                                          decoration: BoxDecoration(
+                                            color: AppColors.thirdRed,
+                                            borderRadius: BorderRadius.circular(5)
+                                          ),
+                                          child: Center(
+                                            child: CustomText(
+                                              text: myPostNewMessages.toString(), 
+                                              fontSize: 14, 
+                                              fontWeight: FontWeight.bold, 
+                                              lineHeight: 1, 
+                                              letterSpacing: 1, 
+                                              color: AppColors.primaryWhite
+                                            ),
+                                          ),
+                                        )
+                                    ],
                                   ),
                                   const SizedBox(
                                     height: 9,
@@ -1269,9 +1344,10 @@ class _MaleMyPageState extends State<MaleMyPage> {
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  SizedBox(
-                                    width: 43,
-                                    height: 43,
+                                  Container(
+                                    width: 50,
+                                    height: 50,
+                                    margin: const EdgeInsets.only(top: 10, right: 10),
                                     child: Image.asset("assets/images/consultation.png", fit: BoxFit.contain,)
                                   ),
                                   const SizedBox(
@@ -1299,9 +1375,10 @@ class _MaleMyPageState extends State<MaleMyPage> {
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  SizedBox(
-                                    width: 43,
-                                    height: 43,
+                                  Container(
+                                    width: 50,
+                                    height: 50,
+                                    margin: const EdgeInsets.only(top: 10, right: 10),
                                     child: Image.asset("assets/images/setting.png", fit: BoxFit.contain,)
                                   ),
                                   const SizedBox(
@@ -1329,9 +1406,10 @@ class _MaleMyPageState extends State<MaleMyPage> {
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  SizedBox(
-                                    width: 43,
-                                    height: 43,
+                                  Container(
+                                    width: 50,
+                                    height: 50,
+                                    margin: const EdgeInsets.only(top: 10, right: 10),
                                     child: Image.asset("assets/images/help.png", fit: BoxFit.contain,)
                                   ),
                                   const SizedBox(
@@ -1359,10 +1437,35 @@ class _MaleMyPageState extends State<MaleMyPage> {
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  SizedBox(
-                                    width: 43,
-                                    height: 43,
-                                    child: Image.asset("assets/images/notification.png", fit: BoxFit.contain,)
+                                  Stack(
+                                    alignment: Alignment.topRight,
+                                    children: [
+                                      Container(
+                                        width: 50,
+                                        height: 50,
+                                        margin: const EdgeInsets.only(top: 10, right: 10),
+                                        child: Image.asset("assets/images/notification.png", fit: BoxFit.contain,)
+                                      ),
+                                      if(newNotificatons > 0)
+                                        Container(
+                                          width: 22,
+                                          height: 22,
+                                          decoration: BoxDecoration(
+                                            color: AppColors.thirdRed,
+                                            borderRadius: BorderRadius.circular(5)
+                                          ),
+                                          child: Center(
+                                            child: CustomText(
+                                              text: newNotificatons.toString(), 
+                                              fontSize: 14, 
+                                              fontWeight: FontWeight.bold, 
+                                              lineHeight: 1, 
+                                              letterSpacing: 1, 
+                                              color: AppColors.primaryWhite
+                                            ),
+                                          ),
+                                        )
+                                    ],
                                   ),
                                   const SizedBox(
                                     height: 9,

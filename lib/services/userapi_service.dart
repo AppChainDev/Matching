@@ -374,6 +374,7 @@ class UserApiService {
         phrases: phrases, 
         deadline: responseData["deadline"], 
         experience: responseData["experience"], 
+        viewUsers: responseData["viewUsers"], 
         createdAt: responseData["createdAt"], 
         updateAt: responseData["updatedAt"]
       );
@@ -414,6 +415,7 @@ class UserApiService {
         phrases: [], 
         deadline: '', 
         experience: false, 
+        viewUsers: null,
         createdAt: '', 
         updateAt: ''
       );
@@ -470,7 +472,8 @@ class UserApiService {
         questions: questions, 
         phrases: phrases, 
         deadline: responseData["deadline"], 
-        experience: responseData["experience"], 
+        experience: responseData["experience"],
+        viewUsers: responseData["viewUsers"],
         createdAt: responseData["createdAt"], 
         updateAt: responseData["updatedAt"]
       );
@@ -511,6 +514,7 @@ class UserApiService {
         phrases: [], 
         deadline: '', 
         experience: false,
+        viewUsers: null,
         createdAt: '', 
         updateAt: ''
       );
@@ -1318,6 +1322,23 @@ class UserApiService {
       return false;
     }
   }
+
+  Future<void> clearViewUsers() async{
+    String? userId = await storage.read(key: 'userId');
+    String? accessToken = await storage.read(key: 'accessToken');
+    await http.post(
+      Uri.parse('$baseUrl/api/auth/clear_viewusers'),
+      body: jsonEncode(<String, String>{
+        'userId': userId!,
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+  }
+
+
   // Future<UserModel> login(String email, String password) async {
   //   final response = await http.post(
   //     Uri.parse('$baseUrl/api/auth/login/'),

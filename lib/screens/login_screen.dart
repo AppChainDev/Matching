@@ -122,7 +122,7 @@ class LoginScreen extends StatelessWidget {
                       borderColor: AppColors.primaryBlue, 
                       titleColor: AppColors.primaryBlue, 
                       onTap: () async{ 
-                              Navigator.pushNamed(context, "/findpilot");
+                        Navigator.pushNamed(context, "/findpilot");
                           // final isAuthenticated = Provider.of<UserState>(context, listen: false).isAuthenticated;
                           // if (isAuthenticated) {
                           //   if(Provider.of<UserState>(context, listen: false).user?.isPilot == false){

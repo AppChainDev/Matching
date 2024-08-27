@@ -21,6 +21,7 @@ class AgreementScreen extends StatefulWidget {
 class _AgreementScreenState extends State<AgreementScreen> {
 
   late List<PostModel> myPosts;
+  int myPostNewMessages = 0;
   bool isLoding = false;
 
   @override
@@ -38,8 +39,17 @@ class _AgreementScreenState extends State<AgreementScreen> {
     await Provider.of<PostState>(context, listen: false).getMyPost();
     setState(() {
       myPosts = Provider.of<PostState>(context, listen: false).myPosts;
+      Provider.of<PostState>(context, listen: false).myPosts.map((item){
+        if (item.newNessageCount != null) {
+          myPostNewMessages = myPostNewMessages+ item.newNessageCount!;
+        }
+      }).toList();
       isLoding = true;
     });
+  }
+
+  Future clearNewMessageCount(int id) async{
+    await Provider.of<PostState>(context, listen: false).clearNewMessageCount(id);
   }
 
   @override
@@ -145,7 +155,10 @@ class _AgreementScreenState extends State<AgreementScreen> {
                                         )
                                     );
                                   }else{
-                                    Navigator.pushNamed(context, "/agreenment_chatlist", arguments: PostModel(post.id, post.userId, post.name, post.description, post.prefectureId, post.age, post.avatar, post.backImage, post.messageCount));
+                                    if (myPostNewMessages > 0) {
+                                      clearNewMessageCount(post.id);
+                                    }
+                                    Navigator.pushNamed(context, "/agreenment_chatlist", arguments: PostModel(post.id, post.userId, post.name, post.description, post.prefectureId, post.age, post.avatar, post.backImage, post.messageCount, post.newNessageCount));
                                   }
                                 },
                                 child: AgreementItem(
@@ -243,8 +256,16 @@ class _AgreementScreenState extends State<AgreementScreen> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       IconButton(
-                        onPressed: (){
-                          Navigator.pop(context);
+                        onPressed: () async {
+                          const storage = FlutterSecureStorage();
+                          String? gender =  await storage.read(key: 'gender');
+                          if (gender != null) {
+                            if (int.parse(gender) == 1) {
+                              Navigator.pushNamed(context, "/malemypage");
+                            } else {
+                              Navigator.pushNamed(context, "/femalemypage");
+                            }
+                          }
                         }, 
                         icon: Icon(
                           Icons.arrow_back_ios_rounded,

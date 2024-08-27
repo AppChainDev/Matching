@@ -342,6 +342,10 @@ class UserState with ChangeNotifier {
     return await userApiService.verifyChecked();
   }
 
+  Future<void> clearViewUsers() async {
+    await userApiService.clearViewUsers();
+  }
+
   // Future<void> login(String email, String password) async {
   //   _user = await userApiService.login(email, password);
   //   if (_user?.id != 0) {

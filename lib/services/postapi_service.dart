@@ -46,7 +46,7 @@ class PostApiService {
       List<PostModel> array = [];
       var reasonData = jsonDecode(response.body);
       for(var singleItem in reasonData){
-        PostModel item = PostModel(singleItem["id"], singleItem["userId"], singleItem["name"], singleItem["description"], singleItem["prefectureId"], singleItem["age"], singleItem["avatar"], singleItem["backImage"], singleItem["messageCount"]);
+        PostModel item = PostModel(singleItem["id"], singleItem["userId"], singleItem["name"], singleItem["description"], singleItem["prefectureId"], singleItem["age"], singleItem["avatar"], singleItem["backImage"], singleItem["messageCount"], singleItem["newMessageCount"]);
         array.add(item);
       }
       return array;
@@ -69,7 +69,7 @@ class PostApiService {
       List<PostModel> array = [];
       var reasonData = jsonDecode(response.body);
       for(var singleItem in reasonData){
-        PostModel item = PostModel(singleItem["id"], singleItem["userId"], singleItem["name"], singleItem["description"], singleItem["prefectureId"], singleItem["age"], singleItem["avatar"], singleItem["backImage"], singleItem["messageCount"]);
+        PostModel item = PostModel(singleItem["id"], singleItem["userId"], singleItem["name"], singleItem["description"], singleItem["prefectureId"], singleItem["age"], singleItem["avatar"], singleItem["backImage"], singleItem["messageCount"], singleItem["newMessageCount"]);
         array.add(item);
       }
       return array;
@@ -120,6 +120,20 @@ class PostApiService {
     } else {
       return [];
     }
+  }
+
+  Future<void> clearNewMessageCount(int postId) async{
+    String? accessToken = await storage.read(key: 'accessToken');
+    await http.post(
+      Uri.parse('$baseUrl/api/posts/clear_newmessagecount'),
+      body: jsonEncode(<String, String>{
+        'postId': postId.toString(),
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
   }
 
   

@@ -5,6 +5,7 @@ import 'package:drone/components/custom_text.dart';
 import 'package:drone/models/notification_model.dart';
 import 'package:drone/state/notification_state.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
 
 class NotificationScreen extends StatefulWidget {
@@ -41,110 +42,134 @@ class _NotificationScreenState extends State<NotificationScreen> {
   
   @override
   Widget build(BuildContext context) {
-    return BaseScreen(
-      child: isLoding? Stack(
-        children: [
-          if(notifications.isNotEmpty)
-            Center(
-            child: CustomContainer(
-              decoration: BoxDecoration(
-                color: AppColors.primaryBackground
-              ),
-              child: Padding(
-                padding: const EdgeInsets.only(top: 137),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: notifications.map((notification){
-                    return MaterialButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, "/notification_detail", arguments: NotificationModel(notification.id, notification.title, notification.content));
-                      },
-                      child: NotificationItem(
-                        id: notification.id, 
-                        text: notification.title
-                      ),
-                    );
-                  }).toList()
-                ),
-              ),
-            ),
-            ),
-          if(notifications.isEmpty)
-            Center(
+    // ignore: deprecated_member_use
+    return WillPopScope(
+      onWillPop: () async{
+        const storage = FlutterSecureStorage();
+        String? gender =  await storage.read(key: 'gender');
+        if (gender != null) {
+          if (int.parse(gender) == 1) {
+            Navigator.pushNamed(context, "/malemypage");
+          } else {
+            Navigator.pushNamed(context, "/femalemypage");
+          }
+        }
+        return true;
+      },
+      child: BaseScreen(
+        child: isLoding? Stack(
+          children: [
+            if(notifications.isNotEmpty)
+              Center(
               child: CustomContainer(
                 decoration: BoxDecoration(
                   color: AppColors.primaryBackground
                 ),
-                child: Center(
-                  child: CustomText(
-                    text: "メッセージはありません", 
-                    fontSize: 14, 
-                    fontWeight: FontWeight.normal, 
-                    lineHeight: 1, 
-                    letterSpacing: -1, 
-                    color: AppColors.secondaryGreen
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 137),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: notifications.map((notification){
+                      return MaterialButton(
+                        onPressed: () async{
+                          await Provider.of<NotificationState>(context, listen: false).addUserToNotification(notification.id);
+                          Navigator.pushNamed(context, "/notification_detail", arguments: NotificationModel(notification.id, notification.title, notification.content, notification.usersArray));
+                        },
+                        child: NotificationItem(
+                          id: notification.id, 
+                          text: notification.title
+                        ),
+                      );
+                    }).toList()
                   ),
                 ),
               ),
-            ),
-
-          Center(
-          child: CustomContainer(
-            height: 94,
-            decoration: BoxDecoration(
-              color: AppColors.secondaryGreen
-            ),
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 20),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  CustomText(
-                    text: "お知らせ", 
-                    fontSize: 17, 
-                    fontWeight: FontWeight.bold, 
-                    lineHeight: 1, 
-                    letterSpacing: 1, 
-                    color:AppColors.primaryWhite
-                  ),
-                ],
               ),
-            ),
-          ),
-        ),
-        Center(
-          child: Padding(
-            padding: const EdgeInsets.only(bottom: 10),
+            if(notifications.isEmpty)
+              Center(
+                child: CustomContainer(
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryBackground
+                  ),
+                  child: Center(
+                    child: CustomText(
+                      text: "メッセージはありません", 
+                      fontSize: 14, 
+                      fontWeight: FontWeight.normal, 
+                      lineHeight: 1, 
+                      letterSpacing: -1, 
+                      color: AppColors.secondaryGreen
+                    ),
+                  ),
+                ),
+              ),
+      
+            Center(
             child: CustomContainer(
               height: 94,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      IconButton(
-                        onPressed: (){
-                          Navigator.pop(context);
-                        }, 
-                        icon: Icon(
-                          Icons.arrow_back_ios_rounded,
-                          color: AppColors.primaryWhite,
-                        )
-                      ),
-                    ],
-                  ),
-                ],
+              decoration: BoxDecoration(
+                color: AppColors.secondaryGreen
+              ),
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 20),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    CustomText(
+                      text: "お知らせ", 
+                      fontSize: 17, 
+                      fontWeight: FontWeight.bold, 
+                      lineHeight: 1, 
+                      letterSpacing: 1, 
+                      color:AppColors.primaryWhite
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-        ],
-      ): const CustomContainer(
-        child: Center(
-          child: CircularProgressIndicator(),
-        ),
-      )
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: CustomContainer(
+                height: 94,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        IconButton(
+                          onPressed: ()async{
+                            const storage = FlutterSecureStorage();
+                            String? gender =  await storage.read(key: 'gender');
+                            if (gender != null) {
+                              if (int.parse(gender) == 1) {
+                                Navigator.pushNamed(context, "/malemypage");
+                              } else {
+                                Navigator.pushNamed(context, "/femalemypage");
+                              }
+                            }
+                          }, 
+                          icon: Icon(
+                            Icons.arrow_back_ios_rounded,
+                            color: AppColors.primaryWhite,
+                          )
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          ],
+        ): const CustomContainer(
+          child: Center(
+            child: CircularProgressIndicator(),
+          ),
+        )
+      ),
     );
   }
 }

@@ -24,12 +24,28 @@ class NotificationApiService {
       List<NotificationModel> array = [];
       var reasponsData = jsonDecode(response.body);
       for(var singleItem in reasponsData){
-        NotificationModel item = NotificationModel(singleItem["id"], singleItem["title"], singleItem["content"]);
+        List<int> usersArray = (singleItem["usersArray"] as List).map((user) => int.parse(user.toString())).toList();
+        NotificationModel item = NotificationModel(singleItem["id"], singleItem["title"], singleItem["content"], usersArray);
         array.add(item);
       }
       return array;
     } else {
       return [];
     }
+  }
+  Future<void> addUserToNotification(int id) async{
+    String? userId = await storage.read(key: 'userId');
+    String? accessToken = await storage.read(key: 'accessToken');
+    await http.post(
+      Uri.parse('$baseUrl/api/notifications/adduser'),
+      body: jsonEncode(<String, String>{
+        'userId': userId!,
+        'notificationId': id.toString()
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
   }
 }

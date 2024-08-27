@@ -36,5 +36,8 @@ class PostState with ChangeNotifier {
   Future<void> getPostMessageList(int postId) async {
     _postMessageList = await postApiService.getPostMessageList(postId);
   }
+  Future<void> clearNewMessageCount(int postId) async {
+    await postApiService.clearNewMessageCount(postId);
+  }
   
 }

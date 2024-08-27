@@ -15,5 +15,8 @@ class NotificationState with ChangeNotifier {
     _notifications = await notificationApiService.getNotifications();
     notifyListeners();
   }
+  Future<void> addUserToNotification(int id) async {
+    await notificationApiService.addUserToNotification(id);
+  }
   
 }
