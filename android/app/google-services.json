@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "143345546135",
+    "project_id": "rinlin-dceb1",
+    "storage_bucket": "rinlin-dceb1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:143345546135:android:cadcd9853a6ee7e9f00ad2",
+        "android_client_info": {
+          "package_name": "com.develope.rinlin"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBFA1TI5-b-NYqjC0IPYQmpV8cJx9MbCrY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

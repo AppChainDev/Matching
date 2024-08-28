@@ -1,7 +1,7 @@
-import 'package:drone/components/app_colors.dart';
-import 'package:drone/components/custom_text.dart';
-import 'package:drone/models/usertransfer_model.dart';
-import 'package:drone/utils/const_file.dart';
+import 'package:rinlin/components/app_colors.dart';
+import 'package:rinlin/components/custom_text.dart';
+import 'package:rinlin/models/usertransfer_model.dart';
+import 'package:rinlin/utils/const_file.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';

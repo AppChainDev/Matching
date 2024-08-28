@@ -1,6 +1,6 @@
 
-import 'package:drone/models/block_model.dart';
-import 'package:drone/services/blockapi_service.dart';
+import 'package:rinlin/models/block_model.dart';
+import 'package:rinlin/services/blockapi_service.dart';
 import 'package:flutter/material.dart';
 
 class BlockState with ChangeNotifier {

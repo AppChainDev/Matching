@@ -1,22 +1,22 @@
-import 'package:drone/components/app_colors.dart';
-import 'package:drone/components/base_screen.dart';
-import 'package:drone/components/custom_button.dart';
-import 'package:drone/components/custom_container.dart';
-import 'package:drone/components/custom_text.dart';
-import 'package:drone/models/chattingtransfer_model.dart';
-import 'package:drone/models/community_model.dart';
-import 'package:drone/models/user_model.dart';
-import 'package:drone/models/usertransfer_model.dart';
-import 'package:drone/state/block_state.dart';
-import 'package:drone/state/like_state.dart';
-import 'package:drone/state/post_state.dart';
-import 'package:drone/state/record_state.dart';
-import 'package:drone/state/user_state.dart';
-import 'package:drone/utils/const_file.dart';
+import 'package:rinlin/components/app_colors.dart';
+import 'package:rinlin/components/base_screen.dart';
+import 'package:rinlin/components/custom_button.dart';
+import 'package:rinlin/components/custom_container.dart';
+import 'package:rinlin/components/custom_text.dart';
+import 'package:rinlin/models/chattingtransfer_model.dart';
+import 'package:rinlin/models/community_model.dart';
+import 'package:rinlin/models/user_model.dart';
+import 'package:rinlin/models/usertransfer_model.dart';
+import 'package:rinlin/state/block_state.dart';
+import 'package:rinlin/state/like_state.dart';
+import 'package:rinlin/state/post_state.dart';
+import 'package:rinlin/state/record_state.dart';
+import 'package:rinlin/state/user_state.dart';
+import 'package:rinlin/utils/const_file.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
-import 'package:drone/screens/register/registerprofile_group.dart';
+import 'package:rinlin/screens/register/registerprofile_group.dart';
 
 class ViewProfileScreen extends StatefulWidget {
 

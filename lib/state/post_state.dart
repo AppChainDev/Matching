@@ -1,9 +1,9 @@
 
 import 'dart:io';
 
-import 'package:drone/models/post_model.dart';
-import 'package:drone/models/postmessage_model.dart';
-import 'package:drone/services/postapi_service.dart';
+import 'package:rinlin/models/post_model.dart';
+import 'package:rinlin/models/postmessage_model.dart';
+import 'package:rinlin/services/postapi_service.dart';
 import 'package:flutter/material.dart';
 
 class PostState with ChangeNotifier {

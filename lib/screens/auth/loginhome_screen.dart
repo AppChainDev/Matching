@@ -1,8 +1,8 @@
-import 'package:drone/components/app_colors.dart';
-import 'package:drone/components/base_screen.dart';
-import 'package:drone/components/custom_button.dart';
-import 'package:drone/components/custom_container.dart';
-import 'package:drone/components/custom_text.dart';
+import 'package:rinlin/components/app_colors.dart';
+import 'package:rinlin/components/base_screen.dart';
+import 'package:rinlin/components/custom_button.dart';
+import 'package:rinlin/components/custom_container.dart';
+import 'package:rinlin/components/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 

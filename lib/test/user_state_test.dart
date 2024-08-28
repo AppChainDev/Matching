@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:drone/services/userapi_service.dart';
-import 'package:drone/state/user_state.dart';
-import 'package:drone/models/user_model.dart';
+import 'package:rinlin/services/userapi_service.dart';
+import 'package:rinlin/state/user_state.dart';
+import 'package:rinlin/models/user_model.dart';
 
 void main() {
   test('User login and logout', () {

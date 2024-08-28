@@ -1,6 +1,6 @@
 
-import 'package:drone/models/record_model.dart';
-import 'package:drone/services/recordapi_service.dart';
+import 'package:rinlin/models/record_model.dart';
+import 'package:rinlin/services/recordapi_service.dart';
 import 'package:flutter/material.dart';
 
 class RecordState with ChangeNotifier {

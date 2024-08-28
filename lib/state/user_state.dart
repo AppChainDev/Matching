@@ -1,13 +1,13 @@
 import 'dart:io';
 
-import 'package:drone/models/advicestate_model.dart';
-import 'package:drone/models/category_model.dart';
-import 'package:drone/models/community_model.dart';
-import 'package:drone/models/like_model.dart';
-import 'package:drone/models/member_model.dart';
-import 'package:drone/models/phrase_model.dart';
-import 'package:drone/models/swipegroup_model.dart';
-import 'package:drone/models/user.dart';
+import 'package:rinlin/models/advicestate_model.dart';
+import 'package:rinlin/models/category_model.dart';
+import 'package:rinlin/models/community_model.dart';
+import 'package:rinlin/models/like_model.dart';
+import 'package:rinlin/models/member_model.dart';
+import 'package:rinlin/models/phrase_model.dart';
+import 'package:rinlin/models/swipegroup_model.dart';
+import 'package:rinlin/models/user.dart';
 import 'package:flutter/material.dart';
 import '../models/user_model.dart';
 import '../services/userapi_service.dart';

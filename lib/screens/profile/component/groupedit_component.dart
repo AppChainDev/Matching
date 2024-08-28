@@ -1,8 +1,8 @@
-import 'package:drone/components/app_colors.dart';
-import 'package:drone/components/custom_text.dart';
-import 'package:drone/models/community_model.dart';
-import 'package:drone/screens/register/registerprofile_group.dart';
-import 'package:drone/state/user_state.dart';
+import 'package:rinlin/components/app_colors.dart';
+import 'package:rinlin/components/custom_text.dart';
+import 'package:rinlin/models/community_model.dart';
+import 'package:rinlin/screens/register/registerprofile_group.dart';
+import 'package:rinlin/state/user_state.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

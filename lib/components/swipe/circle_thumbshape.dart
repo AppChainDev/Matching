@@ -1,4 +1,4 @@
-import 'package:drone/components/app_colors.dart';
+import 'package:rinlin/components/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class CircleThumbShape extends RangeSliderThumbShape {

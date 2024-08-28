@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:drone/state/settings_state.dart';
+import 'package:rinlin/state/settings_state.dart';
 
 void main() {
   test('Toggle dark mode', () {

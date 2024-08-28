@@ -1,8 +1,8 @@
-import 'package:drone/components/app_colors.dart';
-import 'package:drone/components/base_screen.dart';
-import 'package:drone/components/custom_container.dart';
-import 'package:drone/components/custom_text.dart';
-import 'package:drone/models/notification_model.dart';
+import 'package:rinlin/components/app_colors.dart';
+import 'package:rinlin/components/base_screen.dart';
+import 'package:rinlin/components/custom_container.dart';
+import 'package:rinlin/components/custom_text.dart';
+import 'package:rinlin/models/notification_model.dart';
 import 'package:flutter/material.dart';
 
 class NotificationDetailScreen extends StatefulWidget {

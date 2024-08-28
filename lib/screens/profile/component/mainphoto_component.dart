@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:drone/components/app_colors.dart';
-import 'package:drone/components/custom_text.dart';
-import 'package:drone/state/user_state.dart';
+import 'package:rinlin/components/app_colors.dart';
+import 'package:rinlin/components/custom_text.dart';
+import 'package:rinlin/state/user_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:image_cropper/image_cropper.dart';

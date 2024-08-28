@@ -1,6 +1,6 @@
 
-import 'package:drone/models/like_model.dart';
-import 'package:drone/services/likeapi_service.dart';
+import 'package:rinlin/models/like_model.dart';
+import 'package:rinlin/services/likeapi_service.dart';
 import 'package:flutter/material.dart';
 
 class LikeState with ChangeNotifier {

@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:drone/models/post_model.dart';
-import 'package:drone/models/postmessage_model.dart';
+import 'package:rinlin/models/post_model.dart';
+import 'package:rinlin/models/postmessage_model.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 

@@ -1,6 +1,6 @@
 
-import 'package:drone/models/notification_model.dart';
-import 'package:drone/services/notificationapi_service.dart';
+import 'package:rinlin/models/notification_model.dart';
+import 'package:rinlin/services/notificationapi_service.dart';
 import 'package:flutter/material.dart';
 
 class NotificationState with ChangeNotifier {

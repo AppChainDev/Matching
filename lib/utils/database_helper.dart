@@ -1,4 +1,4 @@
-import 'package:drone/models/user.dart';
+import 'package:rinlin/models/user.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 

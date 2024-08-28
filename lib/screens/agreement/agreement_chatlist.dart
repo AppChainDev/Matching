@@ -1,11 +1,11 @@
-import 'package:drone/components/agreement/agreement_chatcard.dart';
-import 'package:drone/components/app_colors.dart';
-import 'package:drone/components/base_screen.dart';
-import 'package:drone/components/custom_container.dart';
-import 'package:drone/components/custom_text.dart';
-import 'package:drone/models/post_model.dart';
-import 'package:drone/models/postmessage_model.dart';
-import 'package:drone/state/post_state.dart';
+import 'package:rinlin/components/agreement/agreement_chatcard.dart';
+import 'package:rinlin/components/app_colors.dart';
+import 'package:rinlin/components/base_screen.dart';
+import 'package:rinlin/components/custom_container.dart';
+import 'package:rinlin/components/custom_text.dart';
+import 'package:rinlin/models/post_model.dart';
+import 'package:rinlin/models/postmessage_model.dart';
+import 'package:rinlin/state/post_state.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

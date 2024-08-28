@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:drone/models/notification_model.dart';
+import 'package:rinlin/models/notification_model.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
