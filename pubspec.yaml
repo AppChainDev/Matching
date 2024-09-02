@@ -32,6 +32,9 @@ dependencies:
   sqflite: ^2.3.3+1
   socket_io_client: ^2.0.3+1
   web_socket_channel: ^3.0.1
+  google_sign_in: ^6.2.1
+  firebase_core: ^2.32.0
+  firebase_auth: ^4.20.0
 
 
 dev_dependencies:

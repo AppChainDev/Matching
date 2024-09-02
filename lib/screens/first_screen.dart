@@ -1,12 +1,15 @@
 
 import 'dart:io';
-
+import 'dart:io' show Platform;
+import 'package:provider/provider.dart';
 import 'package:rinlin/components/app_colors.dart';
 import 'package:rinlin/components/custom_button.dart';
 import 'package:rinlin/components/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:rinlin/components/base_screen.dart';
 import 'package:rinlin/components/custom_container.dart';
+import 'package:rinlin/screens/services/auth_service.dart';
+import 'package:rinlin/state/user_state.dart';
 
 class FirstScreen extends StatelessWidget {
 
@@ -34,19 +37,105 @@ class FirstScreen extends StatelessWidget {
                    child: Column(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      CustomButton(
-                        title: "Appleでサインイン",
-                        width: 316,
-                        fontSize: 15, 
-                        fontWeight: FontWeight.normal, 
-                        color: AppColors.primaryBlack,
-                        // borderColor: AppColors.primaryBlue, 
-                        titleColor: AppColors.primaryWhite, 
-                        onTap: (){
-                          // Navigator.pushNamed(context, "/registerprofile_group");
-                          Navigator.pushNamed(context, "/malemypage");
-                        }
-                      ),
+                      if(Platform.isAndroid)
+                        CustomButton(
+                          title: "Googleでサインイン",
+                          width: 316,
+                          fontSize: 15, 
+                          fontWeight: FontWeight.normal, 
+                          color: AppColors.primaryBlack,
+                          // borderColor: AppColors.primaryBlue, 
+                          titleColor: AppColors.primaryWhite, 
+                          onTap: () async {
+                            final googleAuthResult = await AuthService().signInWithGoogle();
+                            if (googleAuthResult != null && googleAuthResult["email"]!="") {
+                              final isLogin = await Provider.of<UserState>(context, listen: false).loginWithGoogle(googleAuthResult["displayName"], googleAuthResult["email"]);
+                              if (isLogin) {
+                                Navigator.pushNamed(context, "/loginhome");
+                              } else {
+                                showDialog(
+                                  barrierDismissible: false,
+                                  context: context,
+                                  builder: (_) => Center( // Aligns the container to center
+                                    child: Container( // A simplified version of dialog. 
+                                      width: 300,
+                                      height: 150,
+                                      padding: const EdgeInsets.only(top:35),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(10),
+                                        color: AppColors.primaryWhite
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            "Googleログインに失敗しました。",
+                                            textAlign:TextAlign.center,
+                                            style: TextStyle(
+                                              color: AppColors.primaryBlack,
+                                              fontWeight: FontWeight.normal,
+                                              fontSize:15,
+                                              letterSpacing: -1,
+                                              decoration: TextDecoration.none
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 24,
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                                            child: Container(
+                                              width: 343,
+                                              height: 42,
+                                              margin: const EdgeInsets.only(top: 5),
+                                              decoration: BoxDecoration(
+                                                border: Border(
+                                                  top: BorderSide(
+                                                    color: AppColors.secondaryGray.withOpacity(0.5)
+                                                  )
+                                                )
+                                              ),
+                                              child: MaterialButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Center(
+                                                  child: CustomText(
+                                                    text: "OK", 
+                                                    fontSize: 15, 
+                                                    fontWeight: FontWeight.normal, 
+                                                    lineHeight: 1, 
+                                                    letterSpacing: -1, 
+                                                    color: AppColors.alertBlue
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                      )
+                                    )
+                                );
+                              }
+
+                            }
+                          }
+                        ),
+                      if(Platform.isIOS)
+                        CustomButton(
+                          title: "Appleでサインイン",
+                          width: 316,
+                          fontSize: 15, 
+                          fontWeight: FontWeight.normal, 
+                          color: AppColors.primaryBlack,
+                          // borderColor: AppColors.primaryBlue, 
+                          titleColor: AppColors.primaryWhite, 
+                          onTap: (){
+                            // Navigator.pushNamed(context, "/registerprofile_group");
+                            Navigator.pushNamed(context, "/malemypage");
+                          }
+                        ),
                       const SizedBox(
                         height: 20,
                       ),
@@ -58,7 +147,8 @@ class FirstScreen extends StatelessWidget {
                         color: AppColors.primaryGreen,
                         titleColor: AppColors.primaryWhite, 
                         onTap: (){
-                          Navigator.pushNamed(context, "/femalemypage");
+                            Navigator.pushNamed(context, "/malemypage");
+                          // Navigator.pushNamed(context, "/femalemypage");
                         }
                       ),
                       const SizedBox(

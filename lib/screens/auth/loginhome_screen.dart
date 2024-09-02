@@ -19,7 +19,7 @@ class _LoginHomeScreenState extends State<LoginHomeScreen> {
 
   @override
   void initState() {
-    moveMypage();
+    // moveMypage();
     super.initState();
   }
 

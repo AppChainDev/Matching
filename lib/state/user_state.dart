@@ -52,6 +52,9 @@ class UserState with ChangeNotifier {
   Future<bool> loginPhoneNumber(String phoneNumber, String verifyCode) async {
     return await userApiService.loginPhoneNumber(phoneNumber, verifyCode);
   }
+  Future<bool> loginWithGoogle(String displayName, String email) async {
+    return await userApiService.loginWithGoogle(displayName, email);
+  }
   Future<bool> saveName(String name) async {
     return await userApiService.saveName(name);
   }

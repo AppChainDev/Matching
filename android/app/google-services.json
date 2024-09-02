@@ -12,7 +12,20 @@
           "package_name": "com.develope.rinlin"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "143345546135-qesi860dkk69537dkui2ip126rbo2q1s.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.develope.rinlin",
+            "certificate_hash": "2828ffa62f4ee5cd790323a3412784efc6c5456e"
+          }
+        },
+        {
+          "client_id": "143345546135-nplip8gk663b16eo8b31hn1gnpis7fmg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBFA1TI5-b-NYqjC0IPYQmpV8cJx9MbCrY"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "143345546135-nplip8gk663b16eo8b31hn1gnpis7fmg.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "143345546135-48v5qgonch0uv1o8hj2lduiv7js83bie.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.flutterBasicTemplate"
+              }
+            }
+          ]
         }
       }
     }

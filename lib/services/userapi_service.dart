@@ -64,6 +64,36 @@ class UserApiService {
       return false;
     }
   }
+  Future<bool> loginWithGoogle(String displayName, String email) async{
+    print(displayName);
+    print(email);
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/auth/google_login'),
+      body: jsonEncode(<String, String>{
+        'displayName': displayName,
+        'email': email
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    );
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      int userId = data['id'];
+      int? gender = data['gender'];
+      String accessToken = data['accessToken'];
+      String refreshToken = data['refreshToken'];
+      await storage.write(key: 'userId', value: jsonEncode(userId));
+      if (gender != null) {
+        await storage.write(key: 'gender', value: gender.toString()); 
+      }
+      await storage.write(key: 'accessToken', value: accessToken);
+      await storage.write(key: 'refreshToken', value: refreshToken);
+      return true;
+    } else {
+      return false;
+    }
+  }
   Future<bool> saveName(String name) async{
     String? userId = await storage.read(key: 'userId');
     String? accessToken = await storage.read(key: 'accessToken');

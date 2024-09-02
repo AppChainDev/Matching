@@ -1360,7 +1360,7 @@ class _FemaleMyPageState extends State<FemaleMyPage> {
                                         margin: const EdgeInsets.only(top: 10, right: 10),
                                         child: Image.asset("assets/images/record.png", fit: BoxFit.contain,)
                                       ),
-                                      if(user.viewUsers! > 0)
+                                      if(user.viewUsers! > 0 && user.viewUsers != null) 
                                         Container(
                                           width: 22,
                                           height: 22,

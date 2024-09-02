@@ -1,3 +1,5 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:rinlin/firebase_options.dart';
 import 'package:rinlin/services/blockapi_service.dart';
 import 'package:rinlin/services/notificationapi_service.dart';
 import 'package:rinlin/services/postapi_service.dart';
@@ -17,6 +19,8 @@ import 'services/userapi_service.dart';
 import 'routes.dart';
 
 void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options:DefaultFirebaseOptions.currentPlatform);
   runApp(const MyApp());
   await dotenv.load();
 }
