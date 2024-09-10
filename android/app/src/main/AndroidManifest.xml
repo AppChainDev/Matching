@@ -2,7 +2,7 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:usesCleartextTraffic="true"
-        android:label="flutter_basic_template"
+        android:label="rinlin"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         >

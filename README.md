@@ -1,3 +1,3 @@
-# flutter_basic_template
+# rinlin
 
 A new Flutter project.

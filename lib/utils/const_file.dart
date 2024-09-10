@@ -1,6 +1,5 @@
 
 class ConstFile {
-  static const List<String> qualificationsItems = <String>["一等無人航空機操縦士","なし"];
   static const List<String> prefectureItems = <String>[
     "北海道",
     "青森県",
