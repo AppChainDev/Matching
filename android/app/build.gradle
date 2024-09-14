@@ -33,7 +33,7 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace "com.develope.rinlin"
-    compileSdk flutter.compileSdkVersion
+    compileSdk 33
     ndkVersion flutter.ndkVersion
 
     compileOptions {

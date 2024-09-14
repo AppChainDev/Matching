@@ -1,6 +1,8 @@
 
 import 'dart:io';
 import 'dart:io' show Platform;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:rinlin/components/app_colors.dart';
 import 'package:rinlin/components/custom_button.dart';
@@ -11,10 +13,32 @@ import 'package:rinlin/components/custom_container.dart';
 import 'package:rinlin/screens/services/auth_service.dart';
 import 'package:rinlin/state/user_state.dart';
 
-class FirstScreen extends StatelessWidget {
+class FirstScreen extends StatefulWidget {
 
   const FirstScreen({super.key});
 
+  @override
+  State<FirstScreen> createState() => _FirstScreenState();
+}
+
+class _FirstScreenState extends State<FirstScreen> {
+  @override
+  void initState() {
+     getStorage();
+    super.initState();
+  }
+  Future<void> getStorage() async{
+    const storage = FlutterSecureStorage();
+      String? accessToken = await storage.read(key: 'accessToken');
+      String? gender =  await storage.read(key: 'gender');
+      if (accessToken != null && gender != null) {
+        if (int.parse(gender) == 1) {
+          Navigator.pushNamed(context, "/malemypage");
+        } else {
+          Navigator.pushNamed(context, "/femalemypage");
+        }
+      }
+  }
   @override
   Widget build(BuildContext context) {
     // ignore: deprecated_member_use
@@ -25,13 +49,48 @@ class FirstScreen extends StatelessWidget {
       child: BaseScreen(
         child: Stack(
           children: [
+            Center(
+               child: CustomContainer(
+                 decoration: BoxDecoration(
+                  color: AppColors.primaryWhite
+                 ),
+                 child: Padding(
+                  padding: const EdgeInsets.only(top: 150),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: 300,
+                        height: 130,
+                        decoration:const BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage("assets/images/first_title.png"),
+                            fit: BoxFit.cover 
+                          )
+                        ),
+                      ),
+                      Container(
+                        width: 100,
+                        height: 100,
+                        margin: const EdgeInsets.only(top: 50),
+                        decoration: BoxDecoration(
+                          image: const DecorationImage(
+                            image: AssetImage("assets/images/logo.png"),
+                            fit: BoxFit.cover 
+                          ),
+                          borderRadius: BorderRadius.circular(10)
+                        ),
+                      ),
+                    ],
+                  ),
+                   
+                 ),
+               ),
+             ),
              Center(
                child: CustomContainer(
                  width: 375,
                  height: 812,
-                 decoration: BoxDecoration(
-                  color: AppColors.primaryWhite
-                 ),
                  child: Padding(
                   padding: const EdgeInsets.only(bottom: 45),
                    child: Column(

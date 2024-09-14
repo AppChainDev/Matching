@@ -1,3 +1,5 @@
+import 'package:onesignal_flutter/onesignal_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:rinlin/components/app_colors.dart';
 import 'package:rinlin/components/base_screen.dart';
 import 'package:rinlin/components/custom_button.dart';
@@ -5,6 +7,8 @@ import 'package:rinlin/components/custom_container.dart';
 import 'package:rinlin/components/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:rinlin/models/user_model.dart';
+import 'package:rinlin/state/user_state.dart';
 
 class LoginHomeScreen extends StatefulWidget {
 
@@ -19,6 +23,7 @@ class _LoginHomeScreenState extends State<LoginHomeScreen> {
 
   @override
   void initState() {
+    saveOnesignalId();
     // moveMypage();
     super.initState();
   }
@@ -36,6 +41,22 @@ class _LoginHomeScreenState extends State<LoginHomeScreen> {
         _agreeCard.remove(id);
       }
     });
+  }
+
+  Future<void> saveOnesignalId() async{
+    // const storage = FlutterSecureStorage();
+    // String? userId = await storage.read(key: 'userId');
+    // if (userId != null) {   
+    //   OneSignal.login(userId);
+    //   print(await OneSignal.User.getExternalId());
+    // }
+    String? onesignalId = await OneSignal.User.getOnesignalId();
+    if (onesignalId != null) {
+      final result  = await Provider.of<UserState>(context, listen: false).saveOnesignalId(onesignalId);
+      if (result) {
+        print(onesignalId);
+      }
+    }
   }
 
   Future moveMypage() async{

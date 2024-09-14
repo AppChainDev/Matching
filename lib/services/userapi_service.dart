@@ -94,6 +94,26 @@ class UserApiService {
       return false;
     }
   }
+  Future<bool> saveOnesignalId(String onesignalId) async{
+    String? userId = await storage.read(key: 'userId');
+    String? accessToken = await storage.read(key: 'accessToken');
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/auth/save_onesignalid'),
+      body: jsonEncode(<String, String>{
+        'id': userId!,
+        'onesignalId': onesignalId,
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
   Future<bool> saveName(String name) async{
     String? userId = await storage.read(key: 'userId');
     String? accessToken = await storage.read(key: 'accessToken');
@@ -355,6 +375,7 @@ class UserApiService {
   Future<UserModel> getUserInformation() async{
     String? userId = await storage.read(key: 'userId');
     String? accessToken = await storage.read(key: 'accessToken');
+    print("accessToken=======>$accessToken");
     final response = await http.get(
       Uri.parse('$baseUrl/api/auth/getuser?userId=$userId'),
       headers: {
