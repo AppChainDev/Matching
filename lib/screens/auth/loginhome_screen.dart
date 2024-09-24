@@ -7,7 +7,6 @@ import 'package:rinlin/components/custom_container.dart';
 import 'package:rinlin/components/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:rinlin/models/user_model.dart';
 import 'package:rinlin/state/user_state.dart';
 
 class LoginHomeScreen extends StatefulWidget {

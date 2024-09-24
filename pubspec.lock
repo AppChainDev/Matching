@@ -230,6 +230,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.1.0"
+  flutter_line_sdk:
+    dependency: "direct main"
+    description:
+      name: flutter_line_sdk
+      sha256: cc1cdd4b38e57e4b8c6013d394b9ec2c7ca6ed22c9285845180e093e311c3511
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.3.8"
   flutter_lints:
     dependency: "direct dev"
     description:

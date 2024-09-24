@@ -1,8 +1,8 @@
 
 import 'dart:io';
-import 'dart:io' show Platform;
+import 'package:flutter/services.dart';
+import 'package:flutter_line_sdk/flutter_line_sdk.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:rinlin/components/app_colors.dart';
 import 'package:rinlin/components/custom_button.dart';
@@ -38,6 +38,83 @@ class _FirstScreenState extends State<FirstScreen> {
           Navigator.pushNamed(context, "/femalemypage");
         }
       }
+  }
+  Future<void> lineLogin() async {
+    try {
+      final result = await LineSDK.instance.login();
+      final isLogin = await Provider.of<UserState>(context, listen: false).loginWithLine(result.userProfile!.userId, result.userProfile!.displayName);
+      if (isLogin) {
+        Navigator.pushNamed(context, "/loginhome");
+      } else {
+        showDialog(
+          barrierDismissible: false,
+          context: context,
+          builder: (_) => Center( // Aligns the container to center
+            child: Container( // A simplified version of dialog. 
+              width: 300,
+              height: 150,
+              padding: const EdgeInsets.only(top:35),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: AppColors.primaryWhite
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    "LINEログインに失敗しました。",
+                    textAlign:TextAlign.center,
+                    style: TextStyle(
+                      color: AppColors.primaryBlack,
+                      fontWeight: FontWeight.normal,
+                      fontSize:15,
+                      letterSpacing: -1,
+                      decoration: TextDecoration.none
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 24,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Container(
+                      width: 343,
+                      height: 42,
+                      margin: const EdgeInsets.only(top: 5),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          top: BorderSide(
+                            color: AppColors.secondaryGray.withOpacity(0.5)
+                          )
+                        )
+                      ),
+                      child: MaterialButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Center(
+                          child: CustomText(
+                            text: "OK", 
+                            fontSize: 15, 
+                            fontWeight: FontWeight.normal, 
+                            lineHeight: 1, 
+                            letterSpacing: -1, 
+                            color: AppColors.alertBlue
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+              )
+            )
+        );
+      }
+      
+    } on PlatformException catch (e) {
+      print(e.message);
+    }
   }
   @override
   Widget build(BuildContext context) {
@@ -206,24 +283,25 @@ class _FirstScreenState extends State<FirstScreen> {
                         color: AppColors.primaryGreen,
                         titleColor: AppColors.primaryWhite, 
                         onTap: (){
-                            Navigator.pushNamed(context, "/malemypage");
+                          lineLogin();
+                            // Navigator.pushNamed(context, "/malemypage");
                           // Navigator.pushNamed(context, "/femalemypage");
                         }
                       ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      CustomButton(
-                        title: "Facebookでログイン",
-                        width: 316,
-                        fontSize: 15, 
-                        fontWeight: FontWeight.normal, 
-                        color: AppColors.primaryBlue, 
-                        titleColor: AppColors.primaryWhite, 
-                        onTap: (){
-                          Navigator.pushNamed(context, "/malemypage");
-                        }
-                      ),
+                      // const SizedBox(
+                      //   height: 20,
+                      // ),
+                      // CustomButton(
+                      //   title: "Facebookでログイン",
+                      //   width: 316,
+                      //   fontSize: 15, 
+                      //   fontWeight: FontWeight.normal, 
+                      //   color: AppColors.primaryBlue, 
+                      //   titleColor: AppColors.primaryWhite, 
+                      //   onTap: (){
+                      //     Navigator.pushNamed(context, "/malemypage");
+                      //   }
+                      // ),
                       const SizedBox(
                         height: 20,
                       ),

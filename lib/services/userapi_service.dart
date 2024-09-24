@@ -107,6 +107,36 @@ class UserApiService {
       return false;
     }
   }
+
+  Future<bool> loginWithLine(String lineId, String displayName) async{
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/auth/line_login'),
+      body: jsonEncode(<String, String>{
+        'lineId': lineId,
+        'displayName': displayName,
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    );
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      int userId = data['id'];
+      int? gender = data['gender'];
+      String accessToken = data['accessToken'];
+      String refreshToken = data['refreshToken'];
+      await storage.write(key: 'userId', value: jsonEncode(userId));
+      if (gender != null) {
+        await storage.write(key: 'gender', value: gender.toString()); 
+      }
+      await storage.write(key: 'accessToken', value: accessToken);
+      await storage.write(key: 'refreshToken', value: refreshToken);
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   Future<bool> saveOnesignalId(String onesignalId) async{
     String? userId = await storage.read(key: 'userId');
     String? accessToken = await storage.read(key: 'accessToken');
@@ -388,7 +418,6 @@ class UserApiService {
   Future<UserModel> getUserInformation() async{
     String? userId = await storage.read(key: 'userId');
     String? accessToken = await storage.read(key: 'accessToken');
-    print("accessToken=======>$accessToken");
     final response = await http.get(
       Uri.parse('$baseUrl/api/auth/getuser?userId=$userId'),
       headers: {

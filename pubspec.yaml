@@ -1,7 +1,7 @@
 name: rinlin
 description: "A new Flutter project."
 publish_to: 'none'
-version: 1.0.0
+version: 1.0.0+2
 
 environment:
   sdk: '>=3.3.3 <4.0.0'
@@ -36,6 +36,7 @@ dependencies:
   firebase_core: ^2.32.0
   firebase_auth: ^4.20.0
   onesignal_flutter: ^5.2.5
+  flutter_line_sdk: ^2.3.8
 
 
 dev_dependencies:

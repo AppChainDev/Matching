@@ -1,4 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_line_sdk/flutter_line_sdk.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:rinlin/firebase_options.dart';
 import 'package:rinlin/services/blockapi_service.dart';
@@ -26,6 +27,9 @@ void main() async{
   OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
   OneSignal.initialize(dotenv.get('APP_ID'));
   OneSignal.Notifications.requestPermission(true);
+  LineSDK.instance.setup(dotenv.get('CHANNEL_ID')).then((_) {
+    print("LineSDK Prepared");
+  });
   runApp(const MyApp());
 }
 

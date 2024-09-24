@@ -55,6 +55,13 @@ class UserState with ChangeNotifier {
   Future<bool> loginWithGoogle(String displayName, String email) async {
     return await userApiService.loginWithGoogle(displayName, email);
   }
+  Future<bool> loginWithLine(String? lineId, String? displayName) async {
+    if (lineId != null && displayName != null) {
+      return await userApiService.loginWithLine(lineId, displayName);
+    } else {
+      return false;
+    }
+  }
   Future<bool> saveOnesignalId(String onesignalId) async {
     return await userApiService.saveOnesignalId(onesignalId);
   }

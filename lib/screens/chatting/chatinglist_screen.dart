@@ -60,14 +60,10 @@ class _ChattingListScreenState extends State<ChattingListScreen> {
         user.time = '';
       }
     }
-    // await Provider.of<BlockState>(context, listen: false).getBlockList();
     await Provider.of<UserState>(context, listen: false).getMatchedUserList();
     setState(() {
-      // final blockListIds = Provider.of<BlockState>(context, listen: false).blocks.map((user) => user.id).toSet();
       chattingLists = userList;
-      // chattingLists.removeWhere((user) => blockListIds.contains(user.id));
       replayLists = filteredUsers;
-      // replayLists.removeWhere((user) => blockListIds.contains(user.id));
       chattingPossibleLists = Provider.of<UserState>(context, listen: false).matchedUserList;
       final chattingListIds = chattingLists.map((user) => user.id).toSet();
       chattingPossibleLists.removeWhere((user) => chattingListIds.contains(user.id));
