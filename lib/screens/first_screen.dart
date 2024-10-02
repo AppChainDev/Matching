@@ -29,6 +29,8 @@ class _FirstScreenState extends State<FirstScreen> {
   }
   Future<void> getStorage() async{
     const storage = FlutterSecureStorage();
+      // await storage.delete(key: 'accessToken');
+      // await storage.delete(key: 'refreshToken');
       String? accessToken = await storage.read(key: 'accessToken');
       String? gender =  await storage.read(key: 'gender');
       if (accessToken != null && gender != null) {
@@ -326,7 +328,10 @@ class _FirstScreenState extends State<FirstScreen> {
                         lineHeight: 1, 
                         letterSpacing: 1, 
                         color: AppColors.primaryBlack
-                      )
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
                     ],
                    ),
                  ),

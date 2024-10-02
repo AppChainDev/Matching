@@ -1476,6 +1476,7 @@ class UserApiService {
   Future<void> logout() async {
     await storage.delete(key: 'accessToken');
     await storage.delete(key: 'refreshToken');
+    await storage.delete(key: 'alert');
   }
 
   Future<bool> isAuthenticated() async{

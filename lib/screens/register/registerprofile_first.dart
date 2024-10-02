@@ -146,7 +146,7 @@ class _RegisterProfileFirstScreenState extends State<RegisterProfileFirstScreen>
                           color: AppColors.primaryBlack
                         ),
                         const SizedBox(
-                          height: 95,
+                          height: 90,
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.start,

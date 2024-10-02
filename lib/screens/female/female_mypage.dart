@@ -36,15 +36,26 @@ class _FemaleMyPageState extends State<FemaleMyPage> {
   void initState() {
     super.initState();
     getUserInformation();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      notificationAlert();
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   notificationAlert();
+    // });
+    checkAlert();
     getVerifyState();
+    getMyPost();
   }
 
   @override
   void dispose() {
     super.dispose();
+  }
+
+  Future checkAlert() async{
+    String? alert = await storage.read(key: 'alert');
+    if(alert == null){
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        notificationAlert();
+      });
+    }
   }
 
   Future getUserInformation() async{
@@ -165,6 +176,7 @@ class _FemaleMyPageState extends State<FemaleMyPage> {
                       onTap: () async{ 
                         Navigator.pop(context);
                         allowNotification(context);
+                        await storage.write(key: 'alert', value: "true");
                       }
                     ),
                 ],

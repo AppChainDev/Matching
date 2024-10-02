@@ -35,9 +35,10 @@ class _MaleMyPageState extends State<MaleMyPage> {
   void initState() {
     super.initState();
     getUserInformation();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      notificationAlert();
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   notificationAlert();
+    // });
+    checkAlert();
     getVerifyState();
     getMyPost();
   }
@@ -45,6 +46,15 @@ class _MaleMyPageState extends State<MaleMyPage> {
   @override
   void dispose() {
     super.dispose();
+  }
+
+  Future checkAlert() async{
+    String? alert = await storage.read(key: 'alert');
+    if(alert == null){
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        notificationAlert();
+      });
+    }
   }
 
   Future getUserInformation() async{
@@ -168,6 +178,7 @@ class _MaleMyPageState extends State<MaleMyPage> {
                       onTap: () async{ 
                         Navigator.pop(context);
                         allowNotification(context);
+                        await storage.write(key: 'alert', value: "true");
                       }
                     ),
                 ],

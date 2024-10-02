@@ -1,4 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_line_sdk/flutter_line_sdk.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:rinlin/firebase_options.dart';
@@ -30,6 +31,7 @@ void main() async{
   LineSDK.instance.setup(dotenv.get('CHANNEL_ID')).then((_) {
     print("LineSDK Prepared");
   });
+  // debugPaintSizeEnabled = true;
   runApp(const MyApp());
 }
 

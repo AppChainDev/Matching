@@ -24,13 +24,7 @@ class CustomButton extends StatelessWidget {
           color: color,
           borderRadius: BorderRadius.circular(50),
           border: Border.all(width: 2, color:borderColor ?? Colors.transparent)),
-      child: Padding(
-        padding: const EdgeInsets.only(
-          left: 50.0,
-          right: 50.0,
-          top: 10.0,
-          // bottom: 5.0,
-        ),
+      child: Center(
         child: Text(
           title,
           textAlign: TextAlign.center,
