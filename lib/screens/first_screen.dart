@@ -32,7 +32,8 @@ class _FirstScreenState extends State<FirstScreen> {
     // await storage.delete(key: 'refreshToken');
     String? accessToken = await storage.read(key: 'accessToken');
     String? gender = await storage.read(key: 'gender');
-    if (accessToken != null && gender != null) {
+    final result  = await Provider.of<UserState>(context, listen: false).getIsRegistered();
+    if (accessToken != null && gender != null && result == true) {
       if (int.parse(gender) == 1) {
         Navigator.pushNamed(context, "/malemypage");
       } else {

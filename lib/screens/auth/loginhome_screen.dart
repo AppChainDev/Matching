@@ -23,13 +23,26 @@ class _LoginHomeScreenState extends State<LoginHomeScreen> {
   @override
   void initState() {
     saveOnesignalId();
-    // moveMypage();
+    checkIsRegisteredUser();
     super.initState();
   }
 
   @override
   void dispose() {
     super.dispose();
+  }
+
+  Future<void> checkIsRegisteredUser() async{
+    const storage = FlutterSecureStorage();
+    final result  = await Provider.of<UserState>(context, listen: false).getIsRegistered();
+    String? gender = await storage.read(key: 'gender');
+    if (result == true && gender != null) {
+      if (int.parse(gender) == 1) {
+        Navigator.pushNamed(context, "/malemypage");
+      } else {
+        Navigator.pushNamed(context, "/femalemypage");
+      }
+    }
   }
 
   void _handleCartChanged(int id, bool inChecked) {
@@ -58,19 +71,19 @@ class _LoginHomeScreenState extends State<LoginHomeScreen> {
     }
   }
 
-  Future moveMypage() async{
-    const storage = FlutterSecureStorage();
-    String? gender = await storage.read(key: 'gender');
-    String? accessToken = await storage.read(key: 'accessToken');
-    if (accessToken != null && gender != null) {
-      if (int.parse(gender)==1) {
-        Navigator.pushNamed(context, "/malemypage");
-      }
-      if (int.parse(gender)==2) {
-        Navigator.pushNamed(context, "/femalemypage");
-      }
-    }
-  }
+  // Future moveMypage() async{
+  //   const storage = FlutterSecureStorage();
+  //   String? gender = await storage.read(key: 'gender');
+  //   String? accessToken = await storage.read(key: 'accessToken');
+  //   if (accessToken != null && gender != null) {
+  //     if (int.parse(gender)==1) {
+  //       Navigator.pushNamed(context, "/malemypage");
+  //     }
+  //     if (int.parse(gender)==2) {
+  //       Navigator.pushNamed(context, "/femalemypage");
+  //     }
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {

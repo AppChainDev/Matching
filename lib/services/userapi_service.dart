@@ -1566,7 +1566,49 @@ class UserApiService {
   Future<void> logout() async {
     await storage.delete(key: 'accessToken');
     await storage.delete(key: 'refreshToken');
+    await storage.delete(key: 'userId');
     await storage.delete(key: 'alert');
+  }
+
+  Future<bool> setIsRegisterd() async {
+    String? userId = await storage.read(key: 'userId');
+    String? accessToken = await storage.read(key: 'accessToken');
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/auth/set_isregistered'),
+      body: jsonEncode(<String, String>{
+        'userId': userId!,
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+    
+  }
+
+  Future<bool> getIsRegisterd() async {
+    String? userId = await storage.read(key: 'userId');
+    String? accessToken = await storage.read(key: 'accessToken');
+    if (userId == null || accessToken == null) {
+      return false;
+    }
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/auth/get_isregistered?userId=$userId'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   Future<bool> isAuthenticated() async {

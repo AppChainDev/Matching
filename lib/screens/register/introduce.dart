@@ -106,6 +106,7 @@ class _IntroduceScreenState extends State<IntroduceScreen> {
           )
       );
     }else{
+      await Provider.of<UserState>(context, listen: false).setIsRegisterd();
       final isSaved = await Provider.of<UserState>(context, listen: false).saveIntroduce(introduceController.text);
       if (gender != null && isSaved) {
         if (int.parse(gender) == 1) {
@@ -237,60 +238,7 @@ class _IntroduceScreenState extends State<IntroduceScreen> {
                                   ),
                                   child: MaterialButton(
                                     onPressed: () {
-                                      // if(textCount < 150){
-                                      //   showDialog(
-                                      //     context: context,
-                                      //     builder: (context) => AlertDialog(
-                                      //       content: Padding(
-                                      //         padding: const EdgeInsets.only(top: 40, left: 20, right: 20),
-                                      //         child:Text(
-                                      //           "150文字以上の\n自己紹介文を書いてください。", 
-                                      //           textAlign: TextAlign.center,
-                                      //           style: TextStyle(
-                                      //             fontSize: 18, 
-                                      //             fontWeight: FontWeight.normal,
-                                      //             color: AppColors.primaryBlack,
-                                      //             letterSpacing: -1
-                                      //           ),
-                                      //         )
-                                      //       ),
-                                      //       actions: [
-                                      //         Container(
-                                      //           decoration: BoxDecoration(
-                                      //             border: Border(
-                                      //               top: BorderSide(
-                                      //                 width: 2,
-                                      //                 color: AppColors.primaryGray
-                                      //               )
-                                      //             )
-                                      //           ),
-                                      //           child: Center(
-                                      //             child: TextButton(
-                                      //               onPressed: () => Navigator.pop(context),
-                                      //               child: TextButton(
-                                      //                 onPressed: (){
-                                      //                   Navigator.pop(context);
-                                      //                 }, 
-                                      //                 child: CustomText(
-                                      //                   text: "OK", 
-                                      //                   fontSize: 20, 
-                                      //                   fontWeight: FontWeight.bold, 
-                                      //                   lineHeight: 1, 
-                                      //                   letterSpacing: 1, 
-                                      //                   color: AppColors.primaryBlue
-                                      //                 )
-                                      //               ),
-                                      //             ),
-                                      //           ),
-                                      //         ),
-                                      //       ],
-                                      //     ),
-                                      //   );
-                                      // }else{
-                                      //   Navigator.pushNamed(context, "/malemypage");
-                                      // }
-                                        // Navigator.pop(context);
-                                        moveMyPage();
+                                      moveMyPage();
                                     },
                                     child: Center(
                                       child: Text(

@@ -453,6 +453,13 @@ class UserState with ChangeNotifier {
     return await userApiService.deleteAccount();
   }
 
+  Future<bool> setIsRegisterd() async {
+    return await userApiService.setIsRegisterd();
+  }
+  Future<bool> getIsRegistered() async {
+    return await userApiService.getIsRegisterd();
+  }
+
   // Future<void> checkAuthStatus() async {
   //   _isAuthenticated = await userApiService.isAuthenticated();
   //   notifyListeners();
