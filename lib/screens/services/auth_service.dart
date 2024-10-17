@@ -2,23 +2,24 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthService {
-  signInWithGoogle() async{
+  Future<Map<String, dynamic>?> signInWithGoogle() async {
     try {
       // Create an instance of GoogleSignIn
-      final GoogleSignIn googleSignIn = GoogleSignIn(
-        scopes: ['email'],
-      );
-      await googleSignIn.signOut();
+      final GoogleSignIn googleSignIn =
+          GoogleSignIn(scopes: ['profile', 'email']);
+
       // Prompt the user to select a Google account
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      print("nnnnnnnn  ");
 
       if (googleUser == null) {
         // The user canceled the sign-in process
+
         return null;
       }
-
       // Obtain the auth details from the request
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
 
       // Create a new credential using the tokens
       final OAuthCredential credential = GoogleAuthProvider.credential(
@@ -27,7 +28,8 @@ class AuthService {
       );
 
       // Sign in the user with Firebase using the credential
-      UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
 
       // Get the user information
       User? user = userCredential.user;
@@ -41,8 +43,8 @@ class AuthService {
         'accessToken': googleAuth.accessToken,
         'idToken': googleAuth.idToken,
       };
-      return userInfo;
 
+      return userInfo;
     } on FirebaseAuthException catch (e) {
       // Handle specific FirebaseAuth errors
       print('FirebaseAuthException: ${e.message}');

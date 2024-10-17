@@ -1,5 +1,4 @@
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_line_sdk/flutter_line_sdk.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:rinlin/firebase_options.dart';
@@ -21,10 +20,10 @@ import 'state/settings_state.dart';
 import 'services/userapi_service.dart';
 import 'routes.dart';
 
-void main() async{
+void main() async {
   await dotenv.load();
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options:DefaultFirebaseOptions.currentPlatform);
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
   OneSignal.initialize(dotenv.get('APP_ID'));
   OneSignal.Notifications.requestPermission(true);
@@ -35,17 +34,17 @@ void main() async{
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget { 
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
   static final navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context) {
     String? screen;
-    OneSignal.Notifications.addClickListener((event){
+    OneSignal.Notifications.addClickListener((event) {
       final data = event.notification.additionalData;
       screen = data?["screen"];
-      // Navigator.pushNamed(context, "/matching_complete", arguments: MatchingModel(id: widget.id, avatar: widget.avatarImage, name: widget.name)); 
+      // Navigator.pushNamed(context, "/matching_complete", arguments: MatchingModel(id: widget.id, avatar: widget.avatarImage, name: widget.name));
       if (screen != null) {
         if (screen == "message") {
           navigatorKey.currentState?.pushNamed("/chattinglist");
@@ -61,22 +60,31 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => UserState(userApiService: UserApiService(baseUrl: dotenv.get('BASE_URL'))),
+          create: (_) => UserState(
+              userApiService: UserApiService(baseUrl: dotenv.get('BASE_URL'))),
         ),
         ChangeNotifierProvider(
-          create: (_) => RecordState(recordApiService: RecordApiService(baseUrl: dotenv.get('BASE_URL'))),
+          create: (_) => RecordState(
+              recordApiService:
+                  RecordApiService(baseUrl: dotenv.get('BASE_URL'))),
         ),
         ChangeNotifierProvider(
-          create: (_) => LikeState(likeApiService: LikeApiService(baseUrl: dotenv.get('BASE_URL'))),
+          create: (_) => LikeState(
+              likeApiService: LikeApiService(baseUrl: dotenv.get('BASE_URL'))),
         ),
         ChangeNotifierProvider(
-          create: (_) => PostState(postApiService: PostApiService(baseUrl: dotenv.get('BASE_URL'))),
+          create: (_) => PostState(
+              postApiService: PostApiService(baseUrl: dotenv.get('BASE_URL'))),
         ),
         ChangeNotifierProvider(
-          create: (_) => BlockState(blockApiService: BlockApiService(baseUrl: dotenv.get('BASE_URL'))),
+          create: (_) => BlockState(
+              blockApiService:
+                  BlockApiService(baseUrl: dotenv.get('BASE_URL'))),
         ),
         ChangeNotifierProvider(
-          create: (_) => NotificationState(notificationApiService: NotificationApiService(baseUrl: dotenv.get('BASE_URL'))),
+          create: (_) => NotificationState(
+              notificationApiService:
+                  NotificationApiService(baseUrl: dotenv.get('BASE_URL'))),
         ),
         ChangeNotifierProvider(create: (_) => SettingsState()),
       ],
@@ -84,9 +92,7 @@ class MyApp extends StatelessWidget {
         title: 'My Matching App',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          primarySwatch: Colors.green,
-          fontFamily: "HiraginoMinchoPro"
-        ),
+            primarySwatch: Colors.green, fontFamily: "HiraginoMinchoPro"),
         navigatorKey: navigatorKey,
         routes: Routes.routes,
         initialRoute: '/',

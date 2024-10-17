@@ -49,12 +49,15 @@ class UserState with ChangeNotifier {
   Future<bool> phoneNumberSend(String phoneNumber) async {
     return await userApiService.phoneNumberSend(phoneNumber);
   }
+
   Future<bool> loginPhoneNumber(String phoneNumber, String verifyCode) async {
     return await userApiService.loginPhoneNumber(phoneNumber, verifyCode);
   }
+
   Future<bool> loginWithGoogle(String displayName, String email) async {
     return await userApiService.loginWithGoogle(displayName, email);
   }
+
   Future<bool> loginWithLine(String? lineId, String? displayName) async {
     if (lineId != null && displayName != null) {
       return await userApiService.loginWithLine(lineId, displayName);
@@ -62,39 +65,62 @@ class UserState with ChangeNotifier {
       return false;
     }
   }
+
   Future<bool> saveOnesignalId(String onesignalId) async {
     return await userApiService.saveOnesignalId(onesignalId);
   }
+
   Future<bool> saveName(String name) async {
     return await userApiService.saveName(name);
   }
+
   Future<bool> saveAge(int age) async {
     return await userApiService.saveAge(age);
   }
-  Future<bool> saveFirstStep(int gender, int prefectureId, int height, int bodyType, int attitude) async {
-    return await userApiService.saveFirstStep(gender, prefectureId, height, bodyType, attitude);
+
+  Future<bool> saveFirstStep(int gender, int prefectureId, int height,
+      int bodyType, int attitude) async {
+    return await userApiService.saveFirstStep(
+        gender, prefectureId, height, bodyType, attitude);
   }
-  Future<bool> saveSecondStep(int blood, int birth, int education, int jobType, int maritalHistory, int income, int children, int housework, int hopeMeet, int dateCost) async {
-    return await userApiService.saveSecondStep(blood, birth, education, jobType, maritalHistory, income, children, housework, hopeMeet, dateCost);
+
+  Future<bool> saveSecondStep(
+      int blood,
+      int birth,
+      int education,
+      int jobType,
+      int maritalHistory,
+      int income,
+      int children,
+      int housework,
+      int hopeMeet,
+      int dateCost) async {
+    return await userApiService.saveSecondStep(blood, birth, education, jobType,
+        maritalHistory, income, children, housework, hopeMeet, dateCost);
   }
+
   Future<bool> saveAvatar1(File avatar) async {
     return await userApiService.saveAvatar1(avatar);
   }
+
   Future<void> saveAvatar(File avatar, int index) async {
-    final result =  await userApiService.saveAvatar(avatar, index);
+    final result = await userApiService.saveAvatar(avatar, index);
     if (result) {
       getUserInformation();
       notifyListeners();
     }
   }
+
   Future<void> getGroupList() async {
     _groups = await userApiService.getGroupList();
     notifyListeners();
   }
+
   Future<void> getTopGroups() async {
     _topGroups = await userApiService.getTopGroups();
     notifyListeners();
   }
+
   Future<void> getSwipeAllGroups() async {
     _allSwipeGroups = await userApiService.getSwipeAllGroups();
     notifyListeners();
@@ -104,165 +130,191 @@ class UserState with ChangeNotifier {
     _categories = await userApiService.getCategoryList();
     notifyListeners();
   }
+
   Future<bool> saveGroups(List<int> groups) async {
     return await userApiService.saveGroups(groups);
   }
+
   Future<bool> saveIntroduce(String introduce) async {
     return await userApiService.saveIntroduce(introduce);
   }
+
   Future<void> getUserInformation() async {
     _user = await userApiService.getUserInformation();
     notifyListeners();
   }
+
   Future<void> getUserById(int userId) async {
     _userById = await userApiService.getUserById(userId);
     notifyListeners();
   }
+
   Future<void> getUsers() async {
     _users = await userApiService.getUsers();
     notifyListeners();
   }
 
-  Future<bool> saveQuestionAnswer(String answer, int index) async{
+  Future<bool> saveQuestionAnswer(String answer, int index) async {
     return await userApiService.saveQuestionAnswer(answer, index);
   }
+
   Future<void> saveFavoriteImage(File image) async {
-    final result =  await userApiService.saveFavoriteImage(image);
+    final result = await userApiService.saveFavoriteImage(image);
     if (result) {
       getUserInformation();
       notifyListeners();
     }
   }
-  Future<bool> saveFavoriteDescription(String description) async{
+
+  Future<bool> saveFavoriteDescription(String description) async {
     return await userApiService.saveFavoriteDescription(description);
   }
-  Future<void> updatePrefecture(int prefectureId) async{
+
+  Future<void> updatePrefecture(int prefectureId) async {
     final result = await userApiService.updatePrefecture(prefectureId);
     if (result) {
       getUserInformation();
       notifyListeners();
     }
   }
-  Future<void> updateHeight(int height) async{
+
+  Future<void> updateHeight(int height) async {
     final result = await userApiService.updateHeight(height);
     if (result) {
       getUserInformation();
       notifyListeners();
     }
   }
-  Future<void> updateBodyType(int bodyType) async{
+
+  Future<void> updateBodyType(int bodyType) async {
     final result = await userApiService.updateBodyType(bodyType);
     if (result) {
       getUserInformation();
       notifyListeners();
     }
   }
-  Future<void> updateBlood(int blood) async{
+
+  Future<void> updateBlood(int blood) async {
     final result = await userApiService.updateBlood(blood);
     if (result) {
       getUserInformation();
       notifyListeners();
     }
   }
-  Future<void> updateBirth(int birth) async{
+
+  Future<void> updateBirth(int birth) async {
     final result = await userApiService.updateBirth(birth);
     if (result) {
       getUserInformation();
       notifyListeners();
     }
   }
-  Future<void> updateEducation(int education) async{
+
+  Future<void> updateEducation(int education) async {
     final result = await userApiService.updateEducation(education);
     if (result) {
       getUserInformation();
       notifyListeners();
     }
   }
-  Future<void> updateJobType(int jobType) async{
+
+  Future<void> updateJobType(int jobType) async {
     final result = await userApiService.updateJobType(jobType);
     if (result) {
       getUserInformation();
       notifyListeners();
     }
   }
-  Future<void> updateIncome(int income) async{
+
+  Future<void> updateIncome(int income) async {
     final result = await userApiService.updateIncome(income);
     if (result) {
       getUserInformation();
       notifyListeners();
     }
   }
-  Future<void> updateMaritalHistory(int maritalHistory) async{
+
+  Future<void> updateMaritalHistory(int maritalHistory) async {
     final result = await userApiService.updateMaritalHistory(maritalHistory);
     if (result) {
       getUserInformation();
       notifyListeners();
     }
   }
-  Future<void> updateAttitude(int attitude) async{
+
+  Future<void> updateAttitude(int attitude) async {
     final result = await userApiService.updateAttitude(attitude);
     if (result) {
       getUserInformation();
       notifyListeners();
     }
   }
-  Future<void> updateChildren(int children) async{
+
+  Future<void> updateChildren(int children) async {
     final result = await userApiService.updateChildren(children);
     if (result) {
       getUserInformation();
       notifyListeners();
     }
   }
-  Future<void> updateHousework(int housework) async{
+
+  Future<void> updateHousework(int housework) async {
     final result = await userApiService.updateHousework(housework);
     if (result) {
       getUserInformation();
       notifyListeners();
     }
   }
-  Future<void> updateHopeMeet(int hopeMeet) async{
+
+  Future<void> updateHopeMeet(int hopeMeet) async {
     final result = await userApiService.updateHopeMeet(hopeMeet);
     if (result) {
       getUserInformation();
       notifyListeners();
     }
   }
-  Future<void> updateDateCost(int dateCost) async{
+
+  Future<void> updateDateCost(int dateCost) async {
     final result = await userApiService.updateDateCost(dateCost);
     if (result) {
       getUserInformation();
       notifyListeners();
     }
   }
-  Future<void> updateHoliday(int holiday) async{
+
+  Future<void> updateHoliday(int holiday) async {
     final result = await userApiService.updateHoliday(holiday);
     if (result) {
       getUserInformation();
       notifyListeners();
     }
   }
-  Future<void> updateRoomate(int roomate) async{
+
+  Future<void> updateRoomate(int roomate) async {
     final result = await userApiService.updateRoomate(roomate);
     if (result) {
       getUserInformation();
       notifyListeners();
     }
   }
-  Future<void> updateAlcohol(int alcohol) async{
+
+  Future<void> updateAlcohol(int alcohol) async {
     final result = await userApiService.updateAlcohol(alcohol);
     if (result) {
       getUserInformation();
       notifyListeners();
     }
   }
-  Future<void> updateSmoking(int smoking) async{
+
+  Future<void> updateSmoking(int smoking) async {
     final result = await userApiService.updateSmoking(smoking);
     if (result) {
       getUserInformation();
       notifyListeners();
     }
   }
-  Future<void> updateSaving(int saving) async{
+
+  Future<void> updateSaving(int saving) async {
     final result = await userApiService.updateSaving(saving);
     if (result) {
       getUserInformation();
@@ -270,7 +322,7 @@ class UserState with ChangeNotifier {
     }
   }
 
-  Future<bool> removeGroups(List<int> removeGroups) async{
+  Future<bool> removeGroups(List<int> removeGroups) async {
     final result = await userApiService.removeGroups(removeGroups);
     if (result) {
       return true;
@@ -279,45 +331,60 @@ class UserState with ChangeNotifier {
     }
   }
 
-  Future getGroupUsers(int groupId) async{
+  Future getGroupUsers(int groupId) async {
     _groupUsers = await userApiService.getGroupUsers(groupId);
     notifyListeners();
   }
 
-  Future<bool> checkMember(int groupId) async{
+  Future<bool> checkMember(int groupId) async {
     return await userApiService.checkMember(groupId);
   }
 
-  Future<bool> enterGroup(int groupId) async{
+  Future<bool> enterGroup(int groupId) async {
     return await userApiService.enterGroup(groupId);
   }
 
-  Future<void> searchSwipeUser(int minAge, int maxAge, int minHeigth, int maxHeight, List<int> prefectureIds, List<int> bodyTypes, List<int> maritalHistories, List<int> attitudes ) async {
+  Future<void> searchSwipeUser(
+      int minAge,
+      int maxAge,
+      int minHeigth,
+      int maxHeight,
+      List<int> prefectureIds,
+      List<int> bodyTypes,
+      List<int> maritalHistories,
+      List<int> attitudes) async {
     _swipeSearchUsers = await userApiService.searchSwipeUser(
-      minAge,
-      maxAge,
-      minHeigth,
-      maxHeight,
-      prefectureIds,
-      bodyTypes,
-      maritalHistories,
-      attitudes
-    );
+        minAge,
+        maxAge,
+        minHeigth,
+        maxHeight,
+        prefectureIds,
+        bodyTypes,
+        maritalHistories,
+        attitudes);
     notifyListeners();
   }
 
-  Future<void> searchGroupUser(int groupId, int minAge, int maxAge, int minHeigth, int maxHeight, List<int> prefectureIds, List<int> bodyTypes, List<int> maritalHistories, List<int> attitudes ) async {
+  Future<void> searchGroupUser(
+      int groupId,
+      int minAge,
+      int maxAge,
+      int minHeigth,
+      int maxHeight,
+      List<int> prefectureIds,
+      List<int> bodyTypes,
+      List<int> maritalHistories,
+      List<int> attitudes) async {
     _groupSearchUsers = await userApiService.searchGroupUser(
-      groupId,
-      minAge,
-      maxAge,
-      minHeigth,
-      maxHeight,
-      prefectureIds,
-      bodyTypes,
-      maritalHistories,
-      attitudes
-    );
+        groupId,
+        minAge,
+        maxAge,
+        minHeigth,
+        maxHeight,
+        prefectureIds,
+        bodyTypes,
+        maritalHistories,
+        attitudes);
     notifyListeners();
   }
 
@@ -340,7 +407,7 @@ class UserState with ChangeNotifier {
   }
 
   Future<void> getAdviceState(int id) async {
-    _adviceState =  await userApiService.getAdviceState(id);
+    _adviceState = await userApiService.getAdviceState(id);
   }
 
   Future<bool> sendVerifyCard(File image, String verifyType) async {
@@ -359,13 +426,13 @@ class UserState with ChangeNotifier {
     await userApiService.clearViewUsers();
   }
 
-  // Future<void> login(String email, String password) async {
-  //   _user = await userApiService.login(email, password);
-  //   if (_user?.id != 0) {
-  //     _isAuthenticated = true;
-  //   }
-  //   notifyListeners();
-  // }
+  Future<void> login(String email, String password) async {
+    _user = await userApiService.login(email, password);
+    if (_user?.id != 0) {
+      _isAuthenticated = true;
+    }
+    notifyListeners();
+  }
 
   Future<bool> register(String email) async {
     try {
@@ -382,7 +449,7 @@ class UserState with ChangeNotifier {
     notifyListeners();
   }
 
-   Future<bool> deleteAccount() async {
+  Future<bool> deleteAccount() async {
     return await userApiService.deleteAccount();
   }
 

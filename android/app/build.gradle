@@ -56,8 +56,8 @@ android {
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
         minSdkVersion 24
         targetSdkVersion flutter.targetSdkVersion
-        versionCode 3
-        versionName flutterVersionName
+        versionCode 6
+        versionName '6.0'
     }
     signingConfigs {
         release {
@@ -67,8 +67,11 @@ android {
             storePassword = keystoreProperties['storePassword']
         }
     }
-    buildTypes {
+     buildTypes {
         release {
+            // TODO: Add your own signing config for the release build.
+            // Signing with the debug keys for now, so `flutter run --release` works.
+            signingConfig signingConfigs.debug
             signingConfig signingConfigs.release
         }
     }
@@ -78,4 +81,8 @@ flutter {
     source '../..'
 }
 
-dependencies {}
+dependencies {
+    def billing_version = "7.1.1"
+    implementation "com.android.billingclient:billing:$billing_version"
+
+}

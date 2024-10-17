@@ -50,6 +50,7 @@ import 'package:rinlin/screens/verify/verifysend_screen.dart';
 import 'package:rinlin/screens/verify/verifywaiting_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:rinlin/screens/first_screen.dart';
+
 class Routes {
   static final Map<String, WidgetBuilder> routes = {
     '/': (context) => const FirstScreen(),
@@ -105,6 +106,5 @@ class Routes {
     '/verifyscreen': (context) => const VerifyScreen(),
     '/verify_send': (context) => const VerifySendScreen(),
     '/verify_waiting': (context) => const VerifyWaitingScreen(),
-
   };
 }
