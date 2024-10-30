@@ -58,5 +58,11 @@
 	<string>Allow access to photo library</string>
 	<key>NSUserNotificationUsageDescription</key>
 	<string>We need your permission to send you notifications.</string>
+	<key>CFBundleTypeRole</key>
+    <string>Editor</string>
+    <key>CFBundleURLSchemes</key>
+    <array>
+      <string>line3rdp.$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+    </array>
 </dict>
 </plist>
