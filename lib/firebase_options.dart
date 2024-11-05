@@ -65,7 +65,7 @@ class DefaultFirebaseOptions {
     projectId: 'rinlin-dceb1',
     storageBucket: 'rinlin-dceb1.appspot.com',
     iosClientId: '143345546135-48v5qgonch0uv1o8hj2lduiv7js83bie.apps.googleusercontent.com',
-    iosBundleId: 'com.example.flutterBasicTemplate',
+    iosBundleId: 'com.app.rinliln',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
@@ -75,7 +75,7 @@ class DefaultFirebaseOptions {
     projectId: 'rinlin-dceb1',
     storageBucket: 'rinlin-dceb1.appspot.com',
     iosClientId: '143345546135-48v5qgonch0uv1o8hj2lduiv7js83bie.apps.googleusercontent.com',
-    iosBundleId: 'com.example.flutterBasicTemplate',
+    iosBundleId: 'com.app.rinliln',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
