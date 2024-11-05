@@ -267,19 +267,18 @@ class _FirstScreenState extends State<FirstScreen> {
                               }
                             }
                           }),
-                    // if (Platform.isIOS)
-                    //   CustomButton(
-                    //       title: "Appleでサインイン",
-                    //       width: 316,
-                    //       fontSize: 15,
-                    //       fontWeight: FontWeight.normal,
-                    //       color: AppColors.primaryBlack,
-                    //       // borderColor: AppColors.primaryBlue,
-                    //       titleColor: AppColors.primaryWhite,
-                    //       onTap: () {
-                    //         // Navigator.pushNamed(context, "/registerprofile_group");
-                    //         Navigator.pushNamed(context, "/malemypage");
-                    //       }),
+                    if (Platform.isIOS)
+                      CustomButton(
+                          title: "Appleでサインイン",
+                          width: 316,
+                          fontSize: 15,
+                          fontWeight: FontWeight.normal,
+                          color: AppColors.primaryBlack,
+                          // borderColor: AppColors.primaryBlue,
+                          titleColor: AppColors.primaryWhite,
+                          onTap: () {
+
+                          }),
                     const SizedBox(
                       height: 20,
                     ),
