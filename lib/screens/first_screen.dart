@@ -11,6 +11,7 @@ import 'package:rinlin/components/base_screen.dart';
 import 'package:rinlin/components/custom_container.dart';
 import 'package:rinlin/screens/services/auth_service.dart';
 import 'package:rinlin/state/user_state.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class FirstScreen extends StatefulWidget {
   const FirstScreen({super.key});
@@ -114,6 +115,20 @@ class _FirstScreenState extends State<FirstScreen> {
       }
     } on PlatformException catch (e) {
       print(e.message);
+    }
+  }
+
+  Future<void> appleLogin() async {
+    try {
+      final credential  = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+      );
+      print(credential);
+    } catch (e) {
+      print(e);
     }
   }
 
@@ -277,7 +292,7 @@ class _FirstScreenState extends State<FirstScreen> {
                           // borderColor: AppColors.primaryBlue,
                           titleColor: AppColors.primaryWhite,
                           onTap: () {
-
+                            appleLogin();
                           }),
                     const SizedBox(
                       height: 20,
