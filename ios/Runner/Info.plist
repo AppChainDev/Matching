@@ -75,6 +75,7 @@
 					<key>CFBundleURLSchemes</key>
 					<array>
 							<string>lineauth</string>
+							<string>com.app.rinlin</string>
 					</array>
 			</dict>
 	</array>
