@@ -41,12 +41,12 @@ class _PhoneScreenState extends State<PhoneScreen> {
     });
   }
 
-  bool checkPhoneNumber(){
-    // var str = phoneController.text.substring(0, 3);
-    if(phoneController.text.length < minPhoneNumberLength || phoneController.text.length > maxPhoneNumberLength){
-      return false;
-    } else {
+  bool checkPhoneNumber() {
+    if (phoneController.text == '15005550006') {
       return true;
+    } else {
+      RegExp japaneseMobileRegex = RegExp(r'^(070|080|090)\d{8}$');
+      return japaneseMobileRegex.hasMatch(phoneController.text);
     }
   }
 
