@@ -57,9 +57,7 @@ class _FirstScreenState extends State<FirstScreen> {
               barrierDismissible: false,
               context: context,
               builder: (_) => Center(
-                      // Aligns the container to center
                       child: Container(
-                    // A simplified version of dialog.
                     width: 300,
                     height: 150,
                     padding: const EdgeInsets.only(top: 35),
